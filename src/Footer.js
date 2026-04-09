@@ -47,9 +47,9 @@ export default function Footer() {
             Quick Links
           </h3>
           <ul className="space-y-2 text-sm font-medium">
-            <li><Link to="/" className="hover:text-[#a67c52] transition-colors">Home</Link></li>
-            <li><Link to="/about" className="hover:text-[#a67c52] transition-colors">About Us</Link></li>
-            <li><Link to="/contact" className="hover:text-[#a67c52] transition-colors">Contact Us</Link></li>
+           <li><Link to="/"  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]"> Home </Link></li>
+           <li><Link to="/about"  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]"> About Us </Link></li>
+          <li><Link to="/contact"  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]"> Contact Us </Link></li>
           </ul>
 
           {/* Events dropdown */}
