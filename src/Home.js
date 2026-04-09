@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import {FaUser} from "react-icons/fa";
 export default function Home() {
   return (
     <>
@@ -33,6 +33,10 @@ export default function Home() {
 
       {/* NEW COLLECTION */}
       <NewCollection />
+
+   < button className="absolute top-5 right-10 text-3xl text-black p-1 rounded-full z-50">
+  <FaUser />
+</button>
     </>
   );
 }
