@@ -65,21 +65,55 @@ export default function Footer() {
               className={`overflow-hidden transition-all duration-500 ${showEvents ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                 }`}
             >
-              <div className="grid grid-cols-2 gap-4 text-sm font-medium text-center">
-                <ul className="space-y-2">
-                  <li><Link to="/wedding" className="hover:text-[#a67c52]">Wedding</Link></li>
-                  <li><Link to="/birthday" className="hover:text-[#a67c52]">Birthday</Link></li>
-                  <li><Link to="/baby-shower" className="hover:text-[#a67c52]">Baby Shower</Link></li>
-                  <li><Link to="/circumcision" className="hover:text-[#a67c52]">Circumcision</Link></li>
-                </ul>
+          <div className="grid grid-cols-2 gap-8 text-xs sm:text-sm font-medium text-center max-w-3xl mx-auto">
+  <ul className="space-y-2">
+    <li>
+      <Link to="/wedding" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Wedding
+      </Link>
+    </li>
+    <li>
+      <Link to="/birthday" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Birthday
+      </Link>
+    </li>
+    <li>
+      <Link to="/baby-shower" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Baby Shower
+      </Link>
+    </li>
+    <li>
+      <Link to="/circumcision" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Circumcision
+      </Link>
+    </li>
+  </ul>
 
-                <ul className="space-y-2">
-                  <li><Link to="/engagement" className="hover:text-[#a67c52]">Engagement</Link></li>
-                  <li><Link to="/engagement-party" className="hover:text-[#a67c52]">Engagement Party</Link></li>
-                  <li><Link to="/bride-to-be" className="hover:text-[#a67c52]">Bride to Be</Link></li>
-                  <li><Link to="/car-decoration" className="hover:text-[#a67c52]">Car Decoration</Link></li>
-                </ul>
-              </div>
+  <ul className="space-y-2">
+    <li>
+      <Link to="/engagement" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Engagement
+      </Link>
+    </li>
+    <li>
+      <Link to="/engagement-party" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Engagement Party
+      </Link>
+    </li>
+    <li>
+      <Link to="/bride-to-be" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Bride to Be
+      </Link>
+    </li>
+    <li>
+      <Link to="/car-decoration" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Car Decoration
+      </Link>
+    </li>
+  </ul>
+</div>
+
+
             </div>
           </div>
         </div>

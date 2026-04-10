@@ -1,9 +1,18 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+
+
 export default function Header() {
+
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const handleClick = () => {
+  setOpen(false);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +24,9 @@ export default function Header() {
 
   return (
     <>
+    
+
+
       {/* HEADER */}
       <header className="fixed top-0 left-0 w-full z-50 bg-[#f6f1e8]/70 backdrop-blur-md text-[#2b2b2b] transition-all duration-300">
         <div className={`flex items-start justify-between px-6 transition-all duration-300 ${isScrolled ? "py-4" : "py-4"}`}>
@@ -26,25 +38,29 @@ export default function Header() {
           >
             ☰
           </button>
+         
 
-          {/* LOGO */}
-          <div className={`text-center flex-1 transition-all duration-500 overflow-hidden ${isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-24"}`}>
-            <h1
-              className="text-2xl tracking-[6px] font-light"
-              style={{ fontFamily: "Playfair Display, serif" }}
-            >
-              TIXHE DECOR
-            </h1>
+         <div
+  className={`absolute left-1/2 transform -translate-x-1/2 text-center transition-all duration-500 overflow-hidden ${
+    isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-24"
+  }`}
+>
+  <h1
+    className="text-lg sm:text-2xl tracking-[4px] sm:tracking-[6px] font-light whitespace-nowrap"
+    style={{ fontFamily: "Playfair Display, serif" }}
+  >
+    TIXHE DECOR
+  </h1>
 
-            <p
-              className="text-xs tracking-[3px] text-[#5a5a5a]"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              Luxury Weddings & Bespoke Design
-            </p>
-          </div>
-
-          <div className="w-8"></div>
+  <p
+    className="text-[10px] sm:text-xs tracking-[2px] sm:tracking-[3px] text-[#5a5a5a] whitespace-nowrap"
+    style={{ fontFamily: "Cormorant Garamond, serif" }}
+  >
+    Luxury Weddings & Bespoke Design
+  </p>
+</div>
+            <Link to="/login" className="text-2xl ml-3 inline-block">👤</Link>
+ 
         </div>
       </header>
 
@@ -70,7 +86,9 @@ export default function Header() {
           >
             ✕
           </button>
+         
         </div>
+        
 
         {/* MENU */}
         <div className="relative px-10">
@@ -79,18 +97,17 @@ export default function Header() {
           <nav className="flex flex-col gap-6 pl-6 pb-24">
 
            {/* HOME */}
-<Link to="/"onClick={() => setOpen(false)}>
-  <h2
-    className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
-    style={{ fontFamily: "Playfair Display, serif" }}
-  >
+<Link to="/" onClick={handleClick}>
+  <h2 className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
+    style={{ fontFamily: "Playfair Display, serif" }}>
     HOME
   </h2>
 </Link>
 
 
+
 {/* ABOUT */}
-<Link to="/about"onClick={() => setOpen(false)}>
+<Link to="/about"onClick={handleClick}>
   <h2
     className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
     style={{ fontFamily: "Playfair Display, serif" }}
@@ -100,7 +117,7 @@ export default function Header() {
 </Link>
 
            {/* Contact Us */}
-<Link to="/contact"onClick={() => setOpen(false)}>
+<Link to="/contact"onClick={handleClick}>
   <h2
     className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
     style={{ fontFamily: "Playfair Display, serif" }}
@@ -123,45 +140,45 @@ export default function Header() {
     className="flex flex-col gap-4 text-base tracking-[2px]"
     style={{ fontFamily: "Cormorant Garamond, serif" }}
   >
-    <Link to="/wedding" onClick={() => setOpen(false)}>
+    <Link to="/wedding" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Wedding</span>
     </Link>
 
-    <Link to="/birthday" onClick={() => setOpen(false)}>
+    <Link to="/birthday" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Birthday</span>
     </Link>
 
-    <Link to="/circumcision" onClick={() => setOpen(false)}>
+    <Link to="/circumcision"onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">
         Circumcision Ceremony
       </span>
     </Link>
 
-    <Link to="/baby-shower" onClick={() => setOpen(false)}>
+    <Link to="/baby-shower" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Baby Shower</span>
     </Link>
 
-    <Link to="/engagement-party" onClick={() => setOpen(false)}>
+    <Link to="/engagement-party" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Engagement Party</span>
     </Link>
 
-    <Link to="/bride-to-be" onClick={() => setOpen(false)}>
+    <Link to="/bride-to-be" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Bride to Be</span>
     </Link>
 
-    <Link to="/engagement" onClick={() => setOpen(false)}>
+    <Link to="/engagement" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Engagement</span>
     </Link>
 
-    <Link to="/car-decoration" onClick={() => setOpen(false)}>
+    <Link to="/car-decoration" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Car Decoration</span>
     </Link>
   </div>
 </div>
-
           </nav>
         </div>
       </div>
+    
     </>
   );
 }
