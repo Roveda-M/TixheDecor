@@ -79,14 +79,10 @@ export default function Footer() {
     </li>
     <li>
       <Link to="/baby-shower" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
-        Baby Shower
+        Baby 
       </Link>
     </li>
-    <li>
-      <Link to="/circumcision" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
-        Circumcision
-      </Link>
-    </li>
+
   </ul>
 
   <ul className="space-y-2">
@@ -95,21 +91,19 @@ export default function Footer() {
         Engagement
       </Link>
     </li>
-    <li>
-      <Link to="/engagement-party" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
-        Engagement Party
+   <li>
+      <Link to="/circumcision" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+        Circumcision
       </Link>
     </li>
+   
     <li>
       <Link to="/bride-to-be" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
         Bride to Be
       </Link>
     </li>
-    <li>
-      <Link to="/car-decoration" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
-        Car Decoration
-      </Link>
-    </li>
+
+ 
   </ul>
 </div>
 

@@ -155,24 +155,18 @@ export default function Header() {
     </Link>
 
     <Link to="/baby-shower" onClick={handleClick}>
-      <span className="hover:opacity-60 cursor-pointer">Baby Shower</span>
+      <span className="hover:opacity-60 cursor-pointer">Baby </span>
     </Link>
 
     <Link to="/engagement-party" onClick={handleClick}>
-      <span className="hover:opacity-60 cursor-pointer">Engagement Party</span>
+      <span className="hover:opacity-60 cursor-pointer">Engagement </span>
     </Link>
 
     <Link to="/bride-to-be" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">Bride to Be</span>
     </Link>
 
-    <Link to="/engagement" onClick={handleClick}>
-      <span className="hover:opacity-60 cursor-pointer">Engagement</span>
-    </Link>
 
-    <Link to="/car-decoration" onClick={handleClick}>
-      <span className="hover:opacity-60 cursor-pointer">Car Decoration</span>
-    </Link>
   </div>
 </div>
           </nav>
