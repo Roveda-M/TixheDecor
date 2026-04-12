@@ -9,6 +9,7 @@ import Login from "./Login";
 import Register from "./Register";
 import Profile from "./Profile";
 import Wedding from "./Wedding";
+import Birthday from "./Birthday";
 export default function App() {
   const location = useLocation();
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register/>} />
         <Route path="/profile" element={<><Profile /><Footer /></>} />
+        <Route path="/birthday" element={<><Birthday /><Footer /></>} />
       </Routes>
     </>
   );
