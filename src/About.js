@@ -3,20 +3,17 @@ import { useState } from "react";
 const faqs = [
   {
     q: "Çfarë është TixheDecor?",
-    a: "TixheDecor është studio profesionale dekorimi për dasma dhe evenimente të veçanta. Ofrojmë shërbime të plota: rregullim lulesh, sfonde dekorative, ndriçim artistik dhe stilizim tavolinash  të gjitha të përshtatura sipas vizionit dhe dëshirave tuaja.",
+    a: "TixheDecor është kompani profesionale dekorimi për dasma dhe evente të veçanta. Ofrojmë shërbime të plota: rregullim lulesh, sfonde dekorative, ndriçim artistik dhe stilizim tavolinash  të gjitha të përshtatura sipas vizionit dhe dëshirave tuaja.",
   },
   {
     q: "A punoni jashtë Ferizajit?",
-    a: "Po, kryejmë instalime në të gjithë territorin e Kosovës. Për evenimente më të mëdha ose në distancë, mund të bisedojmë për kushtet e udhëtimit. Na kontaktoni me datën dhe vendndodhjen e eventit tuaj dhe do t'ju japim ofertën e duhur.",
+    a: "Po, puna jonë kryhet në gjithë territorin e Kosovës. Për evente  më të mëdha ose në distancë, mund të bisedojmë për kushtet e udhëtimit. Na kontaktoni me datën dhe vendndodhjen e eventit tuaj dhe do t'ju japim ofertën e duhur.",
   },
   {
     q: "Sa kohë përpara duhet të bëjmë rezervimin?",
     a: "Datat e fundjavës rezervohen shumë shpejt, ndaj ju rekomandojmë të na kontaktoni të paktën 3–6 muaj përpara eventit. Rezervimet me afat më të shkurtër janë të mundshme në varësi të disponueshmërisë  na shkruani dhe shohim çfarë mund të bëjmë.",
   },
-  {
-    q: "A mund t'i personalizojmë paketat?",
-    a: "Sigurisht. Çdo event është i veçantë dhe ne e trajtojmë si të tillë. Paketat tona janë plotësisht të personalizueshme  zgjidhni vetëm shërbimet që ju nevojiten dhe paguani vetëm për ato.",
-  },
+ 
   {
     q: "Si mund të marrim një ofertë?",
     a: "Plotësoni formularin në faqen Kontakt duke specifikuar datën e eventit, vendndodhjen dhe stilin që preferoni. Do t'ju kthejmë përgjigje sa më shpejt me hapat e ardhshëm dhe një vlerësim të personalizuar.",
@@ -128,8 +125,7 @@ export default function About() {
           </p>
           <p className="text-gray-600 leading-relaxed">
             Krahas dekorimit klasik me lule dhe sfondet elegante, ofrojmë edhe
-            elemente moderne si ndriçim special, photo booth, efekte tymi dhe
-            laser  për të krijuar një atmosferë të paharrueshme. Qëllimi ynë
+            elemente moderne  për të krijuar një atmosferë të paharrueshme. Qëllimi ynë
             është i qartë: çdo moment i rëndësishëm për ju të bëhet një
             përvojë e jashtëzakonshme.
           </p>
