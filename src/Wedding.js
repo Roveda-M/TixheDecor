@@ -3,6 +3,7 @@ import Ftesa from "./Ftesa";
 
 export default function Wedding() {
   const [view, setView] = useState("main");
+  const [selectedDecors, setSelectedDecors] = useState([]);
 
   const photos = [
     {
@@ -84,12 +85,12 @@ export default function Wedding() {
             className="px-6 py-3 rounded-xl font-serif tracking-wide shadow-md 
             bg-[#6f4e37] text-white hover:bg-[#8b5e3c]"
           >
-           Kthehu një hap para
+            Kthehu një hap para
           </button>
         </div>
-        <br/>
-        <br/>
-        
+        <br />
+        <br />
+
       </div>
     );
   }
@@ -99,7 +100,7 @@ export default function Wedding() {
     <section className="bg-[#fdfaf6] py-16 px-8">
 
       {/* VIDEO */}
-      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[90vh] overflow-hidden -mt-20">
+      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[100vh] overflow-hidden -mt-20">
         <video
           className="w-full h-full object-cover"
           autoPlay
@@ -107,7 +108,7 @@ export default function Wedding() {
           loop
           playsInline
         >
-          <source src="/v2.mp4" type="video/mp4" />
+          <source src="/v1.1.mp4" type="video/mp4" />
         </video>
       </section>
 
@@ -123,30 +124,59 @@ export default function Wedding() {
       </div>
 
       {/* GALLERY */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-        {photos.map((photo, index) => (
-          <div
-            key={index}
-            className="relative group overflow-hidden rounded-xl shadow-lg"
-          >
-            <img
-              src={photo.url}
-              alt={photo.title.full}
-              className="w-full h-56 object-cover transform group-hover:scale-105 transition duration-700 ease-in-out"
-            />
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 mb-16 mt-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
+          {photos.map((photo, index) => {
+            const isSelected = selectedDecors.includes(index);
+            return (
+              <div
+                key={index}
+                className="group relative"
+              >
+                <div
+                  onClick={() => {
+                    if (isSelected) {
+                      setSelectedDecors(selectedDecors.filter(id => id !== index));
+                    } else {
+                      setSelectedDecors([...selectedDecors, index]);
+                    }
+                  }}
+                  className={`relative aspect-[3/4] overflow-hidden rounded-xl md:rounded-3xl mb-8 transition-all duration-700 cursor-pointer ${isSelected ? 'shadow-2xl scale-[1.02]' : 'shadow-lg group-hover:shadow-xl'}`}
+                  style={{ borderColor: '#8c734b', borderWidth: isSelected ? '3px' : '0px' }}
+                >
+                  <img
+                    src={photo.url}
+                    alt={photo.title.full}
+                    className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
+                  />
 
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
-              <span className="text-white text-lg font-serif">
-                <span className="block md:hidden">
-                  {photo.title.short}
-                </span>
-                <span className="hidden md:block">
-                  {photo.title.full}
-                </span>
-              </span>
-            </div>
-          </div>
-        ))}
+                  <div className="absolute top-4 right-4 z-10">
+                    <button
+                      className={`p-3 rounded-full shadow-lg transition-all duration-300 ${isSelected ? 'bg-red-500 text-white hover:bg-red-600 scale-110' : 'bg-white/90 text-gray-400 hover:bg-white hover:text-red-500 hover:scale-110'}`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill={isSelected ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className={`absolute bottom-0 left-0 w-full bg-black/70 text-white py-3 text-center transition-all duration-500 z-20 ${isSelected ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
+                    <p className="text-[10px] tracking-[0.3em] uppercase font-bold">Zgjedhur</p>
+                  </div>
+
+                  <div className="absolute inset-0 bg-black/25 backdrop-blur-[2px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none z-10">
+                    <div className="text-center px-2 md:px-4 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                      <h3 className="text-xl md:text-3xl text-white mb-2 md:mb-3 drop-shadow-lg font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <span className="block md:hidden">{photo.title.short}</span>
+                        <span className="hidden md:block">{photo.title.full}</span>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* BUTTON */}
@@ -159,7 +189,7 @@ export default function Wedding() {
           className="px-6 py-3 rounded-xl font-serif tracking-wide shadow-md 
           bg-[#a67c52] text-white hover:bg-[#8b5e3c]"
         >
-         Krijo ftese përfekte
+          Krijo ftese përfekte
         </button>
       </div>
 
