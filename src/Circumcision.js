@@ -1,7 +1,18 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import html2canvas from "html2canvas";
 
 export default function Circumcision() {
   const [selectedDecors, setSelectedDecors] = useState([]);
+  const [invite, setInvite] = useState({
+    djali: "",
+    familja: "",
+    date: "",
+    time: "",
+    location: "",
+    message: "",
+  });
+  const [isDownloading, setIsDownloading] = useState(false);
+  const inviteRef = useRef(null);
 
   const photos = useMemo(
     () => [
@@ -59,6 +70,42 @@ export default function Circumcision() {
     document
       .getElementById("circumcision-invite")
       ?.scrollIntoView({ behavior: "smooth" });
+
+  const updateInvite = (key, value) =>
+    setInvite((prev) => ({ ...prev, [key]: value }));
+
+  const safeInvite = {
+    djali: invite.djali || "Emri i Djalit",
+    familja: invite.familja || "Familja",
+    date: invite.date || "Data",
+    time: invite.time || "Ora",
+    location: invite.location || "Lokacioni",
+    message:
+      invite.message ||
+      "Ju ftojmë ta ndajmë gëzimin së bashku në ceremoninë e synetisë.",
+  };
+
+  const handleDownloadInvite = async () => {
+    if (!inviteRef.current) return;
+    try {
+      setIsDownloading(true);
+      const canvas = await html2canvas(inviteRef.current, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: null,
+      });
+      const dataURL = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "Ftese-Synetia.png";
+      link.click();
+    } catch (error) {
+      console.error("Error downloading invitation:", error);
+      alert("Pati një gabim gjatë shkarkimit të ftesës.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="bg-[#f7fbff] min-h-screen relative overflow-hidden">
@@ -330,6 +377,188 @@ export default function Circumcision() {
               >
                 Kërko ofertë
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* INVITE BUILDER */}
+      <section
+        id="circumcision-invite"
+        className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 pb-24"
+      >
+        <div className="rounded-[2.25rem] bg-white border border-[#0ea5e9]/15 shadow-[0_30px_90px_rgba(6,26,43,0.08)] overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* LEFT: FORM */}
+            <div className="p-8 md:p-12 lg:p-14">
+              <div
+                className="text-3xl md:text-4xl text-[#061a2b]"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                Krijo ftesën e synetisë
+              </div>
+              <p className="mt-3 text-sm md:text-base text-[#1f3b55]/80 max-w-xl leading-relaxed">
+                Plotëso të dhënat dhe shkarko ftesën si foto (PNG). Mund ta dërgosh
+                direkt në Viber/WhatsApp ose ta postosh në rrjete sociale.
+              </p>
+
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="sm:col-span-1">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1f3b55]/70 font-semibold mb-2">
+                    Emri i djalit
+                  </label>
+                  <input
+                    value={invite.djali}
+                    onChange={(e) => updateInvite("djali", e.target.value)}
+                    placeholder="p.sh. Ardi"
+                    className="w-full border-b border-[#cfe9f7] focus:border-[#0ea5e9] outline-none pb-3 pt-3 text-[#061a2b] bg-transparent text-base transition-colors placeholder:text-[#8aa6bb]"
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1f3b55]/70 font-semibold mb-2">
+                    Familja
+                  </label>
+                  <input
+                    value={invite.familja}
+                    onChange={(e) => updateInvite("familja", e.target.value)}
+                    placeholder="p.sh. Berisha"
+                    className="w-full border-b border-[#cfe9f7] focus:border-[#0ea5e9] outline-none pb-3 pt-3 text-[#061a2b] bg-transparent text-base transition-colors placeholder:text-[#8aa6bb]"
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1f3b55]/70 font-semibold mb-2">
+                    Data
+                  </label>
+                  <input
+                    type="date"
+                    value={invite.date}
+                    onChange={(e) => updateInvite("date", e.target.value)}
+                    className="w-full border-b border-[#cfe9f7] focus:border-[#0ea5e9] outline-none pb-3 pt-3 text-[#061a2b] bg-transparent text-base transition-colors cursor-pointer"
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1f3b55]/70 font-semibold mb-2">
+                    Ora
+                  </label>
+                  <input
+                    type="time"
+                    value={invite.time}
+                    onChange={(e) => updateInvite("time", e.target.value)}
+                    className="w-full border-b border-[#cfe9f7] focus:border-[#0ea5e9] outline-none pb-3 pt-3 text-[#061a2b] bg-transparent text-base transition-colors cursor-pointer"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1f3b55]/70 font-semibold mb-2">
+                    Lokacioni
+                  </label>
+                  <input
+                    value={invite.location}
+                    onChange={(e) => updateInvite("location", e.target.value)}
+                    placeholder="p.sh. Arzo Event, Prishtinë"
+                    className="w-full border-b border-[#cfe9f7] focus:border-[#0ea5e9] outline-none pb-3 pt-3 text-[#061a2b] bg-transparent text-base transition-colors placeholder:text-[#8aa6bb]"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1f3b55]/70 font-semibold mb-2">
+                    Mesazhi (opsionale)
+                  </label>
+                  <input
+                    value={invite.message}
+                    onChange={(e) => updateInvite("message", e.target.value)}
+                    placeholder="p.sh. Ju mirëpresim me gëzim..."
+                    className="w-full border-b border-[#cfe9f7] focus:border-[#0ea5e9] outline-none pb-3 pt-3 text-[#061a2b] bg-transparent text-base transition-colors placeholder:text-[#8aa6bb]"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleDownloadInvite}
+                disabled={isDownloading}
+                className={`mt-10 inline-flex items-center justify-center px-10 py-4 rounded-full font-semibold tracking-wide transition-all duration-300 ${
+                  isDownloading
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-[#061a2b] text-white hover:bg-[#0b2942] hover:-translate-y-0.5 shadow-[0_20px_50px_rgba(6,26,43,0.18)]"
+                }`}
+              >
+                {isDownloading ? "Duke shkarkuar..." : "Shkarko ftesën (PNG)"}
+              </button>
+            </div>
+
+            {/* RIGHT: PREVIEW */}
+            <div className="p-8 md:p-12 lg:p-14 bg-gradient-to-b from-[#f7fbff] to-white flex items-center justify-center">
+              <div className="relative w-full max-w-[420px]">
+                <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#7dd3fc]/35 via-[#fde68a]/25 to-transparent blur-2xl" />
+
+                <div
+                  ref={inviteRef}
+                  className="relative w-full aspect-[4/5.6] rounded-[2.25rem] overflow-hidden shadow-[0_30px_90px_rgba(6,26,43,0.18)] bg-white"
+                >
+                  <div className="absolute inset-0">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(125,211,252,0.35),transparent_55%),radial-gradient(circle_at_90%_30%,rgba(253,230,138,0.35),transparent_50%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(6,26,43,0.05),rgba(6,26,43,0.0),rgba(6,26,43,0.06))]" />
+                  </div>
+
+                  <div className="relative z-10 h-full p-10 flex flex-col items-center text-center">
+                    <div className="text-[10px] tracking-[0.38em] uppercase font-semibold text-[#0b2942]/70">
+                      Ftesë • Syneti
+                    </div>
+
+                    <div className="mt-8 w-full">
+                      <div
+                        className="text-4xl md:text-5xl italic text-[#061a2b]"
+                        style={{ fontFamily: "'Playfair Display', serif" }}
+                      >
+                        {safeInvite.djali}
+                      </div>
+                      <div className="mt-2 text-xs tracking-[0.28em] uppercase text-[#1f3b55]/70">
+                        {safeInvite.familja}
+                      </div>
+                    </div>
+
+                    <div className="mt-8 text-sm text-[#1f3b55]/80 leading-relaxed max-w-[280px]">
+                      {safeInvite.message}
+                    </div>
+
+                    <div className="mt-10 w-full flex flex-col items-center gap-3">
+                      <div className="h-[1px] w-28 bg-gradient-to-r from-transparent via-[#fde68a] to-transparent" />
+                      <div className="flex items-center gap-4 px-5 py-3 rounded-full border border-[#0ea5e9]/20 bg-white/70 backdrop-blur-sm">
+                        <div className="text-[11px] tracking-[0.2em] uppercase text-[#061a2b] font-semibold">
+                          {safeInvite.date}
+                        </div>
+                        <div className="text-[#fde68a] opacity-80 text-xs">
+                          ✦
+                        </div>
+                        <div className="text-[11px] tracking-[0.2em] uppercase text-[#061a2b] font-semibold">
+                          {safeInvite.time}
+                        </div>
+                      </div>
+                      <div className="text-xs text-[#1f3b55]/70">
+                        {safeInvite.location}
+                      </div>
+                    </div>
+
+                    <div className="mt-auto w-full">
+                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#0ea5e9]/25 to-transparent" />
+                      <div className="mt-4 text-[10px] tracking-[0.35em] uppercase text-[#1f3b55]/60">
+                        Tixhe Decor
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute top-6 left-6 w-10 h-10 rounded-full border border-[#fde68a]/60 opacity-70" />
+                  <div className="absolute -bottom-7 -right-7 w-24 h-24 rounded-full border border-[#0ea5e9]/25 opacity-60" />
+                </div>
+
+                <div className="mt-6 text-center text-xs text-[#1f3b55]/70">
+                  Parapamje e ftesës. Plotëso fushat majtas dhe shkarko.
+                </div>
+              </div>
             </div>
           </div>
         </div>
