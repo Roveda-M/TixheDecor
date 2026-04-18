@@ -46,46 +46,45 @@ export default function BrideToBe() {
 
     return (
         <div className="bg-[#f7f3ec] min-h-screen relative font-sans text-gray-800 overflow-hidden break-words selection:bg-[#fbcfe8]">
-            <section className="relative w-full min-h-[90vh] lg:min-h-screen flex flex-col lg:flex-row items-center justify-between px-6 md:px-16 lg:px-24 pt-24 lg:pt-0 pb-20 mt-10 lg:mt-0">
+            <section className="relative w-full flex flex-row items-center justify-center gap-2 sm:gap-8 lg:justify-between px-3 sm:px-8 md:px-16 lg:px-24 pt-24 sm:pt-32 pb-10 lg:pb-0 lg:min-h-screen overflow-hidden">
 
-                <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none mt-20 lg:mt-0">
+                <div className="absolute inset-0 z-0 pointer-events-none">
                     <div className="absolute inset-0 bg-cover bg-center opacity-20 transform scale-105" style={{ backgroundImage: "url('bridetobe/4.jpeg')" }}></div>
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#fff0f5]/70 via-[#f7f3ec]/90 to-[#f7f3ec]"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#fff0f5]/80 via-[#f7f3ec]/90 to-[#f7f3ec]"></div>
                 </div>
-
-                <div className="absolute top-[10%] -left-[5%] w-[400px] h-[400px] opacity-30 pointer-events-none transform -rotate-12 blur-[1px] z-0">
+                <br />
+                <div className="absolute top-[15%] lg:top-[25%] -left-[15%] lg:-left-[5%] w-[150px] h-[150px] lg:w-[400px] lg:h-[400px] opacity-20 pointer-events-none transform -rotate-12 blur-[2px] z-0">
                     <img src="bridetobe/5.jpeg" alt="Decorative Floral" className="w-full h-full object-contain" />
                 </div>
 
-                <div className="w-full lg:w-[45%] flex flex-col items-start justify-center z-10 relative mt-10 md:mt-0 lg:ml-8">
-                    <h1 className="text-[3.5rem] sm:text-[4.5rem] md:text-[5rem] lg:text-[6rem] tracking-tight text-[#4a3b32] font-normal leading-[1.05] mb-4 animate-[fadeIn_1s_ease-out_forwards]">
-                        <br />
-                        <span className="italic text-[#c2b092] pr-6 block mt-2 whitespace-nowrap" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <div className="w-[45%] lg:w-[45%] flex flex-col items-start text-left justify-center z-10 relative mb-0 pr-1 sm:pr-0">
+                    <h1 className="text-[1.8rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[6rem] tracking-tight text-[#4a3b32] font-normal leading-tight mb-2 sm:mb-4 drop-shadow-sm animate-[fadeIn_1s_ease-out_forwards]">
+                        <span className="italic text-[#c2b092] block pr-0 lg:pr-4 break-words" style={{ fontFamily: "'Playfair Display', serif" }}>
                             Bride to Be
                         </span>
                     </h1>
 
-                    <p className="text-lg md:text-xl lg:text-[1.35rem] text-[#6b655f] font-light max-w-sm lg:max-w-lg leading-relaxed mb-12 opacity-90 animate-[fadeIn_1.4s_ease-out_forwards]">
+                    <p className="text-[10px] sm:text-sm md:text-lg lg:text-[1.2rem] text-[#6b655f] font-light max-w-[140px] sm:max-w-[250px] lg:max-w-lg leading-snug lg:leading-relaxed mb-4 lg:mb-8 opacity-90 animate-[fadeIn_1.4s_ease-out_forwards]">
                         Ne krijojmë dekorin perfekt për ditën më të rëndësishme në jetën tuaj.
                     </p>
 
                     <button
                         onClick={() => document.getElementById('bridetobe-gallery')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="px-8 md:px-10 py-4 border border-[#e8dada] bg-transparent text-[#3e3e3e] uppercase tracking-[0.2em] text-xs md:text-sm font-semibold rounded-full hover:bg-[rgba(251,207,232,0.3)] hover:border-[#fbcfe8] hover:shadow-[0_15px_30px_rgba(251,207,232,0.2)] hover:-translate-y-1 transition-all duration-500 animate-[fadeIn_1.8s_ease-out_forwards]"
+                        className="px-3 sm:px-6 lg:px-10 py-2 sm:py-3 lg:py-4 border border-[#e8dada] bg-transparent text-[#3e3e3e] uppercase tracking-[0.1em] sm:tracking-[0.2em] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-bold sm:font-semibold rounded-full hover:bg-[rgba(251,207,232,0.3)] hover:border-[#fbcfe8] hover:shadow-[0_15px_30px_rgba(251,207,232,0.2)] hover:-translate-y-1 transition-all duration-500 animate-[fadeIn_1.8s_ease-out_forwards] w-fit whitespace-nowrap max-w-full overflow-hidden text-ellipsis"
                     >
                         Zgjidh Dekorin
                     </button>
                 </div>
 
-                <div className="w-full lg:w-[45%] relative mt-24 lg:mt-0 flex justify-end z-10 mr-4 md:mr-10">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-gradient-to-tr from-[#fbcfe8]/50 to-[#d89ba3]/30 blur-[60px] rounded-full pointer-events-none z-0 animate-pulse"></div>
+                <div className="w-[50%] lg:w-[45%] relative flex items-start justify-start z-10 max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[420px] xl:max-w-[480px] ml-auto lg:mr-8 xl:mr-12 mb-8 sm:mb-12 lg:mb-20 pb-6 sm:pb-10 lg:pb-16 pr-4 sm:pr-8 lg:pr-12">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-[#fbcfe8]/40 to-[#d89ba3]/20 blur-[25px] md:blur-[60px] rounded-full pointer-events-none z-0"></div>
 
-                    <div className="relative w-[85%] lg:w-[85%] aspect-[3/4] object-cover z-10 shadow-[0_20px_60px_rgba(107,74,83,0.15)] transition-transform duration-1000 hover:-translate-y-2 rounded-xl border border-[#fff0f5] overflow-hidden bg-white">
-                        <img src="/bridetobe/2.jpeg" alt="Festa Bride To Be" className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-1000" />
+                    <div className="relative w-[90%] lg:w-[85%] aspect-[3/4] rounded-2xl lg:rounded-3xl shadow-[0_15px_30px_rgba(107,74,83,0.15)] border-[3px] sm:border-[5px] lg:border-[8px] border-[#fff0f5] bg-white overflow-hidden z-10 transition-transform duration-700 hover:scale-[1.02]">
+                        <img src="/bridetobe/2.jpeg" alt="Festa Bride To Be" className="w-full h-full object-cover" />
                     </div>
 
-                    <div className="absolute -bottom-10 lg:-bottom-16 -right-6 lg:-right-12 w-[60%] aspect-[4/3] rounded-xl overflow-hidden shadow-[0_15px_40px_rgba(107,74,83,0.2)] z-20 border-[6px] border-[#fff0f5] bg-white hover:scale-105 hover:rotate-[-2deg] transition-all duration-[800ms]">
-                        <img src="/bridetobe/1.jpeg" alt="Detaje romancë" className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-1000" />
+                    <div className="absolute bottom-0 right-0 w-[75%] lg:w-[70%] aspect-[4/3] rounded-2xl lg:rounded-3xl shadow-[0_10px_20px_rgba(107,74,83,0.2)] z-20 border-[3px] sm:border-[5px] lg:border-[8px] border-[#fff0f5] bg-white overflow-hidden transition-transform duration-700 hover:scale-105 hover:-rotate-3">
+                        <img src="/bridetobe/1.jpeg" alt="Detaje romancë" className="w-full h-full object-cover" />
                     </div>
                 </div>
             </section>
@@ -93,9 +92,9 @@ export default function BrideToBe() {
 
 
             <div id="bridetobe-gallery" className="pt-20 bg-transparent relative z-10">
-                <div className="flex flex-col items-center text-center mb-12">
+                <div className="flex flex-col items-center text-center mb-8 md:mb-12 px-4">
                     <span className="text-[#f9a8d4] text-xl mb-4">🌸</span>
-                    <h2 className="text-4xl md:text-5xl text-[#5c4a3d] font-normal" style={{ fontFamily: "'Playfair Display', serif" }}>Zgjedh dekorin</h2>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl text-[#5c4a3d] font-normal" style={{ fontFamily: "'Playfair Display', serif" }}>Zgjedh dekorin</h2>
                 </div>
                 <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 mb-16">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
@@ -154,99 +153,101 @@ export default function BrideToBe() {
                 <span className="text-3xl opacity-50">💌</span>
             </div>
 
-            <section className="relative z-10 py-16 px-6 lg:px-20 mb-20">
-                <div className="max-w-[1100px] mx-auto bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 md:p-14 lg:p-20 shadow-[0_20px_50px_rgba(235,215,220,0.4)] flex flex-col md:flex-row items-center gap-16 transition-all duration-700 hover:shadow-[0_30px_60px_rgba(235,215,220,0.6)]">
+            <section className="relative z-10 py-6 sm:py-12 px-3 sm:px-6 lg:px-20 mb-10 overflow-hidden">
+                <div className="max-w-[1200px] mx-auto bg-white/70 backdrop-blur-xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 lg:p-16 shadow-[0_20px_40px_rgba(235,215,220,0.3)] flex flex-col lg:flex-row items-center gap-8 lg:gap-16 transition-all duration-700">
 
-                    <div className="w-full md:w-1/2 flex flex-col gap-8">
-                        <div>
-                            <h3 className="text-3xl md:text-5xl text-[#5c4a3d] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Personalizo Ftesën</h3>
-                            <p className="text-[#8e786b] text-base md:text-lg font-light leading-relaxed">
-                                Plotëso të dhënat dhe ndaj gëzimin me shoqet tuaja.
+                    {/* FORM SECTION - ALWAYS ON TOP ON MOBILE */}
+                    <div className="w-full lg:w-1/2 flex flex-col gap-4 sm:gap-8 order-2 lg:order-1 pt-4 lg:pt-0 border-t border-[#f0e6e1] lg:border-none">
+                        <div className="text-center lg:text-left">
+                            <h3 className="text-2xl sm:text-4xl lg:text-4xl text-[#5c4a3d] mb-2 lg:mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Personalizo Ftesën</h3>
+                            <p className="text-[#8e786b] text-xs sm:text-sm lg:text-base font-light leading-relaxed max-w-sm mx-auto lg:mx-0">
+                                Plotëso të dhënat e tua dhe ktheje në një ftesë mbretërore.
                             </p>
                         </div>
 
-                        <div className="flex flex-col gap-6 w-full">
-                            <input type="text" placeholder="Emri yt (Nusja)" value={inviteName} onChange={(e) => setInviteName(e.target.value)} className="w-full border-b border-[#ebd2da] focus:border-[#d89ba3] focus:ring-0 outline-none pb-3 pt-4 text-[#5c4a3d] bg-transparent text-lg transition-colors placeholder:text-[#c4aeb4]" />
-                            <div className="flex gap-6 w-full">
-                                <div className="w-1/2 relative">
-                                    <label className="text-[10px] text-[#a68f7c] absolute top-1 left-0 uppercase tracking-widest pointer-events-none">Data</label>
-                                    <input type="date" value={inviteDate} onChange={(e) => setInviteDate(e.target.value)} className="w-full border-b border-[#ebd2da] focus:border-[#d89ba3] outline-none pb-2 pt-6 text-[#5c4a3d] bg-transparent text-lg transition-colors cursor-pointer" />
+                        <div className="flex flex-col gap-6 sm:gap-8 w-full mt-2 lg:mt-4">
+                            <div className="relative group">
+                                <label className="text-[10px] font-bold text-[#a68f7c] uppercase tracking-widest absolute -top-2 lg:-top-3 left-4 lg:left-2 bg-white/90 px-1 z-10">Emri yt (Nusja)</label>
+                                <input type="text" placeholder="psh. Vesa" value={inviteName} onChange={(e) => setInviteName(e.target.value)} className="w-full border-2 border-[#ebd2da] rounded-xl lg:rounded-2xl focus:border-[#d89ba3] outline-none px-4 lg:px-5 py-3 lg:py-4 text-[#5c4a3d] bg-white/50 focus:bg-white text-base shadow-sm transition-all relative z-0 placeholder:text-[#d7c9cc]" />
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 w-full">
+                                <div className="w-full sm:w-1/2 relative group">
+                                    <label className="text-[10px] font-bold text-[#a68f7c] uppercase tracking-widest absolute -top-2 lg:-top-3 left-4 lg:left-2 bg-white/90 px-1 z-10">Data e Festës</label>
+                                    <input type="date" value={inviteDate} onChange={(e) => setInviteDate(e.target.value)} className="w-full border-2 border-[#ebd2da] rounded-xl lg:rounded-2xl focus:border-[#d89ba3] outline-none px-4 lg:px-5 py-3 lg:py-4 text-[#5c4a3d] bg-white/50 focus:bg-white text-base shadow-sm transition-all cursor-pointer relative z-0" />
                                 </div>
-                                <div className="w-1/2 relative">
-                                    <label className="text-[10px] text-[#a68f7c] absolute top-1 left-0 uppercase tracking-widest pointer-events-none">Ora</label>
-                                    <input type="time" value={inviteTime} onChange={(e) => setInviteTime(e.target.value)} className="w-full border-b border-[#ebd2da] focus:border-[#d89ba3] outline-none pb-2 pt-6 text-[#5c4a3d] bg-transparent text-lg transition-colors cursor-pointer" />
+                                <div className="w-full sm:w-1/2 relative group">
+                                    <label className="text-[10px] font-bold text-[#a68f7c] uppercase tracking-widest absolute -top-2 lg:-top-3 left-4 lg:left-2 bg-white/90 px-1 z-10">Ora e Fillimit</label>
+                                    <input type="time" value={inviteTime} onChange={(e) => setInviteTime(e.target.value)} className="w-full border-2 border-[#ebd2da] rounded-xl lg:rounded-2xl focus:border-[#d89ba3] outline-none px-4 lg:px-5 py-3 lg:py-4 text-[#5c4a3d] bg-white/50 focus:bg-white text-base shadow-sm transition-all cursor-pointer relative z-0" />
                                 </div>
                             </div>
                         </div>
 
                         <button
                             onClick={handleDownload}
-                            className="mt-4 self-start px-10 py-4 rounded-full bg-[#d89ba3] text-white font-medium uppercase tracking-[0.15em] text-sm shadow-[0_10px_20px_rgba(216,155,163,0.3)] hover:shadow-[0_15px_30px_rgba(216,155,163,0.5)] transition-all duration-300 hover:scale-105"
+                            className="mt-6 lg:mt-8 w-full lg:w-fit px-8 py-4 rounded-xl lg:rounded-2xl bg-[#c2b092] text-white font-bold uppercase tracking-[0.2em] text-[10px] sm:text-xs shadow-[0_15px_30px_rgba(194,176,146,0.3)] hover:bg-[#a69578] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(194,176,146,0.5)] transition-all duration-300"
                         >
                             Shkarko Ftesën
                         </button>
                     </div>
 
-                    <div className="w-full md:w-1/2 relative group flex justify-center mt-10 md:mt-0">
-                        <div className="absolute inset-x-8 inset-y-0 bg-gradient-to-r from-[#f9a8d4] via-[#fbcfe8] to-[#d89ba3] rounded-2xl transform rotate-3 group-hover:rotate-[6deg] group-hover:scale-105 transition-all duration-1000 blur-2xl opacity-40 group-hover:opacity-70 animate-pulse"></div>
+                    {/* CARD PREVIEW SECTION - SCALES ELEGANTLY */}
+                    <div className="w-full lg:w-1/2 relative flex justify-center order-1 lg:order-2 mt-2 lg:mt-0 h-[450px] sm:h-[570px] lg:h-[600px]">
+                        <div className="absolute inset-x-8 sm:inset-x-12 inset-y-0 bg-gradient-to-r from-[#f9a8d4] via-[#fbcfe8] to-[#d89ba3] rounded-3xl transform rotate-2 lg:rotate-3 blur-[20px] opacity-30 animate-pulse pointer-events-none"></div>
 
-                        <div ref={cardRef} style={{
-                            width: '100%', maxWidth: 400,
-                            padding: '52px 40px',
-                            background: 'white',
-                            position: 'relative',
-                            overflow: 'hidden',
-                            boxShadow: '0 30px 80px rgba(45,35,32,0.18)',
-                            zIndex: 10,
-                            transition: 'transform 0.6s ease',
-                            borderRadius: '1.5rem',
-                        }}
-                            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-6px)'}
-                            onMouseLeave={e => e.currentTarget.style.transform = ''}>
+                        {/* SCALE WRAPPER: Top origin ensures no empty margin gaps on mobile scale down */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 transform-gpu scale-[0.75] sm:scale-95 lg:scale-100 origin-top transition-transform duration-500 w-[380px] h-[600px] flex-shrink-0 z-10 rounded-2xl shadow-[0_30px_80px_rgba(45,35,32,0.18)]">
+                            <div ref={cardRef} style={{
+                                width: '380px', height: '600px',
+                                padding: '45px 24px',
+                                background: 'white',
+                                position: 'relative',
+                                overflow: 'hidden',
+                                borderRadius: '1rem',
+                            }}>
+                                <div style={{ position: 'absolute', inset: 0, backgroundImage: "url('/bridetobe/4.jpeg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.85 }} />
+                                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(253,247,240,0.88) 0%, rgba(253,247,240,0.72) 50%, rgba(253,247,240,0.92) 100%)' }} />
 
-                            <div style={{ position: 'absolute', inset: 0, backgroundImage: "url('/bridetobe/4.jpeg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.85 }} />
-                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(253,247,240,0.88) 0%, rgba(253,247,240,0.72) 50%, rgba(253,247,240,0.92) 100%)' }} />
+                                {[
+                                    { top: 14, left: 14, transform: 'rotate(0deg)' },
+                                    { top: 14, right: 14, transform: 'rotate(90deg)' },
+                                    { bottom: 14, right: 14, transform: 'rotate(180deg)' },
+                                    { bottom: 14, left: 14, transform: 'rotate(270deg)' },
+                                ].map((s, i) => (
+                                    <svg key={i} width="20" height="20" style={{ position: 'absolute', opacity: 0.5, ...s }} viewBox="0 0 20 20">
+                                        <path d="M2 2 L2 10 M2 2 L10 2" stroke="#c9a86c" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                                    </svg>
+                                ))}
 
-                            {[
-                                { top: 14, left: 14, transform: 'rotate(0deg)' },
-                                { top: 14, right: 14, transform: 'rotate(90deg)' },
-                                { bottom: 14, right: 14, transform: 'rotate(180deg)' },
-                                { bottom: 14, left: 14, transform: 'rotate(270deg)' },
-                            ].map((s, i) => (
-                                <svg key={i} width="20" height="20" style={{ position: 'absolute', opacity: 0.5, ...s }} viewBox="0 0 20 20">
-                                    <path d="M2 2 L2 10 M2 2 L10 2" stroke="#c9a86c" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-                                </svg>
-                            ))}
+                                <div style={{ position: 'relative', height: '100%', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', justifyContent: 'center' }}>
+                                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.35em', color: '#c9a86c', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
+                                        ✦ &nbsp; Ftesë e Veçantë &nbsp; ✦
+                                    </div>
 
-                            <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                                <div style={{ fontFamily: "'Cinzel', serif", fontSize: '0.6rem', letterSpacing: '0.35em', color: '#c9a86c', textTransform: 'uppercase', marginBottom: 20 }}>
-                                    ✦ &nbsp; Ftesë e Veçantë &nbsp; ✦
-                                </div>
+                                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: '0.7rem', letterSpacing: '0.25em', color: '#8c6b73', textTransform: 'uppercase', marginBottom: '1.8rem' }}>
+                                        Je e ftuar në festën
+                                    </div>
 
-                                <div style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.25em', color: '#8c6b73', textTransform: 'uppercase', marginBottom: 28 }}>
-                                    Je e ftuar në festën
-                                </div>
+                                    <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400, fontSize: '3.5rem', color: '#4a3b32', lineHeight: 1, marginBottom: '0.5rem', letterSpacing: '-0.01em' }}>
+                                        Bride to Be
+                                    </h2>
 
-                                <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400, fontSize: '3.2rem', color: '#4a3b32', lineHeight: 1, marginBottom: 8, letterSpacing: '-0.01em' }}>
-                                    Bride to Be
-                                </h2>
+                                    <div className="w-full flex justify-center mb-6 mt-4" style={{ opacity: 0.5 }}>
+                                        <span style={{ fontSize: '0.7rem', color: '#c9a86c' }}>✦</span>
+                                    </div>
 
-                                <div className="w-full mb-8 mt-4 flex justify-center" style={{ opacity: 0.5 }}>
-                                    <span style={{ fontSize: '0.65rem', color: '#c9a86c' }}>✦</span>
-                                </div>
+                                    <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: inviteName ? '2.8rem' : '1.8rem', color: '#d89ba3', marginBottom: '2rem', minHeight: '60px', fontWeight: 700, lineHeight: 1.1, wordBreak: 'break-word', padding: '0 10px', display: 'flex', alignItems: 'center' }}>
+                                        {inviteName || <span style={{ opacity: 0.3, fontSize: '1.4rem', fontFamily: "'Jost', sans-serif", fontWeight: 300 }}>Emri yt këtu</span>}
+                                    </div>
 
-                                <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: inviteName ? '2.8rem' : '2rem', color: '#d89ba3', marginBottom: 32, minHeight: 60, fontWeight: 700, lineHeight: 1.1 }}>
-                                    {inviteName || <span style={{ opacity: 0.3, fontSize: '1.5rem', fontFamily: "'Jost', sans-serif", fontWeight: 300 }}>Emri yt këtu</span>}
-                                </div>
+                                    <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 300, color: '#8c6b73', fontSize: '1.15rem', lineHeight: 1.7, marginBottom: '2rem' }}>
+                                        Le të festojmë së bashku<br />para ditës më të madhe
+                                    </p>
 
-                                <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 300, color: '#8c6b73', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: 28 }}>
-                                    Le të festojmë së bashku<br />para ditës më të madhe
-                                </p>
-
-                                <div style={{ display: 'flex', gap: 20, alignItems: 'center', background: 'rgba(253,247,240,0.7)', padding: '10px 24px', backdropFilter: 'blur(6px)', border: '1px solid rgba(201,168,108,0.25)', borderRadius: '100px' }}>
-                                    <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.6rem', letterSpacing: '0.2em', color: '#4a3b32', textTransform: 'uppercase' }}>{formatDisplayDate(inviteDate)}</span>
-                                    <span style={{ color: '#c9a86c', opacity: 0.6, fontSize: '0.5rem' }}>✦</span>
-                                    <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.6rem', letterSpacing: '0.2em', color: '#4a3b32', textTransform: 'uppercase' }}>{inviteTime || "Ora"}</span>
+                                    <div style={{ display: 'flex', gap: 20, alignItems: 'center', background: 'rgba(253,247,240,0.8)', padding: '12px 28px', backdropFilter: 'blur(8px)', border: '1px solid rgba(201,168,108,0.3)', borderRadius: '100px' }}>
+                                        <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.2em', color: '#4a3b32', textTransform: 'uppercase', fontWeight: 600 }}>{formatDisplayDate(inviteDate)}</span>
+                                        <span style={{ color: '#c9a86c', opacity: 0.6, fontSize: '0.5rem' }}>✦</span>
+                                        <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.2em', color: '#4a3b32', textTransform: 'uppercase', fontWeight: 600 }}>{inviteTime || "Ora"}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
