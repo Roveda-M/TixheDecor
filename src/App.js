@@ -11,6 +11,7 @@ import Profile from "./Profile";
 import Wedding from "./Wedding";
 import Birthday from "./Birthday";
 import BrideToBe from "./BrideToBe";
+import Circumcision from "./Circumcision";
 export default function App() {
   const location = useLocation();
 
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/profile" element={<><Profile /><Footer /></>} />
         <Route path="/birthday" element={<><Birthday /><Footer /></>} />
         <Route path="/bride-to-be" element={<><BrideToBe /><Footer /></>} />
+        <Route path="/circumcision" element={<><Circumcision /><Footer /></>} />
       </Routes>
     </>
   );
