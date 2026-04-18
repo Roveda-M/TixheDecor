@@ -10,6 +10,7 @@ import Register from "./Register";
 import Profile from "./Profile";
 import Wedding from "./Wedding";
 import Birthday from "./Birthday";
+import BrideToBe from "./BrideToBe";
 export default function App() {
   const location = useLocation();
 
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/register" element={<Register/>} />
         <Route path="/profile" element={<><Profile /><Footer /></>} />
         <Route path="/birthday" element={<><Birthday /><Footer /></>} />
+        <Route path="/bride-to-be" element={<><BrideToBe /><Footer /></>} />
       </Routes>
     </>
   );
