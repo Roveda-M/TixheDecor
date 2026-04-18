@@ -1,4 +1,55 @@
+import { useMemo, useState } from "react";
+
 export default function Circumcision() {
+  const [selectedDecors, setSelectedDecors] = useState([]);
+
+  const photos = useMemo(
+    () => [
+      {
+        url: "/syneti/f2.jpeg",
+        title: { full: "Mirëseardhje për mysafirët", short: "Mirëseardhje" },
+      },
+      {
+        url: "/syneti/f3.jpeg",
+        title: { full: "Detaje blu & gold", short: "Detaje" },
+      },
+      {
+        url: "/syneti/f4.jpeg",
+        title: { full: "Elegancë në tryezë", short: "Tryeza" },
+      },
+      {
+        url: "/syneti/f5.jpeg",
+        title: { full: "Hyrje që lë përshtypje", short: "Hyrja" },
+      },
+      {
+        url: "/syneti/f6.jpeg",
+        title: { full: "Stil i pastër dhe i rafinuar", short: "Stil" },
+      },
+      {
+        url: "/syneti/f7.jpeg",
+        title: { full: "Prekje luksi në çdo detaj", short: "Luks" },
+      },
+      {
+        url: "/syneti/f8.jpeg",
+        title: { full: "Dekor modern për foto-kënd", short: "Foto-kënd" },
+      },
+      {
+        url: "/syneti/f9.jpeg",
+        title: { full: "Atmosferë e ngrohtë familjare", short: "Atmosferë" },
+      },
+    ],
+    []
+  );
+
+  const toggleSelected = (index) => {
+    const isSelected = selectedDecors.includes(index);
+    if (isSelected) {
+      setSelectedDecors(selectedDecors.filter((id) => id !== index));
+    } else {
+      setSelectedDecors([...selectedDecors, index]);
+    }
+  };
+
   const scrollToGallery = () =>
     document
       .getElementById("circumcision-gallery")
@@ -120,6 +171,165 @@ export default function Circumcision() {
                   Ide dekorimi që kombinon pastërti, shkëlqim dhe ngrohtësi.
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* GALLERY */}
+      <section
+        id="circumcision-gallery"
+        className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 py-16"
+      >
+        <div className="flex flex-col items-center text-center mb-10">
+          <div
+            className="text-4xl md:text-5xl text-[#061a2b] font-normal"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Zgjedh stilin tënd
+          </div>
+          <p className="mt-3 text-sm md:text-base text-[#1f3b55]/80 max-w-2xl leading-relaxed">
+            Kliko fotot për t’i shënuar si të preferuara. Mund t’i përdorim si
+            inspirim për dekorin final dhe ta përshtatim sipas sallës dhe buxhetit.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
+          {photos.map((photo, index) => {
+            const isSelected = selectedDecors.includes(index);
+            return (
+              <div key={index} className="group relative">
+                <div
+                  onClick={() => toggleSelected(index)}
+                  className={`relative aspect-[3/4] overflow-hidden rounded-xl md:rounded-3xl mb-8 transition-all duration-700 cursor-pointer ${
+                    isSelected
+                      ? "shadow-2xl scale-[1.02]"
+                      : "shadow-lg group-hover:shadow-xl"
+                  }`}
+                  style={{
+                    borderColor: "#fde68a",
+                    borderWidth: isSelected ? "3px" : "0px",
+                  }}
+                >
+                  <img
+                    src={photo.url}
+                    alt={photo.title.full}
+                    className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
+                  />
+
+                  <div className="absolute top-4 right-4 z-10">
+                    <button
+                      type="button"
+                      className={`p-3 rounded-full shadow-lg transition-all duration-300 ${
+                        isSelected
+                          ? "bg-[#0ea5e9] text-white hover:bg-[#0284c7] scale-110"
+                          : "bg-white/90 text-gray-400 hover:bg-white hover:text-[#0ea5e9] hover:scale-110"
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill={isSelected ? "currentColor" : "none"}
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div
+                    className={`absolute bottom-0 left-0 w-full bg-[#061a2b]/80 text-white py-3 text-center transition-all duration-500 z-20 ${
+                      isSelected
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-full opacity-0"
+                    }`}
+                  >
+                    <p className="text-[10px] tracking-[0.3em] uppercase font-bold">
+                      Zgjedhur
+                    </p>
+                  </div>
+
+                  <div className="absolute inset-0 bg-black/25 backdrop-blur-[2px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none z-10">
+                    <div className="text-center px-2 md:px-4 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                      <h3
+                        className="text-lg md:text-2xl lg:text-3xl text-white mb-2 md:mb-3 drop-shadow-lg font-bold"
+                        style={{ fontFamily: "'Playfair Display', serif" }}
+                      >
+                        <span className="block md:hidden">
+                          {photo.title.short}
+                        </span>
+                        <span className="hidden md:block">
+                          {photo.title.full}
+                        </span>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="max-w-4xl mx-auto mt-4">
+          <div className="rounded-3xl border border-[#0ea5e9]/15 bg-white p-6 md:p-10 shadow-[0_30px_80px_rgba(6,26,43,0.08)]">
+            <div
+              className="text-2xl md:text-3xl text-[#061a2b]"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Çka përfshin dekorimi?
+            </div>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  t: "Hyrje & mirëseardhje",
+                  d: "Tabela emrit, lule dhe elemente pritëse.",
+                },
+                {
+                  t: "Tryezat & qendra",
+                  d: "Kompozime elegante që nuk e ngarkojnë ambientin.",
+                },
+                {
+                  t: "Foto-kënd & detaje",
+                  d: "Sfond i bukur, ndriçim dhe elemente dekorative.",
+                },
+              ].map((x) => (
+                <div key={x.t} className="rounded-2xl bg-[#f7fbff] p-5">
+                  <div className="text-sm font-semibold text-[#061a2b]">
+                    {x.t}
+                  </div>
+                  <div className="mt-2 text-sm text-[#1f3b55]/80 leading-relaxed">
+                    {x.d}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-[#1f3b55]/80">
+                {selectedDecors.length > 0 ? (
+                  <>
+                    Ke zgjedhur{" "}
+                    <span className="font-semibold text-[#061a2b]">
+                      {selectedDecors.length}
+                    </span>{" "}
+                    dekorë si inspirim.
+                  </>
+                ) : (
+                  <>Zgjidh disa dekorë për ta bërë ofertën më të saktë.</>
+                )}
+              </div>
+              <a
+                href="/contact"
+                className="px-7 py-3 rounded-full bg-[#061a2b] text-white font-semibold tracking-wide hover:bg-[#0b2942] transition-colors"
+              >
+                Kërko ofertë
+              </a>
             </div>
           </div>
         </div>
