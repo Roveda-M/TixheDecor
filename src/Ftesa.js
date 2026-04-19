@@ -127,6 +127,11 @@ export default function Ftesa() {
               <p>🍽 {safe.restaurant}</p>
               <p>📍 {safe.address}</p>
             </div>
+            <div className="w-full text-center mt-8">
+  <p className="text-xs text-[#8B5E3C] italic tracking-[4px]">
+    ✦ Tixhe Decor ✦
+  </p>
+</div>
           </div>
         </div>
       </div>
