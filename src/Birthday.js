@@ -312,6 +312,12 @@ export default function Birthday() {
                                 <div className="w-6 h-[1px] bg-white/50 my-3"></div>
                                 <p className="text-[12px] uppercase tracking-[0.2em] font-bold text-white drop-shadow-md">{formData.location}</p>
                               </div>
+                                 <br/>
+                              <br/>
+                              <br/>
+                              <p className="text-xs text-[#8B5E3C] italic tracking-[4px]">
+                                         ✦ Tixhe Decor ✦
+                                    </p>
                             </div>
                           </div>
                         )}
@@ -380,6 +386,12 @@ export default function Birthday() {
                                 <p className="text-[9px] uppercase tracking-[0.3em] font-bold mb-2">Vendi i Eventit</p>
                                 <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-center">{formData.location}</p>
                               </div>
+                              <br/>
+                              <br/>
+                              <br/>
+                              <p className="text-xs text-[#8B5E3C] italic tracking-[4px]">
+                                         ✦ Tixhe Decor ✦
+                                    </p>
                             </div>
                           </div>
                         )}
@@ -398,6 +410,7 @@ export default function Birthday() {
                               className={`px-6 py-3 text-[10px] uppercase tracking-widest font-bold rounded transition-all duration-300 ${inviteStyle === 'photo' ? 'bg-[#1c1c1c] text-white shadow-md' : 'text-gray-500 hover:text-[#1c1c1c]'}`}
                             >Ftese Me Foto</button>
                           </div>
+                          
                         </div>
 
                         {inviteStyle === 'photo' && (
@@ -410,6 +423,7 @@ export default function Birthday() {
                               className="text-[11px] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#1c1c1c] file:text-white hover:file:bg-[#333] cursor-pointer w-full text-center"
                             />
                           </div>
+                          
                         )}
 
                         <div className="grid grid-cols-2 gap-6">
@@ -431,6 +445,7 @@ export default function Birthday() {
                               className="w-full h-12 p-1 border border-gray-300 rounded cursor-pointer bg-white"
                             />
                           </div>
+                          
                         </div>
 
                         <button

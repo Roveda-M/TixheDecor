@@ -41,7 +41,11 @@ export default function BrideToBe() {
         { url: "bridetobe/7.jpeg", title: { full: "Lule dhe Perfeksion", short: "Lule" } },
         { url: "bridetobe/8.jpeg", title: { full: "Dekore Profesionale", short: "Profesionale" } },
         { url: "/bridetobe/1.jpeg", title: { full: "Festa e Vajzave", short: "Vajzat" } },
-        { url: "/bridetobe/2.jpeg", title: { full: "Detaje Romancë", short: "Detaje" } }
+        { url: "/bridetobe/2.jpeg", title: { full: "Detaje Romancë", short: "Detaje" } },
+        { url: "/bridetobe/12.jpeg", title: { full: "Festë me stil", short: "Detaje" } },
+        { url: "/bridetobe/17.jpeg", title: { full: "Bukuri në çdo detaj", short: "Detaje" } },
+        { url: "/bridetobe/15.jpeg", title: { full: "Perfeksion", short: "Detaje" } },
+        { url: "/bridetobe/16.jpeg", title: { full: "Magji momenti", short: "Detaje" } }
     ];
 
     return (
@@ -156,7 +160,6 @@ export default function BrideToBe() {
             <section className="relative z-10 py-6 sm:py-12 px-3 sm:px-6 lg:px-20 mb-10 overflow-hidden">
                 <div className="max-w-[1200px] mx-auto bg-white/70 backdrop-blur-xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 lg:p-16 shadow-[0_20px_40px_rgba(235,215,220,0.3)] flex flex-col lg:flex-row items-center gap-8 lg:gap-16 transition-all duration-700">
 
-                    {/* FORM SECTION - ALWAYS ON TOP ON MOBILE */}
                     <div className="w-full lg:w-1/2 flex flex-col gap-4 sm:gap-8 order-2 lg:order-1 pt-4 lg:pt-0 border-t border-[#f0e6e1] lg:border-none">
                         <div className="text-center lg:text-left">
                             <h3 className="text-2xl sm:text-4xl lg:text-4xl text-[#5c4a3d] mb-2 lg:mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Personalizo Ftesën</h3>
@@ -190,11 +193,9 @@ export default function BrideToBe() {
                         </button>
                     </div>
 
-                    {/* CARD PREVIEW SECTION - SCALES ELEGANTLY */}
                     <div className="w-full lg:w-1/2 relative flex justify-center order-1 lg:order-2 mt-2 lg:mt-0 h-[450px] sm:h-[570px] lg:h-[600px]">
                         <div className="absolute inset-x-8 sm:inset-x-12 inset-y-0 bg-gradient-to-r from-[#f9a8d4] via-[#fbcfe8] to-[#d89ba3] rounded-3xl transform rotate-2 lg:rotate-3 blur-[20px] opacity-30 animate-pulse pointer-events-none"></div>
 
-                        {/* SCALE WRAPPER: Top origin ensures no empty margin gaps on mobile scale down */}
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 transform-gpu scale-[0.75] sm:scale-95 lg:scale-100 origin-top transition-transform duration-500 w-[380px] h-[600px] flex-shrink-0 z-10 rounded-2xl shadow-[0_30px_80px_rgba(45,35,32,0.18)]">
                             <div ref={cardRef} style={{
                                 width: '380px', height: '600px',
@@ -242,12 +243,17 @@ export default function BrideToBe() {
                                     <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 300, color: '#8c6b73', fontSize: '1.15rem', lineHeight: 1.7, marginBottom: '2rem' }}>
                                         Le të festojmë së bashku<br />para ditës më të madhe
                                     </p>
+                                   
 
                                     <div style={{ display: 'flex', gap: 20, alignItems: 'center', background: 'rgba(253,247,240,0.8)', padding: '12px 28px', backdropFilter: 'blur(8px)', border: '1px solid rgba(201,168,108,0.3)', borderRadius: '100px' }}>
                                         <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.2em', color: '#4a3b32', textTransform: 'uppercase', fontWeight: 600 }}>{formatDisplayDate(inviteDate)}</span>
                                         <span style={{ color: '#c9a86c', opacity: 0.6, fontSize: '0.5rem' }}>✦</span>
                                         <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.2em', color: '#4a3b32', textTransform: 'uppercase', fontWeight: 600 }}>{inviteTime || "Ora"}</span>
                                     </div>
+                                    <br/>
+                                    <p className="text-xs text-[#8B5E3C] italic tracking-[4px]">
+                                         ✦ Tixhe Decor ✦
+                                    </p>
                                 </div>
                             </div>
                         </div>
