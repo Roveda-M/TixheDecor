@@ -108,7 +108,7 @@ export default function Wedding() {
           loop
           playsInline
         >
-          <source src="/v1.1.mp4" type="video/mp4" />
+          <source src="/v2.mp4" type="video/mp4" />
         </video>
       </section>
 
