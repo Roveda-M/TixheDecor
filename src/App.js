@@ -12,6 +12,7 @@ import Wedding from "./Wedding";
 import Birthday from "./Birthday";
 import BrideToBe from "./BrideToBe";
 import Circumcision from "./Circumcision";
+import BabyShower from "./BabyShower";
 export default function App() {
   const location = useLocation();
 
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/birthday" element={<><Birthday /><Footer /></>} />
         <Route path="/bride-to-be" element={<><BrideToBe /><Footer /></>} />
         <Route path="/circumcision" element={<><Circumcision /><Footer /></>} />
+        <Route path="/baby-shower" element={<><BabyShower /> <Footer/> </>}/>
       </Routes>
     </>
   );
