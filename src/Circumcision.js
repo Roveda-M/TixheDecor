@@ -14,10 +14,28 @@ export default function Circumcision() {
   const [isDownloading, setIsDownloading] = useState(false);
   const inviteRef = useRef(null);
 
+  const heroInfo = useMemo(
+    () => [
+      {
+        t: "Konsultë para eventit",
+        d: "Planifikojmë së bashku stilin, hapësirën dhe buxhetin sipas nevojës suaj.",
+      },
+      {
+        t: "Përshtatje për sallën",
+        d: "Dekori ndërtohet sipas formës së sallës dhe vendosjes së tryezave.",
+      },
+      {
+        t: "Montim në kohë",
+        d: "Ekipi ynë instalon para mbërritjes së mysafirëve që gjithçka të jetë gati.",
+      },
+    ],
+    []
+  );
+
   const photos = useMemo(
     () => [
       {
-        url: "/syneti/f2.jpeg",
+        url: "/syneti/p1.jpeg",
         title: { full: "Mirëseardhje për mysafirët", short: "Mirëseardhje" },
       },
       {
@@ -25,19 +43,19 @@ export default function Circumcision() {
         title: { full: "Detaje blu & gold", short: "Detaje" },
       },
       {
-        url: "/syneti/f4.jpeg",
+        url: "/syneti/t1.jpeg",
         title: { full: "Elegancë në tryezë", short: "Tryeza" },
       },
       {
-        url: "/syneti/f5.jpeg",
+        url: "/syneti/h1.jpeg",
         title: { full: "Hyrje që lë përshtypje", short: "Hyrja" },
       },
       {
-        url: "/syneti/f6.jpeg",
+        url: "/syneti/t2.jpeg",
         title: { full: "Stil i pastër dhe i rafinuar", short: "Stil" },
       },
       {
-        url: "/syneti/f7.jpeg",
+        url: "/syneti/t5.jpeg",
         title: { full: "Prekje luksi në çdo detaj", short: "Luks" },
       },
       {
@@ -45,7 +63,7 @@ export default function Circumcision() {
         title: { full: "Dekor modern për foto-kënd", short: "Foto-kënd" },
       },
       {
-        url: "/syneti/f9.jpeg",
+        url: "/syneti/f4.jpeg",
         title: { full: "Atmosferë e ngrohtë familjare", short: "Atmosferë" },
       },
     ],
@@ -112,16 +130,12 @@ export default function Circumcision() {
       {/* HERO */}
       <section className="relative w-full min-h-[92vh] flex items-center justify-center pt-24 pb-16">
         <div className="absolute inset-0 overflow-hidden">
-          <video
-            className="w-full h-full object-cover opacity-70"
-            autoPlay
-            muted
-            loop
-            playsInline
-          >
-            <source src="/v2.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-[#061a2b]/65 via-[#061a2b]/45 to-[#f7fbff]" />
+          <div className="absolute inset-0 bg-[#061a2b]" />
+          <div
+            className="absolute inset-0 bg-center bg-cover opacity-60"
+            style={{ backgroundImage: "url(/syneti/test.jpeg)" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#061a2b]/70 via-[#061a2b]/55 to-[#f7fbff]" />
         </div>
 
         <div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#7dd3fc]/25 blur-[60px] pointer-events-none" />
@@ -176,26 +190,13 @@ export default function Circumcision() {
             </div>
 
             <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl">
-              {[
-                {
-                  t: "Konsultë para eventit",
-                  d: "Planifikojmë së bashku stilin, hapësirën dhe buxhetin sipas nevojës suaj.",
-                },
-                {
-                  t: "Përshtatje për sallën",
-                  d: "Dekori ndërtohet sipas formës së sallës dhe vendosjes së tryezave.",
-                },
-                {
-                  t: "Montim në kohë",
-                  d: "Ekipi ynë instalon para mbërritjes së mysafirëve që gjithçka të jetë gati.",
-                },
-              ].map((item) => (
+              {heroInfo.map((item) => (
                 <div
                   key={item.t}
-                  className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm p-4 text-white"
+                  className="rounded-2xl bg-white/90 border border-white/60 shadow-[0_18px_45px_rgba(6,26,43,0.18)] p-4 text-[#061a2b] backdrop-blur-sm"
                 >
                   <div className="text-sm font-semibold">{item.t}</div>
-                  <div className="text-xs mt-1 text-white/80 leading-relaxed">
+                  <div className="text-xs mt-1 text-[#1f3b55]/80 leading-relaxed">
                     {item.d}
                   </div>
                 </div>
@@ -208,7 +209,7 @@ export default function Circumcision() {
             <div className="relative rounded-[2.25rem] overflow-hidden border border-white/15 shadow-[0_30px_90px_rgba(6,26,43,0.35)] bg-white/5 backdrop-blur-sm">
               <div className="aspect-[4/5]">
                 <img
-                  src="/syneti/f1.jpeg"
+                  src="/syneti/t3.jpeg"
                   alt="Dekor për ceremoninë e synetisë"
                   className="w-full h-full object-cover"
                 />
