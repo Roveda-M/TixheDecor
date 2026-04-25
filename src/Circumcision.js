@@ -66,6 +66,22 @@ export default function Circumcision() {
         url: "/syneti/f4.jpeg",
         title: { full: "Atmosferë e ngrohtë familjare", short: "Atmosferë" },
       },
+      {
+        url: "/syneti/f1.jpeg",
+        title: { full: "Dekor i pastër dhe modern", short: "Modern" },
+      },
+      {
+        url: "/syneti/f2.jpeg",
+        title: { full: "Luks dhe elegancë familjare", short: "Elegancë" },
+      },
+      {
+        url: "/syneti/f6.jpeg",
+        title: { full: "Dhoma e djalit", short: "Dhoma" },
+      },
+      {
+        url: "/syneti/f7.jpeg",
+        title: { full: "Festë familjare e ngrohtë", short: "Festë" },
+      },
     ],
     []
   );
