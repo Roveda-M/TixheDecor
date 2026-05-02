@@ -14,13 +14,15 @@ import BrideToBe from "./BrideToBe";
 import Circumcision from "./Circumcision";
 import BabyShower from "./BabyShower";
 import Engagement from "./Engagement";
+import Dashboard from "./Dashboard/Dashboard";
+
 export default function App() {
   const location = useLocation();
 
-  // këtu zgjedhim ku mos me u shfaq Header
   const hideHeader =
     location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/register" ||
+    location.pathname.startsWith("/dashboard");
 
   return (
     <>
@@ -32,13 +34,14 @@ export default function App() {
         <Route path="/contact" element={<><Contact /><Footer /></>} />
         <Route path="/wedding" element={<><Wedding /><Footer /></>} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register/>} />
+        <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<><Profile /><Footer /></>} />
         <Route path="/birthday" element={<><Birthday /><Footer /></>} />
         <Route path="/bride-to-be" element={<><BrideToBe /><Footer /></>} />
         <Route path="/circumcision" element={<><Circumcision /><Footer /></>} />
-        <Route path="/baby-shower" element={<><BabyShower /> <Footer/> </>}/>
+        <Route path="/baby-shower" element={<><BabyShower /><Footer /></>} />
         <Route path="/engagement-party" element={<><Engagement /><Footer /></>} />
+        <Route path="/dashboard/*" element={<Dashboard />} />
       </Routes>
     </>
   );
