@@ -4,24 +4,23 @@ const BabyShower = () => {
   const [cart, setCart] = useState([]);
 
   const collections = [
-    { id: 1, name: "Sfond i Bardhë", altName: "Elegancë Klasike", price: 250, image: "babyshower/1.jpeg" },
-    { id: 2, name: "Gender Reveal", altName: "Vajzë apo Djalë", price: 180, image: "babyshower/2.jpeg" },
-    { id: 3, name: "Rozë Magjike", altName: "Arush e Lule", price: 320, image: "babyshower/3.jpeg" },
-    { id: 4, name: "Aventurë me Avion", altName: "Jeshile Pastel", price: 85, image: "babyshower/4.jpeg" },
-    { id: 5, name: "Mirëseardhje Blu", altName: "Dritë Fluture", price: 95, image: "babyshower/5.jpeg" },
-    { id: 6, name: "Fjongo Rozë", altName: "Kornizë Personalizuar", price: 110, image: "babyshower/6.jpeg" },
-    { id: 7, name: "Ardhja e Lejlekut", altName: "Detaje të Kaltra", price: 150, image: "babyshower/18.jpeg" },
-    { id: 8, name: "Nuanca Kremi", altName: "Sfond Romantik", price: 75, image: "babyshower/8.jpeg" },
-    { id: 9, name: "Pilot i Vogël", altName: "Qiell i Kaltër", price: 180, image: "babyshower/9.jpeg" },
-    { id: 10, name: "Arush në Re", altName: "Magji Blu", price: 190, image: "babyshower/10.jpeg" },
-    { id: 11, name: "Zbulimi i Madh", altName: "Boy or Girl", price: 130, image: "babyshower/11.jpeg" },
-    { id: 13, name: "Sfond Pranveror", altName: "Hark Fluturash", price: 160, image: "babyshower/12.jpeg" },
-    { id: 12, name: "Këndi i Tortës", altName: "Krahë Engjëlli", price: 210, image: "babyshower/13.jpeg" },
-    { id: 14, name: "Tavolinë Festive", altName: "Dekor i Shtruar", price: 175, image: "babyshower/14.jpeg" },
-    { id: 15, name: "Ngjyra Vjollcë", altName: "Detaje të Arta", price: 140, image: "babyshower/17.jpeg" },
-    { id: 16, name: "Lejleku Magjik", altName: "Blu dhe Ar", price: 90, image: "babyshower/16.jpeg" },
-  ];
-
+  { id: 1, name: "Dekor i bardhë", altName: "Stil i pastër dhe elegant", price: 250, image: "babyshower/1.jpeg" },
+  { id: 2, name: "Gender reveal", altName: "Zbulimi i gjinisë", price: 180, image: "babyshower/2.jpeg" },
+  { id: 3, name: "Dekor rozë", altName: "Me arush dhe lule", price: 320, image: "babyshower/3.jpeg" },
+  { id: 4, name: "Dekor me flutur", altName: "Me balona dhe flutur", price: 85, image: "babyshower/4.jpeg" },
+  { id: 5, name: "Dekor i veqante", altName: "Me drita dhe elemente të buta", price: 95, image: "babyshower/5.jpeg" },
+  { id: 6, name: "Fjongo rozë", altName: "Kënd për foto", price: 110, image: "babyshower/6.jpeg" },
+  { id: 7, name: "Dekor për bebe", altName: "Me detaje të lezetshme blu", price: 150, image: "babyshower/18.jpeg" },
+  { id: 8, name: "Dekor krem", altName: "Stil i ngrohtë dhe i thjeshtë", price: 75, image: "babyshower/8.jpeg" },
+  { id: 9, name: "Dekor blu", altName: "Detaje qe bejne diferencen", price: 180, image: "babyshower/9.jpeg" },
+  { id: 10, name: "Arushi", altName: "Dekor blu për baby boy", price: 190, image: "babyshower/10.jpeg" },
+  { id: 11, name: "Zbulimi i gjinisë", altName: "Boy apo girl", price: 130, image: "babyshower/11.jpeg" },
+  { id: 12, name: "Këndi i tortës", altName: "Dekor për tavolinën kryesore", price: 210, image: "babyshower/13.jpeg" },
+  { id: 13, name: "Dekor pranveror", altName: "Me flutura dhe ngjyra të lehta", price: 160, image: "babyshower/12.jpeg" },
+  { id: 14, name: "Tavolinë feste", altName: "E rregulluar komplet", price: 175, image: "babyshower/14.jpeg" },
+  { id: 15, name: "Dekor vjollcë", altName: "Me detaje ari", price: 140, image: "babyshower/22.jpeg" },
+  { id: 16, name: "Dekor klasik ", altName: "Stil i thjeshtë dhe i bukur", price: 90, image: "babyshower/23.jpeg" },
+];
   const toggleCartItem = (item) => {
     const exists = cart.find(i => i.id === item.id);
     if (exists) {
