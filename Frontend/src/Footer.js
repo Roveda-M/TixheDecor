@@ -30,7 +30,7 @@ export default function Footer() {
         {/* LEFT - LOGO */}
         <div className="flex flex-col items-center text-center pt-4 md:pt-8">
           <img
-            src="../../Frontend/public/logo.png"
+            src="/logo.png"
             alt="Tixhe Decor Logo"
             className="h-28 w-auto mb-3"
           />
