@@ -39,7 +39,7 @@ const BabyShower = () => {
           <div className="absolute inset-0 z-0">
             <img
               alt="Baby Shower Hero"
-              src="babyshower/1.1.jpeg"
+              src="../../Frontend/public/babyshower/1.1.jpeg"
               style={{
                 width: '100%',
                 height: '100%',

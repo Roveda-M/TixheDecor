@@ -107,7 +107,7 @@ export default function Header() {
 
 
 {/* ABOUT */}
-<Link to="/about"onClick={handleClick}>
+<Link to="/about" onClick={handleClick}>
   <h2
     className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
     style={{ fontFamily: "Playfair Display, serif" }}
@@ -117,7 +117,7 @@ export default function Header() {
 </Link>
 
            {/* Contact Us */}
-<Link to="/contact"onClick={handleClick}>
+<Link to="/contact" onClick={handleClick}>
   <h2
     className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
     style={{ fontFamily: "Playfair Display, serif" }}
@@ -148,7 +148,7 @@ export default function Header() {
       <span className="hover:opacity-60 cursor-pointer">Birthday</span>
     </Link>
 
-    <Link to="/circumcision"onClick={handleClick}>
+    <Link to="/circumcision" onClick={handleClick}>
       <span className="hover:opacity-60 cursor-pointer">
         Circumcision Ceremony
       </span>

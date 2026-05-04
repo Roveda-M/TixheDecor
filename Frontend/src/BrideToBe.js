@@ -58,7 +58,7 @@ export default function BrideToBe() {
                 </div>
                 <br />
                 <div className="absolute top-[15%] lg:top-[25%] -left-[15%] lg:-left-[5%] w-[150px] h-[150px] lg:w-[400px] lg:h-[400px] opacity-20 pointer-events-none transform -rotate-12 blur-[2px] z-0">
-                    <img src="bridetobe/5.jpeg" alt="Decorative Floral" className="w-full h-full object-contain" />
+                    <img src="../../Frontend/public/bridetobe/5.jpeg" alt="Decorative Floral" className="w-full h-full object-contain" />
                 </div>
 
                 <div className="w-[45%] lg:w-[45%] flex flex-col items-start text-left justify-center z-10 relative mb-0 pr-1 sm:pr-0">
