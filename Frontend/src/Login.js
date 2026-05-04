@@ -10,7 +10,7 @@ export default function Login() {
     return emailRegex.test(email.toLowerCase());
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (email.trim() === "") {
@@ -28,9 +28,31 @@ export default function Login() {
       return;
     }
 
-    alert("Login i suksesshëm ✅");
-  };
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email, password: password }),
+      });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Login dështoi");
+        return;
+      }
+
+      // Ruaj tokenat
+      localStorage.setItem("refreshToken", data.refreshToken);
+      sessionStorage.setItem("accessToken", data.accessToken);
+
+      alert("Login i suksesshëm ✅");
+      // navigate("/dashboard"); // shto këtë kur të kesh routing
+
+    } catch (error) {
+      alert("Nuk u lidh me serverin. A është back-end aktiv?");
+    }
+  };
   return (
       <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
