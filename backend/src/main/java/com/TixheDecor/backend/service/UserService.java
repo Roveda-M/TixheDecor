@@ -7,6 +7,7 @@ import com.TixheDecor.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,49 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> getById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public User create(User user) {
+        user.setPasswordHash(encodePasswordIfNeeded(user.getPasswordHash()));
+        return userRepository.save(user);
+    }
+
+    public Optional<User> update(Long id, User user) {
+        return userRepository.findById(id)
+                .map(existing -> {
+                    user.setId(id);
+                    if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
+                        user.setPasswordHash(existing.getPasswordHash());
+                    } else {
+                        user.setPasswordHash(encodePasswordIfNeeded(user.getPasswordHash()));
+                    }
+                    return userRepository.save(user);
+                });
+    }
+
+    public Optional<User> ndryshoStatusin(Long id, String statusi) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setStatusi(statusi);
+                    return userRepository.save(user);
+                });
+    }
+
+    public boolean delete(Long id) {
+        if (!userRepository.existsById(id)) {
+            return false;
+        }
+
+        userRepository.deleteById(id);
+        return true;
+    }
 
     public boolean validateLogin(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
@@ -37,5 +81,17 @@ public class UserService {
         user.getRoles().add(role);
 
         return userRepository.save(user);
+    }
+
+    private String encodePasswordIfNeeded(String password) {
+        if (password == null || password.isBlank()) {
+            return password;
+        }
+
+        if (password.startsWith("$2a$") || password.startsWith("$2b$") || password.startsWith("$2y$")) {
+            return password;
+        }
+
+        return passwordEncoder.encode(password);
     }
 }
