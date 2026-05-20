@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "RefreshToken")
-public class RefreshToken {
+@Table(name = "UserTokens")
+public class UserTokens {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,7 @@ public class RefreshToken {
     private User user;
 
     private String token;
+    private String tokenType;
     private LocalDateTime expiresAt;
     private Boolean isRevoked;
 }

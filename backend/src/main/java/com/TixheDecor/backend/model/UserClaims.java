@@ -2,22 +2,23 @@ package com.TixheDecor.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "RefreshToken")
-public class RefreshToken {
+@Table(name = "UserClaims")
+public class UserClaims {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer tokenId;
+    private Integer claimId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String token;
-    private LocalDateTime expiresAt;
-    private Boolean isRevoked;
+    @Column(name = "claim_type")
+    private String claimType;
+
+    @Column(name = "claim_value")
+    private String claimValue;
 }

@@ -2,22 +2,21 @@ package com.TixheDecor.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "RefreshToken")
-public class RefreshToken {
+@Table(name = "user_role")
+public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer tokenId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String token;
-    private LocalDateTime expiresAt;
-    private Boolean isRevoked;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
