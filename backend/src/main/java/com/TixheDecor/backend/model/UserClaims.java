@@ -16,6 +16,9 @@ public class UserClaims {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "claim_type")
     private String claimType;
+
+    @Column(name = "claim_value")
     private String claimValue;
 }

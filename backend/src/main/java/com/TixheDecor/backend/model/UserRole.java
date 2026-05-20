@@ -5,12 +5,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "UserRole")
+@Table(name = "user_role")
 public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userRoleId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
