@@ -1,9 +1,8 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.UserTokens;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import com.TixheDecor.backend.service.UserTokensService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,73 +12,51 @@ import java.util.List;
 @RequestMapping("/api/user-tokens")
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserTokensController {
-    @PersistenceContext
-    private EntityManager entityManager;
+
+    @Autowired
+    private UserTokensService userTokensService;
 
     @GetMapping
     public List<UserTokens> getAll() {
-        return entityManager
-                .createQuery("SELECT t FROM UserTokens t", UserTokens.class)
-                .getResultList();
+        return userTokensService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserTokens> getById(@PathVariable Integer id) {
-        UserTokens userTokens = entityManager.find(UserTokens.class, id);
-        if (userTokens == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(userTokens);
+        return userTokensService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/user/{userId}")
     public List<UserTokens> getByUser(@PathVariable Long userId) {
-        return entityManager
-                .createQuery("SELECT t FROM UserTokens t WHERE t.user.id = :userId", UserTokens.class)
-                .setParameter("userId", userId)
-                .getResultList();
+        return userTokensService.getByUser(userId);
     }
 
     @PostMapping
-    @Transactional
     public UserTokens create(@RequestBody UserTokens userTokens) {
-        entityManager.persist(userTokens);
-        return userTokens;
+        return userTokensService.create(userTokens);
     }
 
     @PutMapping("/{id}")
-    @Transactional
     public ResponseEntity<UserTokens> update(@PathVariable Integer id, @RequestBody UserTokens userTokens) {
-        if (entityManager.find(UserTokens.class, id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        userTokens.setTokenId(id);
-        return ResponseEntity.ok(entityManager.merge(userTokens));
+        return userTokensService.update(id, userTokens)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}/revoko")
-    @Transactional
     public ResponseEntity<UserTokens> revoke(@PathVariable Integer id) {
-        UserTokens userTokens = entityManager.find(UserTokens.class, id);
-        if (userTokens == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        userTokens.setIsRevoked(true);
-        return ResponseEntity.ok(entityManager.merge(userTokens));
+        return userTokensService.revoke(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        UserTokens userTokens = entityManager.find(UserTokens.class, id);
-        if (userTokens == null) {
+        if (!userTokensService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        entityManager.remove(userTokens);
         return ResponseEntity.ok("Token i perdoruesit u fshi me sukses!");
     }
 }
