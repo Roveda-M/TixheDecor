@@ -21,12 +21,21 @@ public class AuthService {
             throw new RuntimeException("Email ose fjalekalimi gabim");
         }
 
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User nuk u gjet"));
+
+        String role = user.getRoles().stream()
+                .map(r -> r.getEmertimi())
+                .filter(r -> r.equals("ROLE_ADMIN"))
+                .findFirst()
+                .orElse("ROLE_USER");
+
         return Map.of(
                 "accessToken", jwtUtil.generateToken(email),
-                "refreshToken", jwtUtil.generateRefreshToken(email)
+                "refreshToken", jwtUtil.generateRefreshToken(email),
+                "role", role
         );
     }
-
     public User register(String email, String password) {
         return userService.registerUser(email, password);
     }

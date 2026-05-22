@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "./api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const emailValid = (email) => {
     const emailRegex = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
@@ -28,35 +31,29 @@ export default function Login() {
       return;
     }
 
+    setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: email, password: password }),
-      });
+      const data = await api.login(email, password);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.error || "Login dështoi");
-        return;
-      }
-
-      // Ruaj tokenat
       localStorage.setItem("refreshToken", data.refreshToken);
       sessionStorage.setItem("accessToken", data.accessToken);
+      sessionStorage.setItem("role", data.role);
 
-      alert("Login i suksesshëm ✅");
-      // navigate("/dashboard"); // shto këtë kur të kesh routing
-
+      if (data.role === "ROLE_ADMIN") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
-      alert("Nuk u lidh me serverin. A është back-end aktiv?");
+      alert(error.message || "Login dështoi");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
       <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-          <br />
           <br />
           <br />
           <h2 className="text-2xl font-light text-center mb-6 tracking-[2px]">
@@ -64,8 +61,6 @@ export default function Login() {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-
-            {/* EMAIL */}
             <div>
               <label className="text-sm">Email</label>
               <input
@@ -77,7 +72,6 @@ export default function Login() {
               />
             </div>
 
-            {/* PASSWORD */}
             <div>
               <label className="text-sm">Password</label>
               <input
@@ -89,12 +83,12 @@ export default function Login() {
               />
             </div>
 
-            {/* BUTTON */}
             <button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-black text-white py-3 rounded-lg hover:opacity-80 transition"
             >
-              Login
+              {loading ? "Duke u kyçur..." : "Login"}
             </button>
 
             <p className="text-sm text-center mt-3">
@@ -105,14 +99,12 @@ export default function Login() {
             </p>
           </form>
 
-          {/* DIVIDER */}
           <div className="flex items-center my-6">
             <div className="flex-1 h-px bg-gray-300"></div>
             <span className="px-3 text-sm text-gray-500">OR</span>
             <div className="flex-1 h-px bg-gray-300"></div>
           </div>
 
-          {/* SOCIAL LOGIN */}
           <div className="space-y-2">
             <button className="w-full border py-2 rounded-lg hover:bg-gray-100">
               Login with Apple
@@ -124,7 +116,6 @@ export default function Login() {
               🪟 Login with Microsoft
             </button>
           </div>
-
         </div>
       </div>
   );

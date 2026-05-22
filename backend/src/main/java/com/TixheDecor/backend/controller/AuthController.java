@@ -29,7 +29,6 @@ public class AuthController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {

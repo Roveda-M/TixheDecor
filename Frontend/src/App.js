@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import Header from "./Header";
+import ProtectedRoute from "./ProtectedRoute";
 
 import Home from "./Home";
 import About from "./About";
@@ -41,7 +42,11 @@ export default function App() {
         <Route path="/circumcision" element={<><Circumcision /><Footer /></>} />
         <Route path="/baby-shower" element={<><BabyShower /><Footer /></>} />
         <Route path="/engagement-party" element={<><Engagement /><Footer /></>} />
-        <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route path="/dashboard/*" element={
+          <ProtectedRoute requiredRole="ROLE_ADMIN">
+            <Dashboard />
+          </ProtectedRoute>
+        } />
       </Routes>
     </>
   );
