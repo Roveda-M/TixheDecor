@@ -1,7 +1,7 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.Fatura;
-import com.TixheDecor.backend.repository.FaturaRepository;
+import com.TixheDecor.backend.service.FaturaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,57 +14,52 @@ import java.util.List;
 public class FaturaController {
 
     @Autowired
-    private FaturaRepository faturaRepository;
+    private FaturaService faturaService;
 
     @GetMapping
     public List<Fatura> getAll() {
-        return faturaRepository.findAll();
+        return faturaService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Fatura> getById(@PathVariable Integer id) {
-        return faturaRepository.findById(id)
+        return faturaService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/projekti/{projektiId}")
     public List<Fatura> getByProjekti(@PathVariable Integer projektiId) {
-        return faturaRepository.findByProjektiProjektiId(projektiId);
+        return faturaService.getByProjekti(projektiId);
     }
 
     @GetMapping("/klienti/{klientiId}")
     public List<Fatura> getByKlienti(@PathVariable Integer klientiId) {
-        return faturaRepository.findByKlientiKlientiId(klientiId);
+        return faturaService.getByKlienti(klientiId);
     }
 
     @GetMapping("/statusi/{statusi}")
     public List<Fatura> getByStatusi(@PathVariable String statusi) {
-        return faturaRepository.findByStatusi(statusi);
+        return faturaService.getByStatusi(statusi);
     }
 
     @PostMapping
     public Fatura create(@RequestBody Fatura fatura) {
-        return faturaRepository.save(fatura);
+        return faturaService.create(fatura);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Fatura> update(@PathVariable Integer id, @RequestBody Fatura fatura) {
-        if (!faturaRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        fatura.setFaturaId(id);
-        return ResponseEntity.ok(faturaRepository.save(fatura));
+        return faturaService.update(id, fatura)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (!faturaRepository.existsById(id)) {
+        if (!faturaService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        faturaRepository.deleteById(id);
         return ResponseEntity.ok("Fatura u fshi me sukses!");
     }
 }
