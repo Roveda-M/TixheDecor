@@ -1,12 +1,114 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../api';
 
 export default function Tabela({ title, columns, initialData, disableAdd }) {
-  const [data, setData] = useState(initialData || []);
+  const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
   const [editingId, setEditingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const mapIncomingData = (title, items) => {
+    if (title === 'Punëtorët') {
+      return items.map(item => ({
+        id: item.punetoriId,
+        name: `${item.emri || ''} ${item.mbiemri || ''}`.trim(),
+        role: item.pozita || '',
+        phone: item.telefoni || '',
+        salary: item.paga || 0,
+        email: item.email || '',
+        statusi: item.statusi || 'Aktiv'
+      }));
+    }
+    if (title === 'Detyrat e Projekteve') {
+      return items.map(item => ({
+        id: item.detyrimiId,
+        task: item.pershkrimi || '',
+        project: item.projekti ? item.projekti.emriProjektit : '',
+        assigned: item.punetori ? `${item.punetori.emri} ${item.punetori.mbiemri}` : '',
+        status: item.statusi || 'Për t\'u bërë',
+        prioriteti: item.prioriteti || 'Normal'
+      }));
+    }
+    if (title === 'Fotografitë e Projekteve') {
+      return items.map(item => ({
+        id: item.fotografiaId,
+        project: item.projekti ? item.projekti.emriProjektit : '',
+        description: item.pershkrimi || '',
+        url: item.shtegu || ''
+      }));
+    }
+    return items;
+  };
+
+  const mapOutgoingData = (title, formData, originalItem = null) => {
+    if (title === 'Punëtorët') {
+      const nameParts = (formData.name || '').trim().split(' ');
+      const emri = nameParts[0] || '';
+      const mbiemri = nameParts.slice(1).join(' ') || '';
+      return {
+        punetoriId: editingId ? Number(editingId) : null,
+        emri,
+        mbiemri,
+        pozita: formData.role || '',
+        telefoni: formData.phone || '',
+        paga: Number(formData.salary) || 0,
+        email: formData.email || `${emri.toLowerCase() || 'staf'}@tixhedecor.com`,
+        statusi: formData.statusi || 'Aktiv',
+        specializimi: 'Dekorim'
+      };
+    }
+    if (title === 'Detyrat e Projekteve') {
+      return {
+        detyrimiId: editingId ? Number(editingId) : null,
+        pershkrimi: formData.task || '',
+        statusi: formData.status || 'Për t\'u bërë',
+        prioriteti: formData.prioriteti || 'Normal',
+        // Për thjeshtësi gjatë prezantimit, mund t'i dërgojmë si objekte me id: 1
+        projekti: { projektiId: 1 }, 
+        punetori: { punetoriId: 1 }
+      };
+    }
+    if (title === 'Fotografitë e Projekteve') {
+      return {
+        fotografiaId: editingId ? Number(editingId) : null,
+        pershkrimi: formData.description || '',
+        shtegu: formData.url || '',
+        projekti: { projektiId: 1 },
+        lloji: 'pas',
+        rendi: 1
+      };
+    }
+    return formData;
+  };
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      let items = [];
+      if (title === 'Punëtorët') {
+        items = await api.getWorkers();
+      } else if (title === 'Detyrat e Projekteve') {
+        items = await api.getTasks();
+      } else if (title === 'Fotografitë e Projekteve') {
+        items = await api.getPhotos();
+      } else {
+        items = initialData || [];
+      }
+      setData(mapIncomingData(title, items));
+    } catch (error) {
+      console.error("Gabim gjatë ngarkimit të të dhënave:", error);
+      setData(initialData || []);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [title]);
 
   const handleOpenModal = (item = null) => {
     if (item) {
@@ -33,19 +135,64 @@ export default function Tabela({ title, columns, initialData, disableAdd }) {
     setFormData({ ...formData, [key]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      setData(data.map(item => (item.id === editingId ? { ...formData, id: editingId } : item)));
-    } else {
-      setData([...data, { ...formData, id: Date.now().toString() }]);
+    try {
+      const body = mapOutgoingData(title, formData);
+
+      if (title === 'Punëtorët') {
+        if (editingId) {
+          const updated = await api.updateWorker(editingId, body);
+          setData(data.map(item => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createWorker(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else if (title === 'Detyrat e Projekteve') {
+        if (editingId) {
+          const updated = await api.updateTask(editingId, body);
+          setData(data.map(item => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createTask(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else if (title === 'Fotografitë e Projekteve') {
+        if (editingId) {
+          const updated = await api.updatePhoto(editingId, body);
+          setData(data.map(item => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createPhoto(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else {
+        if (editingId) {
+          setData(data.map(item => (item.id === editingId ? { ...formData, id: editingId } : item)));
+        } else {
+          setData([...data, { ...formData, id: Date.now().toString() }]);
+        }
+      }
+      handleCloseModal();
+      alert("Operacioni u kreh me sukses! ");
+    } catch (error) {
+      alert("Ndodhi një gabim: " + error.message);
     }
-    handleCloseModal();
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("A jeni i sigurt që doni të fshini këtë rekord?")) {
-      setData(data.filter(item => item.id !== id));
+      try {
+        if (title === 'Punëtorët') {
+          await api.deleteWorker(id);
+        } else if (title === 'Detyrat e Projekteve') {
+          await api.deleteTask(id);
+        } else if (title === 'Fotografitë e Projekteve') {
+          await api.deletePhoto(id);
+        }
+        setData(data.filter(item => item.id !== id));
+        alert("Fshirja u krye me sukses!");
+      } catch (error) {
+        alert("Ndodhi një gabim gjatë fshirjes: " + error.message);
+      }
     }
   };
 
@@ -64,69 +211,73 @@ export default function Tabela({ title, columns, initialData, disableAdd }) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#e6dfd3] border-b border-[#c9c1b5]">
-              {columns.map((col) => (
-                <th key={col.key} className="p-4 text-sm font-medium text-gray-600">
-                  {col.label}
-                </th>
-              ))}
-              <th className="p-4 text-sm font-medium text-gray-600 text-right">Veprimet</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length + 1} className="p-8 text-center text-gray-500">
-                  Nuk ka të dhëna.
-                </td>
+        {isLoading ? (
+          <div className="p-8 text-center text-gray-500">Duke ngarkuar të dhënat... ⏳</div>
+        ) : (
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#e6dfd3] border-b border-[#c9c1b5]">
+                {columns.map((col) => (
+                  <th key={col.key} className="p-4 text-sm font-medium text-gray-600">
+                    {col.label}
+                  </th>
+                ))}
+                <th className="p-4 text-sm font-medium text-gray-600 text-right">Veprimet</th>
               </tr>
-            ) : (
-              data.map((item) => (
-                <tr key={item.id} className="border-b border-[#c9c1b5]/30 hover:bg-[#e6dfd3]/50 transition-colors">
-                  {columns.map((col) => (
-                    <td key={col.key} className="p-4 text-sm text-gray-700">
-                      {col.type === 'color' ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: item[col.key] }}></div>
-                          {item[col.key]}
-                        </div>
-                      ) : col.type === 'rating' ? (
-                        <div className="flex text-yellow-400">
-                          {"★".repeat(Number(item[col.key]) || 0)}
-                          <span className="text-gray-300">
-                            {"★".repeat(5 - (Number(item[col.key]) || 0))}
-                          </span>
-                        </div>
-                      ) : (
-                        item[col.key]
-                      )}
-                    </td>
-                  ))}
-                  <td className="p-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => handleOpenModal(item)}
-                        className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Ndrysho"
-                      >
-                        <FiEdit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Fshi"
-                      >
-                        <FiTrash2 size={16} />
-                      </button>
-                    </div>
+            </thead>
+            <tbody>
+              {data.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length + 1} className="p-8 text-center text-gray-500">
+                    Nuk ka të dhëna.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                data.map((item) => (
+                  <tr key={item.id} className="border-b border-[#c9c1b5]/30 hover:bg-[#e6dfd3]/50 transition-colors">
+                    {columns.map((col) => (
+                      <td key={col.key} className="p-4 text-sm text-gray-700">
+                        {col.type === 'color' ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: item[col.key] }}></div>
+                            {item[col.key]}
+                          </div>
+                        ) : col.type === 'rating' ? (
+                          <div className="flex text-yellow-400">
+                            {"★".repeat(Number(item[col.key]) || 0)}
+                            <span className="text-gray-300">
+                              {"★".repeat(5 - (Number(item[col.key]) || 0))}
+                            </span>
+                          </div>
+                        ) : (
+                          item[col.key]
+                        )}
+                      </td>
+                    ))}
+                    <td className="p-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleOpenModal(item)}
+                          className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Ndrysho"
+                        >
+                          <FiEdit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Fshi"
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <AnimatePresence>
