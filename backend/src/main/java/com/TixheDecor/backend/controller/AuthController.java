@@ -1,8 +1,8 @@
 package com.TixheDecor.backend.controller;
 
-import com.TixheDecor.backend.model.User;
-import com.TixheDecor.backend.security.JwtUtil;
-import com.TixheDecor.backend.service.UserService;
+import com.TixheDecor.backend.dto.LoginRequest;
+import com.TixheDecor.backend.dto.RegisterRequest;
+import com.TixheDecor.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,62 +14,41 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserService userService;
+    private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        String email = body.get("username");
-        String password = body.get("password");
-
-        boolean valid = userService.validateLogin(email, password);
-
-        if (!valid) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            Map<String, String> tokens = authService.login(
+                    request.getEmail(),
+                    request.getPassword()
+            );
+            return ResponseEntity.ok(tokens);
+        } catch (RuntimeException e) {
             return ResponseEntity.status(401)
-                    .body(Map.of("error", "Email ose fjalëkalimi gabim"));
+                    .body(Map.of("error", e.getMessage()));
         }
-
-        String accessToken = jwtUtil.generateToken(email);
-        String refreshToken = jwtUtil.generateRefreshToken(email);
-
-        return ResponseEntity.ok(Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
-        ));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        String password = body.get("password");
-
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            User user = userService.registerUser(email, password);
+            authService.register(request.getEmail(), request.getPassword());
             return ResponseEntity.ok(Map.of("message", "Regjistrim i suksesshëm!"));
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(400)
-                    .body(Map.of("error", "Email ekziston tashmë"));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
-        String refreshToken = body.get("refreshToken");
-
         try {
-            String email = jwtUtil.extractEmail(refreshToken);
-            if (jwtUtil.validateToken(refreshToken)) {
-                String newAccessToken = jwtUtil.generateToken(email);
-                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-            }
+            Map<String, String> tokens = authService.refresh(body.get("refreshToken"));
+            return ResponseEntity.ok(tokens);
         } catch (RuntimeException e) {
             return ResponseEntity.status(401)
                     .body(Map.of("error", e.getMessage()));
         }
-
-        return ResponseEntity.status(401)
-                .body(Map.of("error", "Refresh token invalid"));
     }
 }
