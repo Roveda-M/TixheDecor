@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface FotografiaRepository extends JpaRepository<Fotografia, Integer> {
     List<Fotografia> findByProjektiProjektiId(Integer projektiId);
-    List<Fotografia> findByLloji(String lloji);
+    List<Fotografia> findByLlojiIgnoreCase(String lloji);
 }

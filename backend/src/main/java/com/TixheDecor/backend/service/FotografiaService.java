@@ -27,10 +27,11 @@ public class FotografiaService {
     }
 
     public List<Fotografia> getByLloji(String lloji) {
-        return fotografiaRepository.findByLloji(lloji);
+        return fotografiaRepository.findByLlojiIgnoreCase(lloji);
     }
 
     public Fotografia create(Fotografia fotografia) {
+        normalize(fotografia);
         return fotografiaRepository.save(fotografia);
     }
 
@@ -39,6 +40,7 @@ public class FotografiaService {
             return Optional.empty();
         }
         fotografia.setFotografiaId(id);
+        normalize(fotografia);
         return Optional.of(fotografiaRepository.save(fotografia));
     }
 
@@ -48,5 +50,14 @@ public class FotografiaService {
         }
         fotografiaRepository.deleteById(id);
         return true;
+    }
+
+    private void normalize(Fotografia fotografia) {
+        if (fotografia.getLloji() != null) {
+            fotografia.setLloji(fotografia.getLloji().trim().toLowerCase());
+        }
+        if (fotografia.getShtegu() != null) {
+            fotografia.setShtegu(fotografia.getShtegu().trim());
+        }
     }
 }
