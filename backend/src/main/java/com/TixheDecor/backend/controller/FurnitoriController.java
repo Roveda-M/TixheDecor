@@ -1,7 +1,7 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.Furnitori;
-import com.TixheDecor.backend.repository.FurnitoriRepository;
+import com.TixheDecor.backend.service.FurnitoriService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,47 +14,42 @@ import java.util.List;
 public class FurnitoriController {
 
     @Autowired
-    private FurnitoriRepository furnitoriRepository;
+    private FurnitoriService furnitoriService;
 
     @GetMapping
     public List<Furnitori> getAll() {
-        return furnitoriRepository.findAll();
+        return furnitoriService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Furnitori> getById(@PathVariable Integer id) {
-        return furnitoriRepository.findById(id)
+        return furnitoriService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/statusi/{statusi}")
     public List<Furnitori> getByStatusi(@PathVariable String statusi) {
-        return furnitoriRepository.findByStatusi(statusi);
+        return furnitoriService.getByStatusi(statusi);
     }
 
     @PostMapping
     public Furnitori create(@RequestBody Furnitori furnitori) {
-        return furnitoriRepository.save(furnitori);
+        return furnitoriService.create(furnitori);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Furnitori> update(@PathVariable Integer id, @RequestBody Furnitori furnitori) {
-        if (!furnitoriRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        furnitori.setFurnitoriId(id);
-        return ResponseEntity.ok(furnitoriRepository.save(furnitori));
+        return furnitoriService.update(id, furnitori)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (!furnitoriRepository.existsById(id)) {
+        if (!furnitoriService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        furnitoriRepository.deleteById(id);
         return ResponseEntity.ok("Furnitori u fshi me sukses!");
     }
 }

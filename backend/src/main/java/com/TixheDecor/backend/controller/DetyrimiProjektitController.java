@@ -1,7 +1,7 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.DetyrimiProjektit;
-import com.TixheDecor.backend.repository.DetyrimiProjektitRepository;
+import com.TixheDecor.backend.service.DetyrimiProjektitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,58 +14,53 @@ import java.util.List;
 public class DetyrimiProjektitController {
 
     @Autowired
-    private DetyrimiProjektitRepository detyrimiProjektitRepository;
+    private DetyrimiProjektitService detyrimiProjektitService;
 
     @GetMapping
     public List<DetyrimiProjektit> getAll() {
-        return detyrimiProjektitRepository.findAll();
+        return detyrimiProjektitService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DetyrimiProjektit> getById(@PathVariable Integer id) {
-        return detyrimiProjektitRepository.findById(id)
+        return detyrimiProjektitService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/projekti/{projektiId}")
     public List<DetyrimiProjektit> getByProjekti(@PathVariable Integer projektiId) {
-        return detyrimiProjektitRepository.findByProjektiProjektiId(projektiId);
+        return detyrimiProjektitService.getByProjekti(projektiId);
     }
 
     @GetMapping("/punetori/{punetoriId}")
     public List<DetyrimiProjektit> getByPunetori(@PathVariable Integer punetoriId) {
-        return detyrimiProjektitRepository.findByPunetoriPunetoriId(punetoriId);
+        return detyrimiProjektitService.getByPunetori(punetoriId);
     }
 
     @GetMapping("/statusi/{statusi}")
     public List<DetyrimiProjektit> getByStatusi(@PathVariable String statusi) {
-        return detyrimiProjektitRepository.findByStatusi(statusi);
+        return detyrimiProjektitService.getByStatusi(statusi);
     }
 
     @PostMapping
     public DetyrimiProjektit create(@RequestBody DetyrimiProjektit detyrimiProjektit) {
-        return detyrimiProjektitRepository.save(detyrimiProjektit);
+        return detyrimiProjektitService.create(detyrimiProjektit);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DetyrimiProjektit> update(@PathVariable Integer id,
                                                     @RequestBody DetyrimiProjektit detyrimiProjektit) {
-        if (!detyrimiProjektitRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        detyrimiProjektit.setDetyrimiId(id);
-        return ResponseEntity.ok(detyrimiProjektitRepository.save(detyrimiProjektit));
+        return detyrimiProjektitService.update(id, detyrimiProjektit)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (!detyrimiProjektitRepository.existsById(id)) {
+        if (!detyrimiProjektitService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        detyrimiProjektitRepository.deleteById(id);
         return ResponseEntity.ok("Detyrimi i projektit u fshi me sukses!");
     }
 }
