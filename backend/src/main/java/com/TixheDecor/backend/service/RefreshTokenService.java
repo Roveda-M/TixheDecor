@@ -1,9 +1,11 @@
 package com.TixheDecor.backend.service;
 
 import com.TixheDecor.backend.model.RefreshToken;
+import com.TixheDecor.backend.model.User;
 import com.TixheDecor.backend.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,9 @@ public class RefreshTokenService {
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+
+    @Value("${jwt.refresh-expiration}")
+    private Long refreshExpirationMs;
 
     public List<RefreshToken> getAll() {
         return refreshTokenRepository.findAll();
@@ -32,6 +37,22 @@ public class RefreshTokenService {
         if (refreshToken.getIsRevoked() == null) {
             refreshToken.setIsRevoked(false);
         }
+        if (refreshToken.getCreatedAt() == null) {
+            refreshToken.setCreatedAt(LocalDateTime.now());
+        }
+        return refreshTokenRepository.save(refreshToken);
+    }
+
+    @Transactional
+    public RefreshToken issueForUser(User user, String tokenValue) {
+        refreshTokenRepository.deleteByUser_Id(user.getId());
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setUser(user);
+        refreshToken.setToken(tokenValue);
+        refreshToken.setExpiresAt(LocalDateTime.now().plusSeconds(refreshExpirationMs / 1000));
+        refreshToken.setCreatedAt(LocalDateTime.now());
+        refreshToken.setIsRevoked(false);
 
         return refreshTokenRepository.save(refreshToken);
     }
@@ -40,7 +61,6 @@ public class RefreshTokenService {
         if (!refreshTokenRepository.existsById(id)) {
             return Optional.empty();
         }
-
         refreshToken.setTokenId(id);
         return Optional.of(refreshTokenRepository.save(refreshToken));
     }
@@ -57,7 +77,6 @@ public class RefreshTokenService {
         boolean revoked = Boolean.TRUE.equals(refreshToken.getIsRevoked());
         boolean expired = refreshToken.getExpiresAt() != null
                 && refreshToken.getExpiresAt().isBefore(LocalDateTime.now());
-
         return !revoked && !expired;
     }
 
@@ -65,13 +84,12 @@ public class RefreshTokenService {
         if (!refreshTokenRepository.existsById(id)) {
             return false;
         }
-
         refreshTokenRepository.deleteById(id);
         return true;
     }
 
     @Transactional
     public void deleteByUserId(Long userId) {
-        refreshTokenRepository.deleteByUserId(userId);
+        refreshTokenRepository.deleteByUser_Id(userId);
     }
 }
