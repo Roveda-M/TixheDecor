@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api } from "./api";
+import { api, hasRole } from "./api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -39,7 +39,7 @@ export default function Login() {
       sessionStorage.setItem("accessToken", data.accessToken);
       sessionStorage.setItem("role", data.role);
 
-      if (data.role === "ROLE_ADMIN") {
+      if (hasRole(data.role, "ROLE_ADMIN")) {
         navigate("/dashboard");
       } else {
         navigate("/");

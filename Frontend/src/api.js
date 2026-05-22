@@ -1,5 +1,10 @@
 const BASE_URL = "http://localhost:8080/api";
 
+export const hasRole = (roles, roleName) => {
+  if (!roles) return false;
+  return roles.split(",").some((r) => r.trim() === roleName);
+};
+
 const getHeaders = () => {
   const token = sessionStorage.getItem("accessToken");
   return {
@@ -8,7 +13,6 @@ const getHeaders = () => {
   };
 };
 
-// Refresh token automatikisht
 const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
   if (!refreshToken) throw new Error("Nuk ka refresh token");
@@ -22,29 +26,36 @@ const refreshAccessToken = async () => {
   if (!res.ok) {
     localStorage.removeItem("refreshToken");
     sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("role");
     window.location.href = "/login";
     throw new Error("Sesioni skadoi");
   }
 
   const data = await res.json();
   sessionStorage.setItem("accessToken", data.accessToken);
+  if (data.refreshToken) {
+    localStorage.setItem("refreshToken", data.refreshToken);
+  }
+  if (data.role) {
+    sessionStorage.setItem("role", data.role);
+  }
   return data.accessToken;
 };
 
-// Request me refresh automatik
 const fetchWithAuth = async (url, options = {}) => {
-  let res = await fetch(url, { ...options, headers: getHeaders() });
+  const headers = { ...getHeaders(), ...options.headers };
+  let res = await fetch(url, { ...options, headers });
 
   if (res.status === 401) {
     await refreshAccessToken();
-    res = await fetch(url, { ...options, headers: getHeaders() });
+    const retryHeaders = { ...getHeaders(), ...options.headers };
+    res = await fetch(url, { ...options, headers: retryHeaders });
   }
 
   return res;
 };
 
 export const api = {
-  // AUTH
   login: async (email, password) => {
     const res = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
@@ -65,7 +76,6 @@ export const api = {
     return res.json();
   },
 
-  // KLIENTI
   getKlientet: async () => {
     const res = await fetchWithAuth(`${BASE_URL}/klienti`);
     if (!res.ok) throw new Error("Dështoi ngarkimi i klientëve");
@@ -88,21 +98,18 @@ export const api = {
     return res.json();
   },
   deleteKlient: async (id) => {
-    const res = await fetchWithAuth(`${BASE_URL}/klienti/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetchWithAuth(`${BASE_URL}/klienti/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Dështoi fshirja e klientit");
     return res;
   },
 
-  // PROJEKTI
   getProjektet: async () => {
-    const res = await fetchWithAuth(`${BASE_URL}/projekti`);
+    const res = await fetchWithAuth(`${BASE_URL}/projektet`);
     if (!res.ok) throw new Error("Dështoi ngarkimi i projekteve");
     return res.json();
   },
   createProjekt: async (data) => {
-    const res = await fetchWithAuth(`${BASE_URL}/projekti`, {
+    const res = await fetchWithAuth(`${BASE_URL}/projektet`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -110,7 +117,7 @@ export const api = {
     return res.json();
   },
   updateProjekt: async (id, data) => {
-    const res = await fetchWithAuth(`${BASE_URL}/projekti/${id}`, {
+    const res = await fetchWithAuth(`${BASE_URL}/projektet/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -118,21 +125,18 @@ export const api = {
     return res.json();
   },
   deleteProjekt: async (id) => {
-    const res = await fetchWithAuth(`${BASE_URL}/projekti/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetchWithAuth(`${BASE_URL}/projektet/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Dështoi fshirja e projektit");
     return res;
   },
 
-  // FATURA
   getFaturat: async () => {
-    const res = await fetchWithAuth(`${BASE_URL}/fatura`);
+    const res = await fetchWithAuth(`${BASE_URL}/faturat`);
     if (!res.ok) throw new Error("Dështoi ngarkimi i faturave");
     return res.json();
   },
   createFatura: async (data) => {
-    const res = await fetchWithAuth(`${BASE_URL}/fatura`, {
+    const res = await fetchWithAuth(`${BASE_URL}/faturat`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -140,7 +144,7 @@ export const api = {
     return res.json();
   },
   updateFatura: async (id, data) => {
-    const res = await fetchWithAuth(`${BASE_URL}/fatura/${id}`, {
+    const res = await fetchWithAuth(`${BASE_URL}/faturat/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -148,21 +152,18 @@ export const api = {
     return res.json();
   },
   deleteFatura: async (id) => {
-    const res = await fetchWithAuth(`${BASE_URL}/fatura/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetchWithAuth(`${BASE_URL}/faturat/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Dështoi fshirja e faturës");
     return res;
   },
 
-  // VLERESIMI
   getVleresimet: async () => {
-    const res = await fetchWithAuth(`${BASE_URL}/vleresimi`);
+    const res = await fetchWithAuth(`${BASE_URL}/vleresimet`);
     if (!res.ok) throw new Error("Dështoi ngarkimi i vlerësimeve");
     return res.json();
   },
   createVleresim: async (data) => {
-    const res = await fetchWithAuth(`${BASE_URL}/vleresimi`, {
+    const res = await fetchWithAuth(`${BASE_URL}/vleresimet`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -170,7 +171,7 @@ export const api = {
     return res.json();
   },
   updateVleresim: async (id, data) => {
-    const res = await fetchWithAuth(`${BASE_URL}/vleresimi/${id}`, {
+    const res = await fetchWithAuth(`${BASE_URL}/vleresimet/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -178,14 +179,11 @@ export const api = {
     return res.json();
   },
   deleteVleresim: async (id) => {
-    const res = await fetchWithAuth(`${BASE_URL}/vleresimi/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetchWithAuth(`${BASE_URL}/vleresimet/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Dështoi fshirja e vlerësimit");
     return res;
   },
 
-  // Punetori, Tasks, Photos nga kolegu
   getWorkers: async () => {
     const res = await fetchWithAuth(`${BASE_URL}/punetoret`);
     if (!res.ok) throw new Error("Dështoi ngarkimi i punëtorëve");
@@ -208,10 +206,62 @@ export const api = {
     return res.json();
   },
   deleteWorker: async (id) => {
-    const res = await fetchWithAuth(`${BASE_URL}/punetoret/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetchWithAuth(`${BASE_URL}/punetoret/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Dështoi fshirja e punëtorit");
+    return res;
+  },
+
+  getTasks: async () => {
+    const res = await fetchWithAuth(`${BASE_URL}/detyrimet-projektit`);
+    if (!res.ok) throw new Error("Dështoi ngarkimi i detyrave");
+    return res.json();
+  },
+  createTask: async (data) => {
+    const res = await fetchWithAuth(`${BASE_URL}/detyrimet-projektit`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Dështoi shtimi i detyrës");
+    return res.json();
+  },
+  updateTask: async (id, data) => {
+    const res = await fetchWithAuth(`${BASE_URL}/detyrimet-projektit/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Dështoi përditësimi i detyrës");
+    return res.json();
+  },
+  deleteTask: async (id) => {
+    const res = await fetchWithAuth(`${BASE_URL}/detyrimet-projektit/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Dështoi fshirja e detyrës");
+    return res;
+  },
+
+  getPhotos: async () => {
+    const res = await fetchWithAuth(`${BASE_URL}/fotografite`);
+    if (!res.ok) throw new Error("Dështoi ngarkimi i fotografive");
+    return res.json();
+  },
+  createPhoto: async (data) => {
+    const res = await fetchWithAuth(`${BASE_URL}/fotografite`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Dështoi shtimi i fotografisë");
+    return res.json();
+  },
+  updatePhoto: async (id, data) => {
+    const res = await fetchWithAuth(`${BASE_URL}/fotografite/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Dështoi përditësimi i fotografisë");
+    return res.json();
+  },
+  deletePhoto: async (id) => {
+    const res = await fetchWithAuth(`${BASE_URL}/fotografite/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Dështoi fshirja e fotografisë");
     return res;
   },
 };
