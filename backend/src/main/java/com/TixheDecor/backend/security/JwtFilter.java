@@ -62,6 +62,11 @@ public class JwtFilter extends OncePerRequestFilter {
                                 email, null, new ArrayList<>()
                         );
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"Token i pavlefshëm. Bëni login përsëri.\"}");
+                return;
             }
         } catch (RuntimeException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

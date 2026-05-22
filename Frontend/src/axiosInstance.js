@@ -39,17 +39,27 @@ axiosInstance.interceptors.response.use(
                     window.location.href = "/login";
                     return Promise.reject(error);
                 }
-
                 const res = await axios.post(
                     "/api/auth/refresh",
                     { refreshToken }
                 );
-
                 const newAccessToken = res.data.accessToken;
+                const newRefreshToken = res.data.refreshToken; // SHTO KËTË RRESHT
                 sessionStorage.setItem("accessToken", newAccessToken);
+                localStorage.setItem("refreshToken", newRefreshToken); // SHTO KËTË RRESHT
                 if (res.data.role) {
                     sessionStorage.setItem("role", res.data.role);
                 }
+                // const res = await axios.post(
+                //     "/api/auth/refresh",
+                //     { refreshToken }
+                // );
+                //
+                // const newAccessToken = res.data.accessToken;
+                // sessionStorage.setItem("accessToken", newAccessToken);
+                // if (res.data.role) {
+                //     sessionStorage.setItem("role", res.data.role);
+                // }
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
                 return axiosInstance(originalRequest);

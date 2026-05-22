@@ -34,7 +34,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         id: item.detyrimiId,
         task: item.pershkrimi || '',
         project: item.projekti ? item.projekti.emriProjektit : '',
+        projektiId: item.projekti ? String(item.projekti.projektiId) : '',
         assigned: item.punetori ? `${item.punetori.emri} ${item.punetori.mbiemri}` : '',
+        punetoriId: item.punetori ? String(item.punetori.punetoriId) : '',
         status: item.statusi || "Për t'u bërë",
         prioriteti: item.prioriteti || 'Normal',
       }));
@@ -43,6 +45,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return items.map((item) => ({
         id: item.fotografiaId,
         project: item.projekti ? item.projekti.emriProjektit : '',
+        projectId: item.projekti ? String(item.projekti.projektiId) : '',
         description: item.pershkrimi || '',
         url: item.shtegu || '',
       }));
@@ -117,21 +120,27 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return payload;
     }
     if (title === 'Detyrat e Projekteve') {
+      if (!form.projektiId || !form.punetoriId) {
+        throw new Error('Shkruaj ID ekzistuese te projektit dhe punetorit.');
+      }
       const payload = {
         pershkrimi: form.task || '',
         statusi: form.status || "Për t'u bërë",
         prioriteti: form.prioriteti || 'Normal',
-        projekti: { projektiId: 1 },
-        punetori: { punetoriId: 1 },
+        projekti: { projektiId: Number(form.projektiId) },
+        punetori: { punetoriId: Number(form.punetoriId) },
       };
       if (editingId) payload.detyrimiId = Number(editingId);
       return payload;
     }
     if (title === 'Fotografitë e Projekteve') {
+      if (!form.projectId) {
+        throw new Error('Shkruaj ID ekzistuese te projektit.');
+      }
       const payload = {
         pershkrimi: form.description || '',
         shtegu: form.url || '',
-        projekti: { projektiId: 1 },
+        projekti: { projektiId: Number(form.projectId) },
         lloji: 'pas',
         rendi: 1,
       };

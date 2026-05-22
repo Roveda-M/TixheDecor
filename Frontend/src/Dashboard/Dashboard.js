@@ -87,13 +87,12 @@ const crudConfigs = {
     icon: <FiCheckSquare />,
     columns: [
       { key: 'task', label: 'Përshkrimi i Detyrës', type: 'text' },
-      { key: 'project', label: 'Projekti', type: 'text' },
-      { key: 'assigned', label: 'Caktuar Për', type: 'text' },
+      { key: 'projektiId', label: 'ID e Projektit', type: 'number' },
+      { key: 'punetoriId', label: 'ID e Punëtorit', type: 'number' },
       { key: 'status', label: 'Statusi', type: 'text' },
+      { key: 'prioriteti', label: 'Prioriteti', type: 'text' },
     ],
-    initialData: [
-      { id: '1', task: 'Rregullimi i Harkut të Luleve', project: 'Dasma e Artës', assigned: 'Blerim Gashi', status: 'Në proces' },
-    ]
+    initialData: []
   },
   materialUsage: {
     id: 'materialUsage',
@@ -128,7 +127,7 @@ const crudConfigs = {
     title: 'Fotografitë e Projekteve',
     icon: <FiImage />,
     columns: [
-      { key: 'project', label: 'Projekti', type: 'text' },
+      { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project' },
       { key: 'description', label: 'Përshkrimi', type: 'text' },
       { key: 'url', label: 'URL e Fotos (Ose Emri)', type: 'text' },
     ],
