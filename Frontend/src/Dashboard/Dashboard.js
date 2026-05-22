@@ -127,9 +127,23 @@ const crudConfigs = {
     title: 'Fotografitë e Projekteve',
     icon: <FiImage />,
     columns: [
-      { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project' },
+      { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project', required: false },
       { key: 'description', label: 'Përshkrimi', type: 'text' },
-      { key: 'url', label: 'URL e Fotos (Ose Emri)', type: 'text' },
+      { key: 'photoFile', label: 'Zgjidh Foto nga Pajisja', type: 'file', formOnly: true, required: false },
+      { key: 'url', label: 'Foto e Ruajtur', type: 'text', required: false },
+      {
+        key: 'lloji',
+        label: 'Faqja ku shfaqet',
+        type: 'select',
+        options: [
+          { value: 'wedding', label: 'Wedding' },
+          { value: 'birthday', label: 'Birthday' },
+          { value: 'engagement', label: 'Engagement' },
+          { value: 'babyshower', label: 'Baby Shower' },
+          { value: 'bridetobe', label: 'Bride To Be' },
+          { value: 'circumcision', label: 'Circumcision' },
+        ],
+      },
     ],
     initialData: [
       { id: '1', project: 'Dasma e Artës', description: 'Dekori i tavolinës kryesore', url: 'tavolina1.jpg' },

@@ -176,6 +176,15 @@ export const api = {
     return res.data;
   },
 
+  uploadPhoto: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await axiosInstance.post("/fotografite/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+  },
+
   updatePhoto: async (id, data) => {
     const res = await axiosInstance.put(`/fotografite/${id}`, data);
     return res.data;

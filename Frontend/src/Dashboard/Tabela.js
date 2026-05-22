@@ -48,6 +48,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         projectId: item.projekti ? String(item.projekti.projektiId) : '',
         description: item.pershkrimi || '',
         url: item.shtegu || '',
+        lloji: item.lloji || '',
       }));
     }
     if (title === 'Menaxhimi i Klientëve') {
@@ -134,16 +135,18 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return payload;
     }
     if (title === 'Fotografitë e Projekteve') {
-      if (!form.projectId) {
-        throw new Error('Shkruaj ID ekzistuese te projektit.');
-      }
       const payload = {
         pershkrimi: form.description || '',
-        shtegu: form.url || '',
-        projekti: { projektiId: Number(form.projectId) },
-        lloji: 'pas',
+        shtegu: (form.url || '').trim(),
+        lloji: (form.lloji || 'wedding').trim().toLowerCase(),
         rendi: 1,
       };
+      if (form.projectId) {
+        payload.projekti = { projektiId: Number(form.projectId) };
+      }
+      if (!payload.shtegu && !form.photoFile) {
+        throw new Error('Zgjidh nje foto nga pajisja.');
+      }
       if (editingId) payload.fotografiaId = Number(editingId);
       return payload;
     }
@@ -288,6 +291,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           setData([...data, mapIncomingData(title, [created])[0]]);
         }
       } else if (title === 'Fotografitë e Projekteve') {
+        if (formData.photoFile) {
+          const uploaded = await api.uploadPhoto(formData.photoFile);
+          body.shtegu = uploaded.url;
+        }
         if (editingId) {
           const updated = await api.updatePhoto(editingId, body);
           setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
@@ -360,6 +367,33 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   };
 
   const renderField = (col) => {
+    if (col.type === 'file') {
+      return (
+        <input
+          type="file"
+          accept="image/*"
+          required={col.required !== false && !formData.url}
+          onChange={(e) => setFormData({ ...formData, [col.key]: e.target.files?.[0] || null })}
+          className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#2b2b2b] file:text-white"
+        />
+      );
+    }
+    if (col.type === 'select') {
+      return (
+        <select
+          required={col.required !== false}
+          value={formData[col.key] || col.options?.[0]?.value || ''}
+          onChange={(e) => handleChange(e, col.key)}
+          className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none"
+        >
+          {(col.options || []).map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      );
+    }
     if (col.type === 'textarea') {
       return (
         <textarea

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 
 import img1 from './1.jpeg';
@@ -16,6 +16,12 @@ import img12 from './Dmeshkuj/d1.1.jpeg';
 import img14 from './Dmeshkuj/d2.jpeg';
 import img15 from './Dmeshkuj/d3.jpeg';
 import img16 from './Dmeshkuj/d4.jpeg';
+
+const normalizePhotoUrl = (url) => {
+  if (!url) return "";
+  if (url.startsWith("http") || url.startsWith("/")) return url;
+  return `/${url}`;
+};
 
 const decors = [
   { id: 'f1', name: 'Elegant dhe i paharrueshëm', desc: '', image: img1 },
@@ -38,6 +44,7 @@ const decors = [
 
 export default function Birthday() {
   const [selectedDecors, setSelectedDecors] = useState([]);
+  const [dynamicDecors, setDynamicDecors] = useState([]);
   const [step, setStep] = useState('selection');
   const [formData, setFormData] = useState({ name: '', date: '', location: '', message: '' });
   const [showInvite, setShowInvite] = useState(false);
@@ -48,6 +55,29 @@ export default function Birthday() {
   const [inviteBgImage, setInviteBgImage] = useState(null);
 
   const inviteRef = useRef(null);
+
+  useEffect(() => {
+    const loadBirthdayPhotos = async () => {
+      try {
+        const res = await fetch("/api/fotografite/lloji/birthday");
+        if (!res.ok) return;
+        const items = await res.json();
+        const mapped = items
+          .filter((item) => item.shtegu)
+          .map((item) => ({
+            id: `photo-${item.fotografiaId}`,
+            name: item.pershkrimi || "Dekor ditelindjeje",
+            desc: "",
+            image: normalizePhotoUrl(item.shtegu),
+          }));
+        setDynamicDecors(mapped);
+      } catch (error) {
+        console.error("Gabim gjate ngarkimit te fotove te ditelindjes:", error);
+      }
+    };
+
+    loadBirthdayPhotos();
+  }, []);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -63,6 +93,7 @@ export default function Birthday() {
   const fontSerif = { fontFamily: "'Playfair Display', serif" };
   const fontSans = { fontFamily: "'Montserrat', sans-serif" };
   const fontCursive = { fontFamily: "'Great Vibes', cursive" };
+  const visibleDecors = [...dynamicDecors, ...decors];
 
   const handleCreateInvite = (e) => {
     e.preventDefault();
@@ -146,7 +177,7 @@ export default function Birthday() {
 
         <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 mb-16">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
-            {decors.map((decor) => {
+            {visibleDecors.map((decor) => {
               const isSelected = selectedDecors.includes(decor.id);
               return (
                 <div

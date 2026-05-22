@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Ftesa from "./Ftesa";
+
+const normalizePhotoUrl = (url) => {
+  if (!url) return "";
+  if (url.startsWith("http") || url.startsWith("/")) return url;
+  return `/${url}`;
+};
 
 export default function Wedding() {
   const [view, setView] = useState("main");
   const [selectedDecors, setSelectedDecors] = useState([]);
+  const [dynamicPhotos, setDynamicPhotos] = useState([]);
 
-  const photos = [
+  const defaultPhotos = [
     {
       url: "/darsma1.jpeg",
       title: { full: "Momente të Paharrueshme", short: "Momente" }
@@ -71,6 +78,32 @@ export default function Wedding() {
       title: { full: "Stili që bie në sy që nga larg", short: "Stil" }
     }
   ];
+
+  useEffect(() => {
+    const loadWeddingPhotos = async () => {
+      try {
+        const res = await fetch("/api/fotografite/lloji/wedding");
+        if (!res.ok) return;
+        const items = await res.json();
+        const mapped = items
+          .filter((item) => item.shtegu)
+          .map((item) => ({
+            url: normalizePhotoUrl(item.shtegu),
+            title: {
+              full: item.pershkrimi || "Dekor dasme",
+              short: item.pershkrimi || "Dasme",
+            },
+          }));
+        setDynamicPhotos(mapped);
+      } catch (error) {
+        console.error("Gabim gjate ngarkimit te fotove te dasmes:", error);
+      }
+    };
+
+    loadWeddingPhotos();
+  }, []);
+
+  const photos = dynamicPhotos.length > 0 ? dynamicPhotos : defaultPhotos;
 
   /* ================== FTFESA VIEW ================== */
   if (view === "ftesa") {
