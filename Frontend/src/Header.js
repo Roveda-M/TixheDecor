@@ -1,6 +1,14 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { hasRole } from "./api";
+
+const getHomePath = () => {
+  const token = sessionStorage.getItem("accessToken");
+  const role = sessionStorage.getItem("role");
+  if (token && hasRole(role, "ROLE_ADMIN")) return "/dashboard";
+  return "/home";
+};
 
 
 
@@ -97,7 +105,7 @@ export default function Header() {
           <nav className="flex flex-col gap-6 pl-6 pb-24">
 
            {/* HOME */}
-<Link to="/" onClick={handleClick}>
+<Link to={getHomePath()} onClick={handleClick}>
   <h2 className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
     style={{ fontFamily: "Playfair Display, serif" }}>
     HOME

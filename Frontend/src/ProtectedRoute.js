@@ -1,16 +1,17 @@
 import { Navigate } from "react-router-dom";
+import { hasRole } from "./api";
 
 export default function ProtectedRoute({ children, requiredRole }) {
-    const accessToken = sessionStorage.getItem("accessToken");
-    const role = sessionStorage.getItem("role");
+  const accessToken = sessionStorage.getItem("accessToken");
+  const role = sessionStorage.getItem("role");
 
-    if (!accessToken) {
-        return <Navigate to="/login" />;
-    }
+  if (!accessToken) {
+    return <Navigate to="/login" />;
+  }
 
-    if (requiredRole && role !== requiredRole) {
-        return <Navigate to="/" />;
-    }
+  if (requiredRole && !hasRole(role, requiredRole)) {
+    return <Navigate to="/home" replace />;
+  }
 
-    return children;
+  return children;
 }

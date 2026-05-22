@@ -50,4 +50,31 @@ public class AuthController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Emaili eshte i detyrueshem"));
+        }
+        return ResponseEntity.ok(authService.forgotPassword(email));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        try {
+            String token = body.get("token");
+            String password = body.get("password");
+            if (token == null || token.isBlank()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Token mungon"));
+            }
+            authService.resetPassword(token, password);
+            return ResponseEntity.ok(Map.of("message", "Fjalëkalimi u ndryshua me sukses"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 }

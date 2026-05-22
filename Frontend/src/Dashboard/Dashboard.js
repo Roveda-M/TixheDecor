@@ -18,9 +18,11 @@ const crudConfigs = {
       { key: 'email', label: 'Email', type: 'email' },
       { key: 'phone', label: 'Telefoni', type: 'text' },
       { key: 'address', label: 'Adresa', type: 'text' },
+      { key: 'status', label: 'Statusi', type: 'text' },
+      { key: 'lloji', label: 'Lloji', type: 'text' },
     ],
     initialData: [],
-
+    enableFilters: true,
   },
   projects: {
     id: 'projects',
@@ -28,13 +30,14 @@ const crudConfigs = {
     icon: <FiBriefcase />,
     columns: [
       { key: 'title', label: 'Titulli i Projektit', type: 'text' },
-      { key: 'client', label: 'Klienti', type: 'text' },
-      { key: 'date', label: 'Data', type: 'date' },
-      { key: 'status', label: 'Statusi', type: 'select', options: ['Në Pritje', 'Aktiv', 'Përfunduar'] },
+      { key: 'clientId', label: 'ID Klienti', type: 'number', tableKey: 'client' },
+      { key: 'date', label: 'Data fillimit', type: 'date' },
+      { key: 'endDate', label: 'Data mbarimit', type: 'date' },
+      { key: 'budget', label: 'Buxheti (€)', type: 'number' },
+      { key: 'location', label: 'Lokacioni', type: 'text' },
+      { key: 'status', label: 'Statusi', type: 'text' },
     ],
-    initialData: [
-      { id: '1', title: 'Dasma e Artës', client: 'Arta Hoxha', date: '2026-06-15', status: 'Aktiv' },
-    ]
+    initialData: [],
   },
   employees: {
     id: 'employees',
@@ -86,7 +89,7 @@ const crudConfigs = {
       { key: 'task', label: 'Përshkrimi i Detyrës', type: 'text' },
       { key: 'project', label: 'Projekti', type: 'text' },
       { key: 'assigned', label: 'Caktuar Për', type: 'text' },
-      { key: 'status', label: 'Statusi', type: 'select', options: ['Për t\'u bërë', 'Në proces', 'Përfunduar'] },
+      { key: 'status', label: 'Statusi', type: 'text' },
     ],
     initialData: [
       { id: '1', task: 'Rregullimi i Harkut të Luleve', project: 'Dasma e Artës', assigned: 'Blerim Gashi', status: 'Në proces' },
@@ -112,13 +115,13 @@ const crudConfigs = {
     icon: <FiFileText />,
     columns: [
       { key: 'invoiceNo', label: 'Nr. Faturës', type: 'text' },
-      { key: 'client', label: 'Klienti', type: 'text' },
+      { key: 'clientId', label: 'ID Klienti', type: 'number', tableKey: 'client' },
+      { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project' },
       { key: 'amount', label: 'Shuma Totale (€)', type: 'number' },
-      { key: 'status', label: 'Statusi', type: 'select', options: ['E Paguar', 'E Papaguar', 'Pjesërisht'] },
+      { key: 'paymentMethod', label: 'Metoda e pagesës', type: 'text' },
+      { key: 'status', label: 'Statusi i pagesës', type: 'text' },
     ],
-    initialData: [
-      { id: '1', invoiceNo: 'INV-2026-001', client: 'Arta Hoxha', amount: '2500', status: 'E Papaguar' },
-    ]
+    initialData: [],
   },
   photos: {
     id: 'photos',
@@ -138,13 +141,12 @@ const crudConfigs = {
     title: 'Vlerësimet e Klientëve',
     icon: <FiStar />,
     columns: [
-      { key: 'client', label: 'Klienti', type: 'text' },
-      { key: 'project', label: 'Projekti', type: 'text' },
-      { key: 'rating', label: 'Vlerësimi (1-5)', type: 'select', options: ['1', '2', '3', '4', '5'] },
+      { key: 'clientId', label: 'ID Klienti', type: 'number', tableKey: 'client' },
+      { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project' },
+      { key: 'rating', label: 'Vlerësimi (1-5)', type: 'number' },
       { key: 'comment', label: 'Koment', type: 'textarea' },
     ],
     initialData: [],
-    disableAdd: true
   }
 };
 
@@ -258,6 +260,7 @@ export default function Dashboard() {
               columns={activeConfig.columns}
               initialData={activeConfig.initialData}
               disableAdd={activeConfig.disableAdd}
+              enableFilters={activeConfig.enableFilters}
             />
           </motion.div>
         </div>

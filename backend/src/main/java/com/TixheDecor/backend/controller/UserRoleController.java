@@ -1,7 +1,7 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.UserRole;
-import com.TixheDecor.backend.repository.UserRoleRepository;
+import com.TixheDecor.backend.service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,46 +14,42 @@ import java.util.List;
 public class UserRoleController {
 
     @Autowired
-    private UserRoleRepository userRoleRepository;
+    private UserRoleService userRoleService;
+
     @GetMapping
     public List<UserRole> getAll() {
-        return userRoleRepository.findAll();
+        return userRoleService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserRole> getById(@PathVariable Integer id) {
-        return userRoleRepository.findById(id)
+    public ResponseEntity<UserRole> getById(@PathVariable Long id) {
+        return userRoleService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/user/{userId}")
     public List<UserRole> getByUser(@PathVariable Long userId) {
-        return userRoleRepository.findByUserId(userId);
+        return userRoleService.getByUser(userId);
     }
 
     @PostMapping
     public UserRole create(@RequestBody UserRole userRole) {
-        return userRoleRepository.save(userRole);
+        return userRoleService.create(userRole);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserRole> update(@PathVariable Integer id, @RequestBody UserRole userRole) {
-        if (!userRoleRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        userRole.setId(id.longValue());
-        return ResponseEntity.ok(userRoleRepository.save(userRole));
+    public ResponseEntity<UserRole> update(@PathVariable Long id, @RequestBody UserRole userRole) {
+        return userRoleService.update(id, userRole)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (!userRoleRepository.existsById(id)) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        if (!userRoleService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        userRoleRepository.deleteById(id);
         return ResponseEntity.ok("Roli i perdoruesit u fshi me sukses!");
     }
 }

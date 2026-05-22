@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api } from "./api";
+import { api, formatApiError, hasRole } from "./api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -30,9 +30,6 @@ export default function Login() {
       alert("Fjalëkalimi është i zbrazët");
       return;
     }
-    <Link to="/forgot-password" className="text-sm underline">
-      Forgot password?
-    </Link>
 
     setLoading(true);
     try {
@@ -42,13 +39,13 @@ export default function Login() {
       sessionStorage.setItem("accessToken", data.accessToken);
       sessionStorage.setItem("role", data.role);
 
-      if (data.role === "ROLE_ADMIN") {
+      if (hasRole(data.role, "ROLE_ADMIN")) {
         navigate("/dashboard", { replace: true });
       } else {
         navigate("/home", { replace: true });
       }
     } catch (error) {
-      alert(error.message || "Login dështoi");
+      alert(formatApiError(error));
     } finally {
       setLoading(false);
     }
@@ -84,6 +81,12 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
               />
+            </div>
+
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-sm underline">
+                Forgot password?
+              </Link>
             </div>
 
             <button

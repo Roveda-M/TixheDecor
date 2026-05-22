@@ -5,6 +5,7 @@ import com.TixheDecor.backend.service.KlientiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -32,16 +33,18 @@ public class KlientiController {
         return klientiService.create(klienti);
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<Klienti> update(@PathVariable Integer id,
-                                          @RequestBody Klienti klienti) {
-        return ResponseEntity.ok(klientiService.update(id, klienti));
+    public ResponseEntity<Klienti> update(@PathVariable Integer id, @RequestBody Klienti klienti) {
+        return klientiService.update(id, klienti)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        klientiService.delete(id);
+        if (!klientiService.delete(id)) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok("Klienti u fshi me sukses!");
     }
 

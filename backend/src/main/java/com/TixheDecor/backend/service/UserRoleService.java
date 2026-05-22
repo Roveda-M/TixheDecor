@@ -18,7 +18,7 @@ public class UserRoleService {
         return userRoleRepository.findAll();
     }
 
-    public Optional<UserRole> getById(Integer id) {
+    public Optional<UserRole> getById(Long id) {
         return userRoleRepository.findById(id);
     }
 
@@ -30,20 +30,18 @@ public class UserRoleService {
         return userRoleRepository.save(userRole);
     }
 
-    public Optional<UserRole> update(Integer id, UserRole userRole) {
+    public Optional<UserRole> update(Long id, UserRole userRole) {
         if (!userRoleRepository.existsById(id)) {
             return Optional.empty();
         }
-
-        userRole.setId(id.longValue());
+        userRole.setId(id);
         return Optional.of(userRoleRepository.save(userRole));
     }
 
-    public boolean delete(Integer id) {
+    public boolean delete(Long id) {
         if (!userRoleRepository.existsById(id)) {
             return false;
         }
-
         userRoleRepository.deleteById(id);
         return true;
     }

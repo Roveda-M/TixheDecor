@@ -1,5 +1,18 @@
 import axiosInstance from "./axiosInstance";
 
+export const formatApiError = (error) => {
+  const data = error.response?.data;
+  if (typeof data === "string") return data;
+  if (data?.error) return data.error;
+  if (data?.message) return data.message;
+  return error.message || "Gabim i panjohur";
+};
+
+export const hasRole = (roles, roleName) => {
+  if (!roles) return false;
+  return roles.split(",").some((r) => r.trim() === roleName);
+};
+
 export const api = {
   // AUTH
   login: async (email, password) => {
@@ -12,72 +25,104 @@ export const api = {
     return res.data;
   },
 
-  // KLIENTI
+  forgotPassword: async (email) => {
+    const res = await axiosInstance.post("/auth/forgot-password", { email });
+    return res.data;
+  },
+
+  resetPassword: async (token, password) => {
+    const res = await axiosInstance.post("/auth/reset-password", {
+      token,
+      password,
+    });
+    return res.data;
+  },
+
+  // KLIENTI — backend: /api/klienti
   getKlientet: async () => {
     const res = await axiosInstance.get("/klienti");
     return res.data;
   },
+
+  getKlientetByStatusi: async (statusi) => {
+    const res = await axiosInstance.get(
+      `/klienti/statusi/${encodeURIComponent(statusi)}`
+    );
+    return res.data;
+  },
+
   createKlient: async (data) => {
     const res = await axiosInstance.post("/klienti", data);
     return res.data;
   },
+
   updateKlient: async (id, data) => {
     const res = await axiosInstance.put(`/klienti/${id}`, data);
     return res.data;
   },
+
   deleteKlient: async (id) => {
     await axiosInstance.delete(`/klienti/${id}`);
   },
 
-  // PROJEKTI
+  // PROJEKTI — backend: /api/projektet (jo /projekti)
   getProjektet: async () => {
-    const res = await axiosInstance.get("/projekti");
+    const res = await axiosInstance.get("/projektet");
     return res.data;
   },
+
   createProjekt: async (data) => {
-    const res = await axiosInstance.post("/projekti", data);
+    const res = await axiosInstance.post("/projektet", data);
     return res.data;
   },
+
   updateProjekt: async (id, data) => {
-    const res = await axiosInstance.put(`/projekti/${id}`, data);
+    const res = await axiosInstance.put(`/projektet/${id}`, data);
     return res.data;
   },
+
   deleteProjekt: async (id) => {
-    await axiosInstance.delete(`/projekti/${id}`);
+    await axiosInstance.delete(`/projektet/${id}`);
   },
 
-  // FATURA
+  // FATURA — backend: /api/faturat (jo /fatura)
   getFaturat: async () => {
-    const res = await axiosInstance.get("/fatura");
+    const res = await axiosInstance.get("/faturat");
     return res.data;
-  },
-  createFatura: async (data) => {
-    const res = await axiosInstance.post("/fatura", data);
-    return res.data;
-  },
-  updateFatura: async (id, data) => {
-    const res = await axiosInstance.put(`/fatura/${id}`, data);
-    return res.data;
-  },
-  deleteFatura: async (id) => {
-    await axiosInstance.delete(`/fatura/${id}`);
   },
 
-  // VLERESIMI
+  createFatura: async (data) => {
+    const res = await axiosInstance.post("/faturat", data);
+    return res.data;
+  },
+
+  updateFatura: async (id, data) => {
+    const res = await axiosInstance.put(`/faturat/${id}`, data);
+    return res.data;
+  },
+
+  deleteFatura: async (id) => {
+    await axiosInstance.delete(`/faturat/${id}`);
+  },
+
+  // VLERESIMI — backend: /api/vleresimet (jo /vleresimi)
   getVleresimet: async () => {
-    const res = await axiosInstance.get("/vleresimi");
+    const res = await axiosInstance.get("/vleresimet");
     return res.data;
   },
+
   createVleresim: async (data) => {
-    const res = await axiosInstance.post("/vleresimi", data);
+    const res = await axiosInstance.post("/vleresimet", data);
     return res.data;
   },
+
   updateVleresim: async (id, data) => {
-    const res = await axiosInstance.put(`/vleresimi/${id}`, data);
+    const res = await axiosInstance.put(`/vleresimet/${id}`, data);
     return res.data;
   },
+
   deleteVleresim: async (id) => {
-    await axiosInstance.delete(`/vleresimi/${id}`);
+    await axiosInstance.delete(`/vleresimet/${id}`);
   },
 
   // PUNETORI
@@ -85,28 +130,58 @@ export const api = {
     const res = await axiosInstance.get("/punetoret");
     return res.data;
   },
+
   createWorker: async (data) => {
     const res = await axiosInstance.post("/punetoret", data);
     return res.data;
   },
+
   updateWorker: async (id, data) => {
     const res = await axiosInstance.put(`/punetoret/${id}`, data);
     return res.data;
   },
+
   deleteWorker: async (id) => {
     await axiosInstance.delete(`/punetoret/${id}`);
   },
-  forgotPassword: async (email) => {
-    const res = await axiosInstance.post("/auth/forgot-password", {
-      email,
-    });
+
+  // DETYRAT (kolegët — nëse përdoren në dashboard)
+  getTasks: async () => {
+    const res = await axiosInstance.get("/detyrimet-projektit");
     return res.data;
   },
-  resetPassword: async (token, password) => {
-    const res = await axiosInstance.post("/auth/reset-password", {
-      token,
-      password,
-    });
+
+  createTask: async (data) => {
+    const res = await axiosInstance.post("/detyrimet-projektit", data);
     return res.data;
+  },
+
+  updateTask: async (id, data) => {
+    const res = await axiosInstance.put(`/detyrimet-projektit/${id}`, data);
+    return res.data;
+  },
+
+  deleteTask: async (id) => {
+    await axiosInstance.delete(`/detyrimet-projektit/${id}`);
+  },
+
+  // FOTOGRAFITE
+  getPhotos: async () => {
+    const res = await axiosInstance.get("/fotografite");
+    return res.data;
+  },
+
+  createPhoto: async (data) => {
+    const res = await axiosInstance.post("/fotografite", data);
+    return res.data;
+  },
+
+  updatePhoto: async (id, data) => {
+    const res = await axiosInstance.put(`/fotografite/${id}`, data);
+    return res.data;
+  },
+
+  deletePhoto: async (id) => {
+    await axiosInstance.delete(`/fotografite/${id}`);
   },
 };

@@ -1,7 +1,7 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.Projekti;
-import com.TixheDecor.backend.repository.ProjektiRepository;
+import com.TixheDecor.backend.service.ProjektiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,52 +14,47 @@ import java.util.List;
 public class ProjektiController {
 
     @Autowired
-    private ProjektiRepository projektiRepository;
+    private ProjektiService projektiService;
 
     @GetMapping
     public List<Projekti> getAll() {
-        return projektiRepository.findAll();
+        return projektiService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Projekti> getById(@PathVariable Integer id) {
-        return projektiRepository.findById(id)
+        return projektiService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/klienti/{klientiId}")
     public List<Projekti> getByKlienti(@PathVariable Integer klientiId) {
-        return projektiRepository.findByKlientiKlientiId(klientiId);
+        return projektiService.getByKlienti(klientiId);
     }
 
     @GetMapping("/statusi/{statusi}")
     public List<Projekti> getByStatusi(@PathVariable String statusi) {
-        return projektiRepository.findByStatusi(statusi);
+        return projektiService.getByStatusi(statusi);
     }
 
     @PostMapping
     public Projekti create(@RequestBody Projekti projekti) {
-        return projektiRepository.save(projekti);
+        return projektiService.create(projekti);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Projekti> update(@PathVariable Integer id, @RequestBody Projekti projekti) {
-        if (!projektiRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        projekti.setProjektiId(id);
-        return ResponseEntity.ok(projektiRepository.save(projekti));
+        return projektiService.update(id, projekti)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (!projektiRepository.existsById(id)) {
+        if (!projektiService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        projektiRepository.deleteById(id);
         return ResponseEntity.ok("Projekti u fshi me sukses!");
     }
 }

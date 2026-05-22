@@ -19,5 +19,9 @@ public class RefreshToken {
 
     private String token;
     private LocalDateTime expiresAt;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     private Boolean isRevoked;
 }

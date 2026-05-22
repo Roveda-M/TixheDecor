@@ -3,7 +3,7 @@ import Header from "./Header";
 import ProtectedRoute from "./ProtectedRoute";
 import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
-import Home from "./Home";
+import HomeRoute from "./HomeRoute";
 import About from "./About";
 import Footer from "./Footer";
 import Contact from "./Contact";
@@ -34,7 +34,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/home" element={<><Home /><Footer /></>} />
+        <Route path="/home" element={<HomeRoute />} />
         <Route path="/about" element={<><About /><Footer /></>} />
         <Route path="/contact" element={<><Contact /><Footer /></>} />
         <Route path="/wedding" element={<><Wedding /><Footer /></>} />

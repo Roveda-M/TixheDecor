@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "/api",
     headers: {
         "Content-Type": "application/json",
     },
@@ -25,23 +25,31 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        const status = error.response?.status;
+        const needsAuth = status === 401 || status === 403;
+
+        if (needsAuth && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = localStorage.getItem("refreshToken");
                 if (!refreshToken) {
+                    sessionStorage.removeItem("accessToken");
+                    sessionStorage.removeItem("role");
                     window.location.href = "/login";
                     return Promise.reject(error);
                 }
 
                 const res = await axios.post(
-                    "http://localhost:8080/api/auth/refresh",
+                    "/api/auth/refresh",
                     { refreshToken }
                 );
 
                 const newAccessToken = res.data.accessToken;
                 sessionStorage.setItem("accessToken", newAccessToken);
+                if (res.data.role) {
+                    sessionStorage.setItem("role", res.data.role);
+                }
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
                 return axiosInstance(originalRequest);

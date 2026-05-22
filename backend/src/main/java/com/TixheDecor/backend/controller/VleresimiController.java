@@ -1,7 +1,7 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.Vleresimi;
-import com.TixheDecor.backend.repository.VleresimiRepository;
+import com.TixheDecor.backend.service.VleresimiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,52 +14,47 @@ import java.util.List;
 public class VleresimiController {
 
     @Autowired
-    private VleresimiRepository vleresimiRepository;
+    private VleresimiService vleresimiService;
 
     @GetMapping
     public List<Vleresimi> getAll() {
-        return vleresimiRepository.findAll();
+        return vleresimiService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Vleresimi> getById(@PathVariable Integer id) {
-        return vleresimiRepository.findById(id)
+        return vleresimiService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/projekti/{projektiId}")
     public List<Vleresimi> getByProjekti(@PathVariable Integer projektiId) {
-        return vleresimiRepository.findByProjektiProjektiId(projektiId);
+        return vleresimiService.getByProjekti(projektiId);
     }
 
     @GetMapping("/klienti/{klientiId}")
     public List<Vleresimi> getByKlienti(@PathVariable Integer klientiId) {
-        return vleresimiRepository.findByKlientiKlientiId(klientiId);
+        return vleresimiService.getByKlienti(klientiId);
     }
 
     @PostMapping
     public Vleresimi create(@RequestBody Vleresimi vleresimi) {
-        return vleresimiRepository.save(vleresimi);
+        return vleresimiService.create(vleresimi);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Vleresimi> update(@PathVariable Integer id, @RequestBody Vleresimi vleresimi) {
-        if (!vleresimiRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        vleresimi.setVleresimiId(id);
-        return ResponseEntity.ok(vleresimiRepository.save(vleresimi));
+        return vleresimiService.update(id, vleresimi)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (!vleresimiRepository.existsById(id)) {
+        if (!vleresimiService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        vleresimiRepository.deleteById(id);
         return ResponseEntity.ok("Vleresimi u fshi me sukses!");
     }
 }
