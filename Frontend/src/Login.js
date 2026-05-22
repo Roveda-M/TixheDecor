@@ -30,6 +30,9 @@ export default function Login() {
       alert("Fjalëkalimi është i zbrazët");
       return;
     }
+    <Link to="/forgot-password" className="text-sm underline">
+      Forgot password?
+    </Link>
 
     setLoading(true);
     try {
@@ -40,9 +43,9 @@ export default function Login() {
       sessionStorage.setItem("role", data.role);
 
       if (data.role === "ROLE_ADMIN") {
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       } else {
-        navigate("/");
+        navigate("/home", { replace: true });
       }
     } catch (error) {
       alert(error.message || "Login dështoi");

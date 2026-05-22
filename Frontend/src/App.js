@@ -1,7 +1,8 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation,Navigate } from "react-router-dom";
 import Header from "./Header";
 import ProtectedRoute from "./ProtectedRoute";
-
+import ForgotPassword from "./ForgotPassword";
+import ResetPassword from "./ResetPassword";
 import Home from "./Home";
 import About from "./About";
 import Footer from "./Footer";
@@ -30,7 +31,10 @@ export default function App() {
       {!hideHeader && <Header />}
 
       <Routes>
-        <Route path="/" element={<><Home /><Footer /></>} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/home" element={<><Home /><Footer /></>} />
         <Route path="/about" element={<><About /><Footer /></>} />
         <Route path="/contact" element={<><Contact /><Footer /></>} />
         <Route path="/wedding" element={<><Wedding /><Footer /></>} />

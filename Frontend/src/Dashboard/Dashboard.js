@@ -20,7 +20,7 @@ const crudConfigs = {
       { key: 'address', label: 'Adresa', type: 'text' },
     ],
     initialData: [],
-    disableAdd: true
+
   },
   projects: {
     id: 'projects',
