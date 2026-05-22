@@ -1,7 +1,7 @@
 package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.Fotografia;
-import com.TixheDecor.backend.repository.FotografiaRepository;
+import com.TixheDecor.backend.service.FotografiaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,52 +14,47 @@ import java.util.List;
 public class FotografiaController {
 
     @Autowired
-    private FotografiaRepository fotografiaRepository;
+    private FotografiaService fotografiaService;
 
     @GetMapping
     public List<Fotografia> getAll() {
-        return fotografiaRepository.findAll();
+        return fotografiaService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Fotografia> getById(@PathVariable Integer id) {
-        return fotografiaRepository.findById(id)
+        return fotografiaService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/projekti/{projektiId}")
     public List<Fotografia> getByProjekti(@PathVariable Integer projektiId) {
-        return fotografiaRepository.findByProjektiProjektiId(projektiId);
+        return fotografiaService.getByProjekti(projektiId);
     }
 
     @GetMapping("/lloji/{lloji}")
     public List<Fotografia> getByLloji(@PathVariable String lloji) {
-        return fotografiaRepository.findByLloji(lloji);
+        return fotografiaService.getByLloji(lloji);
     }
 
     @PostMapping
     public Fotografia create(@RequestBody Fotografia fotografia) {
-        return fotografiaRepository.save(fotografia);
+        return fotografiaService.create(fotografia);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Fotografia> update(@PathVariable Integer id, @RequestBody Fotografia fotografia) {
-        if (!fotografiaRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        fotografia.setFotografiaId(id);
-        return ResponseEntity.ok(fotografiaRepository.save(fotografia));
+        return fotografiaService.update(id, fotografia)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (!fotografiaRepository.existsById(id)) {
+        if (!fotografiaService.delete(id)) {
             return ResponseEntity.notFound().build();
         }
-
-        fotografiaRepository.deleteById(id);
         return ResponseEntity.ok("Fotografia u fshi me sukses!");
     }
 }
