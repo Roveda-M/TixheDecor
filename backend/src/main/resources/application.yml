@@ -17,6 +17,7 @@ spring:
 jwt:
   secret: dekorimi_secret_key_2024_very_long_string_minimum_32_chars
   expiration: 86400000
+  refresh-expiration: 604800000
 
 server:
-  port: 3306
+  port: 8080
