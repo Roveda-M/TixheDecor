@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private static final int MAX_FAILED_ATTEMPTS = 5;
+    private static final int MAX_FAILED_ATTEMPTS = 10;
 
     @Autowired
     private UserRepository userRepository;

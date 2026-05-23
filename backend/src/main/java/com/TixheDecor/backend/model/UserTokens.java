@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "UserTokens")
 public class UserTokens {
-
+    @Column(name = "login_provider")
+    private String loginProvider = "LOCAL";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer tokenId;

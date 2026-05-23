@@ -190,9 +190,12 @@ export default function Dashboard() {
         } absolute lg:relative`}
       >
         <div className="p-6 flex items-center justify-between border-b border-gray-100 min-w-[280px]">
-          <Link to="/" className="text-lg sm:text-2xl tracking-[4px] font-light text-[#2b2b2b]" style={{ fontFamily: "Playfair Display, serif" }}>
+          <h1
+              className="text-lg sm:text-2xl tracking-[4px] font-light text-[#2b2b2b]"
+              style={{ fontFamily: "Playfair Display, serif" }}
+          >
             TIXHE DECOR
-          </Link>
+          </h1>
           <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg">
             <FiX size={20} />
           </button>
@@ -225,7 +228,7 @@ export default function Dashboard() {
 
         <div className="p-4 border-t border-gray-100 min-w-[280px] space-y-1">
           <Link
-              to="/"
+              to="/home"
               className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-[#e6dfd3] hover:text-[#2b2b2b] rounded-xl transition-colors"
           >
             <FiLogOut className="text-gray-400" />

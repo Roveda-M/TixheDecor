@@ -1,5 +1,6 @@
 package com.TixheDecor.backend.controller;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.TixheDecor.backend.dto.LoginRequest;
 import com.TixheDecor.backend.dto.RegisterRequest;
 import com.TixheDecor.backend.service.AuthService;
@@ -8,14 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
+@Tag(name = "Authentication", description = "Login, Register, Refresh Token")
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
+    @Operation(summary = "Login", description = "Kyçje me email dhe fjalëkalim")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
@@ -29,6 +32,8 @@ public class AuthController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+
+    @Operation(summary = "Register", description = "Regjistrim i përdoruesit të ri")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
@@ -40,6 +45,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Refresh Token", description = "Rinovim i access token")
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
         try {
@@ -51,6 +57,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Forgot Password", description = "Kërkesë për rivendosje fjalëkalimi")
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
         String email = body.get("email");
@@ -58,9 +65,15 @@ public class AuthController {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Emaili eshte i detyrueshem"));
         }
-        return ResponseEntity.ok(authService.forgotPassword(email));
+        try {
+            return ResponseEntity.ok(authService.forgotPassword(email));
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
+    @Operation(summary = "Reset Password", description = "Rivendosje e fjalëkalimit")
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
         try {
