@@ -191,4 +191,67 @@ export const api = {
   deletePhoto: async (id) => {
     await axiosInstance.delete(`/fotografite/${id}`);
   },
+
+  // USERS / ROLES
+  getUsers: async () => {
+    const res = await axiosInstance.get("/users");
+    return res.data;
+  },
+
+  createUser: async (data) => {
+    const res = await axiosInstance.post("/users", data);
+    return res.data;
+  },
+
+  updateUser: async (id, data) => {
+    const res = await axiosInstance.put(`/users/${id}`, data);
+    return res.data;
+  },
+
+  deleteUser: async (id) => {
+    await axiosInstance.delete(`/users/${id}`);
+  },
+
+  getRoles: async () => {
+    const res = await axiosInstance.get("/roles");
+    return res.data;
+  },
+
+  createRole: async (data) => {
+    const res = await axiosInstance.post("/roles", data);
+    return res.data;
+  },
+
+  updateRole: async (id, data) => {
+    const res = await axiosInstance.put(`/roles/${id}`, data);
+    return res.data;
+  },
+
+  deleteRole: async (id) => {
+    await axiosInstance.delete(`/roles/${id}`);
+  },
+
+  getUserRoles: async () => {
+    const res = await axiosInstance.get("/user-roles");
+    return res.data;
+  },
+
+  createUserRole: async (data) => {
+    const res = await axiosInstance.post("/user-roles", data);
+    return res.data;
+  },
+
+  updateUserRole: async (id, data) => {
+    const res = await axiosInstance.put(`/user-roles/${id}`, data);
+    return res.data;
+  },
+
+  deleteUserRole: async (id) => {
+    await axiosInstance.delete(`/user-roles/${id}`);
+  },
+
+  getMaterialUsage: async () => {
+    const res = await axiosInstance.get("/materialet-projektit");
+    return res.data;
+  },
 };

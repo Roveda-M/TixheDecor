@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiUsers, FiBriefcase, FiUserCheck, FiBox, 
@@ -7,6 +7,7 @@ import {
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Tabela from './Tabela';
+import { api, formatApiError } from '../api';
 
 const crudConfigs = {
   clients: {
@@ -157,6 +158,66 @@ const crudConfigs = {
       { id: '1', project: 'Dasma e Artës', description: 'Dekori i tavolinës kryesore', url: 'tavolina1.jpg' },
     ]
   },
+  users: {
+    id: 'users',
+    title: 'Përdoruesit',
+    icon: <FiUsers />,
+    columns: [
+      { key: 'name', label: 'Emri i Plotë', type: 'text' },
+      { key: 'email', label: 'Email', type: 'email' },
+      { key: 'password', label: 'Fjalëkalimi', type: 'password', formOnly: true, required: false },
+      { key: 'phone', label: 'Telefoni', type: 'text', required: false },
+      { key: 'roles', label: 'Rolet', type: 'text', required: false },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        options: [
+          { value: 'Aktiv', label: 'Aktiv' },
+          { value: 'Joaktiv', label: 'Joaktiv' },
+        ],
+      },
+      {
+        key: 'emailConfirmed',
+        label: 'Email i konfirmuar',
+        type: 'select',
+        options: [
+          { value: 'Jo', label: 'Jo' },
+          { value: 'Po', label: 'Po' },
+        ],
+      },
+    ],
+    initialData: [],
+  },
+  roles: {
+    id: 'roles',
+    title: 'Rolet',
+    icon: <FiUserCheck />,
+    columns: [
+      { key: 'name', label: 'Emërtimi', type: 'text' },
+      { key: 'description', label: 'Përshkrimi', type: 'text', required: false },
+      { key: 'normalizedName', label: 'Emri i normalizuar', type: 'text', required: false },
+    ],
+    initialData: [],
+  },
+  userRoles: {
+    id: 'userRoles',
+    title: 'Rolet e Përdoruesve',
+    icon: <FiCheckSquare />,
+    columns: [
+      { key: 'userId', label: 'ID Përdoruesi', type: 'number', tableKey: 'user' },
+      { key: 'roleId', label: 'ID Roli', type: 'number', tableKey: 'role' },
+    ],
+    initialData: [],
+  },
+  stats: {
+    id: 'stats',
+    title: 'Statistikat',
+    icon: <FiStar />,
+    columns: [],
+    initialData: [],
+    disableAdd: true,
+  },
   reviews: {
     id: 'reviews',
     title: 'Vlerësimet e Klientëve',
@@ -170,6 +231,89 @@ const crudConfigs = {
     initialData: [],
   }
 };
+
+function DashboardStats() {
+  const [stats, setStats] = useState({
+    totalInvoices: 0,
+    activeProjects: 0,
+    topMaterial: 'Nuk ka të dhëna',
+    averageRating: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const [invoices, projects, materialUsage, reviews] = await Promise.all([
+          api.getFaturat(),
+          api.getProjektet(),
+          api.getMaterialUsage(),
+          api.getVleresimet(),
+        ]);
+
+        const totalInvoices = invoices.reduce((sum, invoice) => sum + Number(invoice.shumaTotale || 0), 0);
+        const activeProjects = projects.filter((project) => {
+          const status = (project.statusi || '').toLowerCase();
+          return status.includes('aktiv') || status.includes('progres');
+        }).length;
+
+        const materialTotals = materialUsage.reduce((totals, item) => {
+          const name = item.materiali?.emri || 'Material pa emër';
+          totals[name] = (totals[name] || 0) + Number(item.sasia || 0);
+          return totals;
+        }, {});
+        const topMaterialEntry = Object.entries(materialTotals).sort((a, b) => b[1] - a[1])[0];
+
+        const ratedReviews = reviews.filter((review) => review.piket != null);
+        const averageRating = ratedReviews.length
+          ? ratedReviews.reduce((sum, review) => sum + Number(review.piket || 0), 0) / ratedReviews.length
+          : 0;
+
+        setStats({
+          totalInvoices,
+          activeProjects,
+          topMaterial: topMaterialEntry ? `${topMaterialEntry[0]} (${topMaterialEntry[1]})` : 'Nuk ka të dhëna',
+          averageRating,
+        });
+        setError('');
+      } catch (err) {
+        setError(formatApiError(err));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
+
+  const cards = [
+    { label: 'Shuma totale e faturave', value: `${stats.totalInvoices.toFixed(2)} €` },
+    { label: 'Projektet aktive', value: stats.activeProjects },
+    { label: 'Materiali më i përdorur', value: stats.topMaterial },
+    { label: 'Vlerësimi mesatar', value: stats.averageRating.toFixed(1) },
+  ];
+
+  return (
+    <div className="bg-[#efe9df] rounded-xl shadow-sm border border-[#c9c1b5] p-6">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Statistikat</h2>
+      {isLoading ? (
+        <div className="p-8 text-center text-gray-500">Duke ngarkuar të dhënat...</div>
+      ) : error ? (
+        <div className="p-4 rounded-lg border border-red-200 bg-red-50 text-red-600">{error}</div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {cards.map((card) => (
+            <div key={card.label} className="rounded-lg border border-[#c9c1b5] bg-[#f6f1e8] p-5">
+              <p className="text-sm text-gray-500 mb-2">{card.label}</p>
+              <p className="text-2xl font-semibold text-gray-800 break-words">{card.value}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('clients');
@@ -279,13 +423,17 @@ export default function Dashboard() {
             transition={{ duration: 0.2 }}
             className="max-w-7xl mx-auto"
           >
-            <Tabela
-              title={activeConfig.title}
-              columns={activeConfig.columns}
-              initialData={activeConfig.initialData}
-              disableAdd={activeConfig.disableAdd}
-              enableFilters={activeConfig.enableFilters}
-            />
+            {activeConfig.id === 'stats' ? (
+              <DashboardStats />
+            ) : (
+              <Tabela
+                title={activeConfig.title}
+                columns={activeConfig.columns}
+                initialData={activeConfig.initialData}
+                disableAdd={activeConfig.disableAdd}
+                enableFilters={activeConfig.enableFilters}
+              />
+            )}
           </motion.div>
         </div>
       </main>

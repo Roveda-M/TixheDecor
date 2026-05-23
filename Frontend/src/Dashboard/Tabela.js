@@ -56,6 +56,35 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         rendi: item.rendi ?? '',
       }));
     }
+    if (title === 'Përdoruesit') {
+      return items.map((item) => ({
+        id: item.id,
+        name: `${item.emri || ''} ${item.mbiemri || ''}`.trim(),
+        email: item.email || '',
+        phone: item.phoneNumber || '',
+        roles: Array.isArray(item.roles) ? item.roles.map((role) => role.emertimi).join(', ') : '',
+        roleIds: Array.isArray(item.roles) ? item.roles.map((role) => role.id).join(',') : '',
+        statusi: item.statusi || 'Aktiv',
+        emailConfirmed: item.emailConfirmed ? 'Po' : 'Jo',
+      }));
+    }
+    if (title === 'Rolet') {
+      return items.map((item) => ({
+        id: item.id,
+        name: item.emertimi || '',
+        description: item.pershkrimi || '',
+        normalizedName: item.normalizedName || '',
+      }));
+    }
+    if (title === 'Rolet e Përdoruesve') {
+      return items.map((item) => ({
+        id: item.id,
+        userId: item.user?.id ? String(item.user.id) : '',
+        user: item.user?.email || '',
+        roleId: item.role?.id ? String(item.role.id) : '',
+        role: item.role?.emertimi || '',
+      }));
+    }
     if (title === 'Menaxhimi i Klientëve') {
       return items.map((item) => ({
         id: item.klientiId,
@@ -158,6 +187,50 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       if (editingId) payload.fotografiaId = Number(editingId);
       return payload;
     }
+    if (title === 'Përdoruesit') {
+      const nameParts = (form.name || '').trim().split(' ');
+      const payload = {
+        emri: nameParts[0] || '',
+        mbiemri: nameParts.slice(1).join(' ') || '',
+        email: form.email || '',
+        phoneNumber: form.phone || '',
+        statusi: form.statusi || 'Aktiv',
+        emailConfirmed: form.emailConfirmed === 'Po',
+      };
+      if (form.password) payload.passwordHash = form.password;
+      if (form.roleIds) {
+        payload.roles = form.roleIds
+          .split(',')
+          .map((id) => id.trim())
+          .filter(Boolean)
+          .map((id) => ({ id: Number(id) }));
+      }
+      if (!editingId && !payload.passwordHash) {
+        throw new Error('Shkruaj fjalëkalimin për përdoruesin e ri.');
+      }
+      if (editingId) payload.id = Number(editingId);
+      return payload;
+    }
+    if (title === 'Rolet') {
+      const payload = {
+        emertimi: form.name || '',
+        pershkrimi: form.description || '',
+        normalizedName: form.normalizedName || (form.name || '').toUpperCase(),
+      };
+      if (editingId) payload.id = Number(editingId);
+      return payload;
+    }
+    if (title === 'Rolet e Përdoruesve') {
+      if (!form.userId || !form.roleId) {
+        throw new Error('Shkruaj ID ekzistuese të përdoruesit dhe rolit.');
+      }
+      const payload = {
+        user: { id: Number(form.userId) },
+        role: { id: Number(form.roleId) },
+      };
+      if (editingId) payload.id = Number(editingId);
+      return payload;
+    }
     if (title === 'Menaxhimi i Klientëve') {
       const nameParts = (form.name || '').trim().split(' ');
       const payload = {
@@ -219,6 +292,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       if (title === 'Punëtorët') items = await api.getWorkers();
       else if (title === 'Detyrat e Projekteve') items = await api.getTasks();
       else if (title === 'Fotografitë e Projekteve') items = await api.getPhotos();
+      else if (title === 'Përdoruesit') items = await api.getUsers();
+      else if (title === 'Rolet') items = await api.getRoles();
+      else if (title === 'Rolet e Përdoruesve') items = await api.getUserRoles();
       else if (title === 'Menaxhimi i Klientëve') {
         items = await api.getKlientet();
         if (filterStatus.trim()) {
@@ -310,6 +386,30 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           const created = await api.createPhoto(body);
           setData([...data, mapIncomingData(title, [created])[0]]);
         }
+      } else if (title === 'Përdoruesit') {
+        if (editingId) {
+          const updated = await api.updateUser(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createUser(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else if (title === 'Rolet') {
+        if (editingId) {
+          const updated = await api.updateRole(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createRole(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else if (title === 'Rolet e Përdoruesve') {
+        if (editingId) {
+          const updated = await api.updateUserRole(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createUserRole(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
       } else if (title === 'Menaxhimi i Klientëve') {
         if (editingId) {
           const updated = await api.updateKlient(editingId, body);
@@ -362,6 +462,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         if (title === 'Punëtorët') await api.deleteWorker(id);
         else if (title === 'Detyrat e Projekteve') await api.deleteTask(id);
         else if (title === 'Fotografitë e Projekteve') await api.deletePhoto(id);
+        else if (title === 'Përdoruesit') await api.deleteUser(id);
+        else if (title === 'Rolet') await api.deleteRole(id);
+        else if (title === 'Rolet e Përdoruesve') await api.deleteUserRole(id);
         else if (title === 'Menaxhimi i Klientëve') await api.deleteKlient(id);
         else if (title === 'Projektet e Dekorimit') await api.deleteProjekt(id);
         else if (title === 'Faturat') await api.deleteFatura(id);
