@@ -26,6 +26,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         phone: item.telefoni || '',
         salary: item.paga || 0,
         email: item.email || '',
+        specialization: item.specializimi || '',
+        hireDate: item.dataPunesimit || '',
         statusi: item.statusi || 'Aktiv',
       }));
     }
@@ -37,6 +39,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         projektiId: item.projekti ? String(item.projekti.projektiId) : '',
         assigned: item.punetori ? `${item.punetori.emri} ${item.punetori.mbiemri}` : '',
         punetoriId: item.punetori ? String(item.punetori.punetoriId) : '',
+        startDate: item.dataFillimit || '',
+        endDate: item.dataPerfundimit || '',
         status: item.statusi || "Për t'u bërë",
         prioriteti: item.prioriteti || 'Normal',
       }));
@@ -49,6 +53,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         description: item.pershkrimi || '',
         url: item.shtegu || '',
         lloji: item.lloji || '',
+        rendi: item.rendi ?? '',
       }));
     }
     if (title === 'Menaxhimi i Klientëve') {
@@ -115,7 +120,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         paga: Number(form.salary) || 0,
         email: form.email || `${emri.toLowerCase()}@tixhedecor.com`,
         statusi: form.statusi || 'Aktiv',
-        specializimi: 'Dekorim',
+        specializimi: form.specialization || 'Dekorim',
+        dataPunesimit: form.hireDate || null,
       };
       if (editingId) payload.punetoriId = Number(editingId);
       return payload;
@@ -126,6 +132,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       }
       const payload = {
         pershkrimi: form.task || '',
+        dataFillimit: form.startDate || null,
+        dataPerfundimit: form.endDate || null,
         statusi: form.status || "Për t'u bërë",
         prioriteti: form.prioriteti || 'Normal',
         projekti: { projektiId: Number(form.projektiId) },
@@ -139,7 +147,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         pershkrimi: form.description || '',
         shtegu: (form.url || '').trim(),
         lloji: (form.lloji || 'wedding').trim().toLowerCase(),
-        rendi: 1,
+        rendi: Number(form.rendi) || 1,
       };
       if (form.projectId) {
         payload.projekti = { projektiId: Number(form.projectId) };

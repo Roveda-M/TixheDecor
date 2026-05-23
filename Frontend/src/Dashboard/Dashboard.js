@@ -46,8 +46,11 @@ const crudConfigs = {
     columns: [
       { key: 'name', label: 'Emri i Plotë', type: 'text' },
       { key: 'role', label: 'Roli', type: 'text' },
+      { key: 'specialization', label: 'Specializimi', type: 'text' },
       { key: 'phone', label: 'Telefoni', type: 'text' },
       { key: 'salary', label: 'Paga (€)', type: 'number' },
+      { key: 'hireDate', label: 'Data e Punësimit', type: 'date' },
+      { key: 'statusi', label: 'Statusi', type: 'text' },
     ],
     initialData: [
       { id: '1', name: 'Blerim Gashi', role: 'Dekorues Kryesor', phone: '+383 45 111 222', salary: '800' },
@@ -89,6 +92,8 @@ const crudConfigs = {
       { key: 'task', label: 'Përshkrimi i Detyrës', type: 'text' },
       { key: 'projektiId', label: 'ID e Projektit', type: 'number' },
       { key: 'punetoriId', label: 'ID e Punëtorit', type: 'number' },
+      { key: 'startDate', label: 'Data fillimit', type: 'date' },
+      { key: 'endDate', label: 'Afati / Data përfundimit', type: 'date' },
       { key: 'status', label: 'Statusi', type: 'text' },
       { key: 'prioriteti', label: 'Prioriteti', type: 'text' },
     ],
@@ -129,13 +134,16 @@ const crudConfigs = {
     columns: [
       { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project', required: false },
       { key: 'description', label: 'Përshkrimi', type: 'text' },
+      { key: 'rendi', label: 'Renditja', type: 'number' },
       { key: 'photoFile', label: 'Zgjidh Foto nga Pajisja', type: 'file', formOnly: true, required: false },
       { key: 'url', label: 'Foto e Ruajtur', type: 'text', required: false },
       {
         key: 'lloji',
-        label: 'Faqja ku shfaqet',
+        label: 'Lloji / faqja ku shfaqet',
         type: 'select',
         options: [
+          { value: 'para', label: 'Para dekorimit' },
+          { value: 'pas', label: 'Pas dekorimit' },
           { value: 'wedding', label: 'Wedding' },
           { value: 'birthday', label: 'Birthday' },
           { value: 'engagement', label: 'Engagement' },
