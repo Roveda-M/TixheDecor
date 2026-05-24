@@ -1,11 +1,15 @@
 import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
+import { api, formatApiError } from "./api";
 
 export default function BrideToBe() {
     const [inviteName, setInviteName] = useState("");
     const [inviteDate, setInviteDate] = useState("");
     const [inviteTime, setInviteTime] = useState("");
+    const [eventLocation, setEventLocation] = useState("");
     const [selectedDecors, setSelectedDecors] = useState([]);
+    const [requestStatus, setRequestStatus] = useState("");
+    const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
     const cardRef = useRef(null);
 
 
@@ -31,6 +35,40 @@ export default function BrideToBe() {
             return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
         return dateString;
+    };
+
+    const handleSubmitRequest = async () => {
+        if (selectedDecors.length === 0) {
+            setRequestStatus("Zgjidh te pakten nje dekor.");
+            return;
+        }
+        if (!inviteName.trim() || !inviteDate || !inviteTime || !eventLocation.trim()) {
+            setRequestStatus("Ploteso emrin, daten, oren dhe vendin e eventit.");
+            return;
+        }
+
+        const selectedDecorText = selectedDecors
+            .map((index) => {
+                const photo = photos[index];
+                return `${photo.title.full} (${photo.url})`;
+            })
+            .join(", ");
+
+        try {
+            setIsSubmittingRequest(true);
+            await api.createBrideToBeRequest({
+                brideName: inviteName.trim(),
+                eventDate: inviteDate,
+                eventTime: inviteTime,
+                location: eventLocation.trim(),
+                selectedDecors: selectedDecorText,
+            });
+            setRequestStatus("Kerkesa u dergua me sukses. Admini do ta shohe ne dashboard.");
+        } catch (error) {
+            setRequestStatus(formatApiError(error));
+        } finally {
+            setIsSubmittingRequest(false);
+        }
     };
 
     const photos = [
@@ -183,7 +221,24 @@ export default function BrideToBe() {
                                     <input type="time" value={inviteTime} onChange={(e) => setInviteTime(e.target.value)} className="w-full border-2 border-[#ebd2da] rounded-xl lg:rounded-2xl focus:border-[#d89ba3] outline-none px-4 lg:px-5 py-3 lg:py-4 text-[#5c4a3d] bg-white/50 focus:bg-white text-base shadow-sm transition-all cursor-pointer relative z-0" />
                                 </div>
                             </div>
+                            <div className="relative group">
+                                <label className="text-[10px] font-bold text-[#a68f7c] uppercase tracking-widest absolute -top-2 lg:-top-3 left-4 lg:left-2 bg-white/90 px-1 z-10">Vendi i Eventit</label>
+                                <input type="text" placeholder="psh. Prishtine, Restaurant ..." value={eventLocation} onChange={(e) => setEventLocation(e.target.value)} className="w-full border-2 border-[#ebd2da] rounded-xl lg:rounded-2xl focus:border-[#d89ba3] outline-none px-4 lg:px-5 py-3 lg:py-4 text-[#5c4a3d] bg-white/50 focus:bg-white text-base shadow-sm transition-all relative z-0 placeholder:text-[#d7c9cc]" />
+                            </div>
                         </div>
+
+                        <button
+                            onClick={handleSubmitRequest}
+                            disabled={isSubmittingRequest}
+                            className="mt-6 lg:mt-8 w-full lg:w-fit px-8 py-4 rounded-xl lg:rounded-2xl bg-[#d89ba3] text-white font-bold uppercase tracking-[0.18em] text-[10px] sm:text-xs shadow-[0_15px_30px_rgba(216,155,163,0.3)] hover:bg-[#c9838c] hover:-translate-y-1 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            {isSubmittingRequest ? "Duke derguar..." : "Dergo Kerkesen"}
+                        </button>
+                        {requestStatus && (
+                            <p className="text-sm text-[#6b655f] bg-white/70 border border-[#ebd2da] rounded-xl px-4 py-3">
+                                {requestStatus}
+                            </p>
+                        )}
 
                         <button
                             onClick={handleDownload}

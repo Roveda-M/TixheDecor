@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiUsers, FiBriefcase, FiUserCheck, FiBox, 
   FiTruck, FiCheckSquare, FiLayers, FiFileText, 
-  FiImage, FiStar, FiLogOut, FiMenu, FiX
+  FiImage, FiStar, FiLogOut, FiMenu, FiX, FiHeart
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Tabela from './Tabela';
@@ -32,6 +32,7 @@ const crudConfigs = {
     columns: [
       { key: 'title', label: 'Titulli i Projektit', type: 'text' },
       { key: 'clientId', label: 'ID Klienti', type: 'number', tableKey: 'client' },
+      { key: 'llojiDekorimit', label: 'Lloji i Dekorit', type: 'text' },
       { key: 'date', label: 'Data fillimit', type: 'date' },
       { key: 'endDate', label: 'Data mbarimit', type: 'date' },
       { key: 'budget', label: 'Buxheti (€)', type: 'number' },
@@ -91,8 +92,8 @@ const crudConfigs = {
     icon: <FiCheckSquare />,
     columns: [
       { key: 'task', label: 'Përshkrimi i Detyrës', type: 'text' },
-      { key: 'projektiId', label: 'ID e Projektit', type: 'number' },
-      { key: 'punetoriId', label: 'ID e Punëtorit', type: 'number' },
+      { key: 'projektiId', label: 'Projekti', type: 'select', optionsSource: 'projects', tableKey: 'project' },
+      { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'assigned' },
       { key: 'startDate', label: 'Data fillimit', type: 'date' },
       { key: 'endDate', label: 'Afati / Data përfundimit', type: 'date' },
       { key: 'status', label: 'Statusi', type: 'text' },
@@ -157,6 +158,22 @@ const crudConfigs = {
     initialData: [
       { id: '1', project: 'Dasma e Artës', description: 'Dekori i tavolinës kryesore', url: 'tavolina1.jpg' },
     ]
+  },
+  brideRequests: {
+    id: 'brideRequests',
+    title: 'Kërkesat Bride To Be',
+    icon: <FiHeart />,
+    columns: [
+      { key: 'brideName', label: 'Emri', type: 'text' },
+      { key: 'eventDate', label: 'Data', type: 'date' },
+      { key: 'eventTime', label: 'Ora', type: 'time' },
+      { key: 'location', label: 'Lokacioni', type: 'text' },
+      { key: 'selectedDecors', label: 'Fotot e zgjedhura', type: 'photoLinks' },
+      { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'punetori' },
+      { key: 'statusi', label: 'Statusi', type: 'text' },
+    ],
+    initialData: [],
+    disableAdd: true,
   },
   users: {
     id: 'users',

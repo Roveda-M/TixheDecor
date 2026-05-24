@@ -8,12 +8,45 @@ const klientLabel = (k) =>
 
 const projektLabel = (p) => p.emriProjektit || `Projekt #${p.projektiId}`;
 
+const punetoriLabel = (p) =>
+  `${p.emri || ''} ${p.mbiemri || ''}`.trim() || `Punëtor #${p.punetoriId}`;
+
+const normalizeAssetUrl = (url) => {
+  const trimmed = (url || '').trim();
+  if (!trimmed) return '';
+  if (/^(https?:|blob:|data:|\/uploads\/)/i.test(trimmed)) return trimmed;
+  return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+};
+
+const parseSelectedDecorLinks = (value) => {
+  if (!value) return [];
+  const text = String(value);
+  const links = [];
+  const regex = /([^(),]+?)\s*\(([^)]+)\)/g;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    links.push({
+      title: match[1].trim(),
+      url: normalizeAssetUrl(match[2]),
+    });
+  }
+
+  return links.length
+    ? links
+    : text
+        .split(',')
+        .map((item) => ({ title: item.trim(), url: normalizeAssetUrl(item) }))
+        .filter((item) => item.title);
+};
+
 export default function Tabela({ title, columns, initialData, disableAdd, enableFilters }) {
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [lookupOptions, setLookupOptions] = useState({});
   const [filterStatus, setFilterStatus] = useState('');
   const [filterLloji, setFilterLloji] = useState('');
 
@@ -54,6 +87,19 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         url: item.shtegu || '',
         lloji: item.lloji || '',
         rendi: item.rendi ?? '',
+      }));
+    }
+    if (title === 'Kërkesat Bride To Be') {
+      return items.map((item) => ({
+        id: item.requestId,
+        brideName: item.brideName || '',
+        eventDate: item.eventDate || '',
+        eventTime: item.eventTime || '',
+        location: item.location || '',
+        selectedDecors: item.selectedDecors || '',
+        punetori: item.punetori ? punetoriLabel(item.punetori) : '',
+        punetoriId: item.punetori?.punetoriId ? String(item.punetori.punetoriId) : '',
+        statusi: item.statusi || 'PENDING',
       }));
     }
     if (title === 'Përdoruesit') {
@@ -102,6 +148,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         title: item.emriProjektit || '',
         client: item.klienti ? klientLabel(item.klienti) : '',
         clientId: item.klienti?.klientiId ? String(item.klienti.klientiId) : '',
+        llojiDekorimit: item.llojiDekorimit || '',
         date: item.dataFillimit || '',
         endDate: item.dataPerfundimit || '',
         budget: item.buxheti ?? '',
@@ -157,7 +204,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     }
     if (title === 'Detyrat e Projekteve') {
       if (!form.projektiId || !form.punetoriId) {
-        throw new Error('Shkruaj ID ekzistuese te projektit dhe punetorit.');
+        throw new Error('Zgjidh projektin dhe punetorin.');
       }
       const payload = {
         pershkrimi: form.task || '',
@@ -185,6 +232,21 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         throw new Error('Zgjidh nje foto nga pajisja.');
       }
       if (editingId) payload.fotografiaId = Number(editingId);
+      return payload;
+    }
+    if (title === 'Kërkesat Bride To Be') {
+      const payload = {
+        brideName: form.brideName || '',
+        eventDate: form.eventDate || null,
+        eventTime: form.eventTime || null,
+        location: form.location || '',
+        selectedDecors: form.selectedDecors || '',
+        statusi: form.statusi || 'PENDING',
+      };
+      if (form.punetoriId) {
+        payload.punetori = { punetoriId: Number(form.punetoriId) };
+      }
+      if (editingId) payload.requestId = Number(editingId);
       return payload;
     }
     if (title === 'Përdoruesit') {
@@ -253,6 +315,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         dataPerfundimit: form.endDate || null,
         buxheti: form.budget !== '' && form.budget != null ? Number(form.budget) : null,
         lokacioni: form.location || '',
+        llojiDekorimit: form.llojiDekorimit || '',
       };
       if (form.clientId) {
         payload.klienti = { klientiId: Number(form.clientId) };
@@ -306,6 +369,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           items = items.filter((k) => (k.lloji || '').toLowerCase().includes(q));
         }
       } else if (title === 'Projektet e Dekorimit') items = await api.getProjektet();
+      else if (title === 'Kërkesat Bride To Be') items = await api.getBrideToBeRequests();
       else if (title === 'Faturat') items = await api.getFaturat();
       else if (title === 'Vlerësimet e Klientëve') items = await api.getVleresimet();
       else items = initialData || [];
@@ -322,6 +386,50 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   useEffect(() => {
     loadData();
   }, [title, filterStatus, filterLloji]);
+
+  useEffect(() => {
+    const loadLookupOptions = async () => {
+      const sources = [...new Set(columns.map((col) => col.optionsSource).filter(Boolean))];
+      if (!sources.length) {
+        setLookupOptions({});
+        return;
+      }
+
+      try {
+        const entries = await Promise.all(
+          sources.map(async (source) => {
+            if (source === 'projects') {
+              const projects = await api.getProjektet();
+              return [
+                source,
+                projects.map((project) => ({
+                  value: String(project.projektiId),
+                  label: projektLabel(project),
+                })),
+              ];
+            }
+            if (source === 'workers') {
+              const workers = await api.getWorkers();
+              return [
+                source,
+                workers.map((worker) => ({
+                  value: String(worker.punetoriId),
+                  label: punetoriLabel(worker),
+                })),
+              ];
+            }
+            return [source, []];
+          })
+        );
+        setLookupOptions(Object.fromEntries(entries));
+      } catch (error) {
+        console.error('Gabim gjate ngarkimit te listave:', error);
+        setLookupOptions({});
+      }
+    };
+
+    loadLookupOptions();
+  }, [columns]);
 
   const getCellValue = (item, col) => {
     if (col.tableKey) return item[col.tableKey] ?? '';
@@ -385,6 +493,11 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         } else {
           const created = await api.createPhoto(body);
           setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else if (title === 'Kërkesat Bride To Be') {
+        if (editingId) {
+          const updated = await api.updateBrideToBeRequest(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
         }
       } else if (title === 'Përdoruesit') {
         if (editingId) {
@@ -462,6 +575,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         if (title === 'Punëtorët') await api.deleteWorker(id);
         else if (title === 'Detyrat e Projekteve') await api.deleteTask(id);
         else if (title === 'Fotografitë e Projekteve') await api.deletePhoto(id);
+        else if (title === 'Kërkesat Bride To Be') await api.deleteBrideToBeRequest(id);
         else if (title === 'Përdoruesit') await api.deleteUser(id);
         else if (title === 'Rolet') await api.deleteRole(id);
         else if (title === 'Rolet e Përdoruesve') await api.deleteUserRole(id);
@@ -478,6 +592,16 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   };
 
   const renderField = (col) => {
+    if (col.type === 'photoLinks') {
+      return (
+        <textarea
+          required={col.required !== false}
+          value={formData[col.key] || ''}
+          onChange={(e) => handleChange(e, col.key)}
+          className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none min-h-[120px]"
+        />
+      );
+    }
     if (col.type === 'file') {
       return (
         <input
@@ -490,14 +614,19 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       );
     }
     if (col.type === 'select') {
+      const options = col.options || lookupOptions[col.optionsSource] || [];
       return (
         <select
           required={col.required !== false}
-          value={formData[col.key] || col.options?.[0]?.value || ''}
+          value={formData[col.key] || ''}
           onChange={(e) => handleChange(e, col.key)}
+          disabled={col.optionsSource && options.length === 0}
           className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none"
         >
-          {(col.options || []).map((option) => (
+          <option value="">
+            {options.length === 0 && col.optionsSource ? 'Nuk ka të dhëna' : 'Zgjidh...'}
+          </option>
+          {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -527,6 +656,34 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   };
 
   const tableColumns = columns.filter((col) => !col.formOnly);
+
+  const renderCellValue = (item, col) => {
+    const value = getCellValue(item, col);
+
+    if (col.type === 'photoLinks') {
+      const links = parseSelectedDecorLinks(value);
+      if (!links.length) return '';
+
+      return (
+        <div className="flex flex-wrap gap-2 max-w-xs">
+          {links.map((link, index) => (
+            <a
+              key={`${link.url}-${index}`}
+              href={link.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center rounded-lg border border-[#c9c1b5] bg-[#f6f1e8] px-3 py-1 text-xs font-medium text-[#2b2b2b] hover:bg-white"
+              title={link.title}
+            >
+              Hap foton {index + 1}
+            </a>
+          ))}
+        </div>
+      );
+    }
+
+    return value;
+  };
 
   return (
     <div className="bg-[#efe9df] rounded-xl shadow-sm border border-[#c9c1b5] p-6">
@@ -609,7 +766,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                   >
                     {tableColumns.map((col) => (
                       <td key={col.key} className="p-4 text-sm text-gray-700">
-                        {getCellValue(item, col)}
+                        {renderCellValue(item, col)}
                       </td>
                     ))}
                     <td className="p-4">

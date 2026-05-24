@@ -163,6 +163,26 @@ export const api = {
     await axiosInstance.delete(`/detyrimet-projektit/${id}`);
   },
 
+  // BRIDE TO BE REQUESTS
+  getBrideToBeRequests: async () => {
+    const res = await axiosInstance.get("/bride-to-be-requests");
+    return res.data;
+  },
+
+  createBrideToBeRequest: async (data) => {
+    const res = await axiosInstance.post("/bride-to-be-requests", data);
+    return res.data;
+  },
+
+  updateBrideToBeRequest: async (id, data) => {
+    const res = await axiosInstance.put(`/bride-to-be-requests/${id}`, data);
+    return res.data;
+  },
+
+  deleteBrideToBeRequest: async (id) => {
+    await axiosInstance.delete(`/bride-to-be-requests/${id}`);
+  },
+
   // FOTOGRAFITE
   getPhotos: async () => {
     const res = await axiosInstance.get("/fotografite");
