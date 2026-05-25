@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { api, formatApiError } from './api';
 
 const BabyShower = () => {
   const [cart, setCart] = useState([]);
+  const [requestForm, setRequestForm] = useState({ name: '', date: '', time: '', location: '' });
+  const [requestStatus, setRequestStatus] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const collections = [
   { id: 1, name: "Dekor i bardhë", altName: "Stil i pastër dhe elegant", price: 250, image: "babyshower/1.jpeg" },
@@ -27,6 +31,41 @@ const BabyShower = () => {
       setCart(cart.filter(i => i.id !== item.id));
     } else {
       setCart([...cart, item]);
+    }
+  };
+
+  const updateRequestForm = (key, value) => {
+    setRequestForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleSubmitRequest = async () => {
+    if (cart.length === 0) {
+      setRequestStatus('Zgjidh të paktën një dekor.');
+      return;
+    }
+    if (!requestForm.name.trim() || !requestForm.date || !requestForm.time || !requestForm.location.trim()) {
+      setRequestStatus('Plotëso emrin, datën, orën dhe lokacionin.');
+      return;
+    }
+
+    const selectedDecorText = cart
+      .map((item) => `${item.name} (${item.image})`)
+      .join(', ');
+
+    try {
+      setIsSubmitting(true);
+      await api.createBrideToBeRequest({
+        brideName: `Baby Shower - ${requestForm.name.trim()}`,
+        eventDate: requestForm.date,
+        eventTime: requestForm.time,
+        location: requestForm.location.trim(),
+        selectedDecors: selectedDecorText,
+      });
+      setRequestStatus('Kërkesa u dërgua me sukses. Admini do t’i shohë fotot në dashboard.');
+    } catch (error) {
+      setRequestStatus(formatApiError(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -126,6 +165,19 @@ const BabyShower = () => {
               </div>
             );
           })}
+        </section>
+
+        <section className="px-6 sm:px-12 md:px-20 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 gap-4 bg-[#F8F5F1] border border-[#EADDCB] rounded-3xl p-5 sm:p-8">
+            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" placeholder="Emri" value={requestForm.name} onChange={(e) => updateRequestForm('name', e.target.value)} />
+            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" type="date" value={requestForm.date} onChange={(e) => updateRequestForm('date', e.target.value)} />
+            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" type="time" value={requestForm.time} onChange={(e) => updateRequestForm('time', e.target.value)} />
+            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" placeholder="Lokacioni" value={requestForm.location} onChange={(e) => updateRequestForm('location', e.target.value)} />
+            <button onClick={handleSubmitRequest} disabled={isSubmitting} className="sm:col-span-2 px-6 py-3 rounded-xl bg-[#C5B4A3] text-white font-bold uppercase tracking-[0.18em] text-xs disabled:opacity-60">
+              {isSubmitting ? 'Duke dërguar...' : `Dërgo kërkesën (${cart.length})`}
+            </button>
+            {requestStatus && <p className="sm:col-span-2 text-sm text-[#7A685B]">{requestStatus}</p>}
+          </div>
         </section>
       </div >
 

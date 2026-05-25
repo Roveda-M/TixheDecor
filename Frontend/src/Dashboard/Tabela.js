@@ -11,6 +11,11 @@ const projektLabel = (p) => p.emriProjektit || `Projekt #${p.projektiId}`;
 const punetoriLabel = (p) =>
   `${p.emri || ''} ${p.mbiemri || ''}`.trim() || `Punëtor #${p.punetoriId}`;
 
+const isEventRequestTitle = (title) =>
+  title === 'Kërkesat Bride To Be' || title === 'Kërkesat Baby Shower';
+
+const isBabyShowerRequest = (item) => (item.brideName || '').startsWith('Baby Shower -');
+
 const normalizeAssetUrl = (url) => {
   const trimmed = (url || '').trim();
   if (!trimmed) return '';
@@ -89,7 +94,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         rendi: item.rendi ?? '',
       }));
     }
-    if (title === 'Kërkesat Bride To Be') {
+    if (isEventRequestTitle(title)) {
       return items.map((item) => ({
         id: item.requestId,
         brideName: item.brideName || '',
@@ -234,7 +239,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       if (editingId) payload.fotografiaId = Number(editingId);
       return payload;
     }
-    if (title === 'Kërkesat Bride To Be') {
+    if (isEventRequestTitle(title)) {
       const payload = {
         brideName: form.brideName || '',
         eventDate: form.eventDate || null,
@@ -369,7 +374,12 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           items = items.filter((k) => (k.lloji || '').toLowerCase().includes(q));
         }
       } else if (title === 'Projektet e Dekorimit') items = await api.getProjektet();
-      else if (title === 'Kërkesat Bride To Be') items = await api.getBrideToBeRequests();
+      else if (isEventRequestTitle(title)) {
+        items = await api.getBrideToBeRequests();
+        items = items.filter((item) =>
+          title === 'Kërkesat Baby Shower' ? isBabyShowerRequest(item) : !isBabyShowerRequest(item)
+        );
+      }
       else if (title === 'Faturat') items = await api.getFaturat();
       else if (title === 'Vlerësimet e Klientëve') items = await api.getVleresimet();
       else items = initialData || [];
@@ -494,7 +504,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           const created = await api.createPhoto(body);
           setData([...data, mapIncomingData(title, [created])[0]]);
         }
-      } else if (title === 'Kërkesat Bride To Be') {
+      } else if (isEventRequestTitle(title)) {
         if (editingId) {
           const updated = await api.updateBrideToBeRequest(editingId, body);
           setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
@@ -575,7 +585,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         if (title === 'Punëtorët') await api.deleteWorker(id);
         else if (title === 'Detyrat e Projekteve') await api.deleteTask(id);
         else if (title === 'Fotografitë e Projekteve') await api.deletePhoto(id);
-        else if (title === 'Kërkesat Bride To Be') await api.deleteBrideToBeRequest(id);
+        else if (isEventRequestTitle(title)) await api.deleteBrideToBeRequest(id);
         else if (title === 'Përdoruesit') await api.deleteUser(id);
         else if (title === 'Rolet') await api.deleteRole(id);
         else if (title === 'Rolet e Përdoruesve') await api.deleteUserRole(id);

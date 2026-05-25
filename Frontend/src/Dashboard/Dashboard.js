@@ -175,6 +175,22 @@ const crudConfigs = {
     initialData: [],
     disableAdd: true,
   },
+  babyShowerRequests: {
+    id: 'babyShowerRequests',
+    title: 'Kërkesat Baby Shower',
+    icon: <FiHeart />,
+    columns: [
+      { key: 'brideName', label: 'Emri', type: 'text' },
+      { key: 'eventDate', label: 'Data', type: 'date' },
+      { key: 'eventTime', label: 'Ora', type: 'time' },
+      { key: 'location', label: 'Lokacioni', type: 'text' },
+      { key: 'selectedDecors', label: 'Fotot e zgjedhura', type: 'photoLinks' },
+      { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'punetori' },
+      { key: 'statusi', label: 'Statusi', type: 'text' },
+    ],
+    initialData: [],
+    disableAdd: true,
+  },
   users: {
     id: 'users',
     title: 'Përdoruesit',
