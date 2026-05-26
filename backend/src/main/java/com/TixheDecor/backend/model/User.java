@@ -16,8 +16,6 @@ public class User {
 
     private String emri;
 
-    @Column(unique = true)
-    private String username;
 
     @Column(unique = true, nullable = false)
     private String email;
