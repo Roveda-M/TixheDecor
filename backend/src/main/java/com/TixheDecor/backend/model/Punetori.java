@@ -20,7 +20,10 @@ public class Punetori {
     private String specializimi;
     private String telefoni;
     private String email;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal paga;
+
     private LocalDate dataPunesimit;
     private String statusi;
 }

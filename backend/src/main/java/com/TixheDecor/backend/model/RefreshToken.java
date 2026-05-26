@@ -24,4 +24,4 @@ public class RefreshToken {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private Boolean isRevoked;
-}
+}sc
