@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, formatApiError, hasRole } from "./api";
 
@@ -7,6 +7,18 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    const role = sessionStorage.getItem("role");
+    if (token) {
+      if (hasRole(role, "ROLE_ADMIN")) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/home", { replace: true });
+      }
+    }
+  }, []);
 
   const emailValid = (email) => {
     const emailRegex = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;

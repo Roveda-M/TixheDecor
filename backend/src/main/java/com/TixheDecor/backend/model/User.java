@@ -15,7 +15,9 @@ public class User {
     private Long id;
 
     private String emri;
-    private String mbiemri;
+
+    @Column(unique = true)
+    private String username;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -23,8 +25,6 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
 
     @Column(name = "email_confirmed")
     private boolean emailConfirmed = false;
@@ -39,6 +39,7 @@ public class User {
     private LocalDateTime dataKrijimit = LocalDateTime.now();
 
     private String statusi;
+    private String fullname;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

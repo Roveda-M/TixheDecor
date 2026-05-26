@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +34,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isPublicPath(HttpServletRequest request) {
         String path = request.getRequestURI();
-        if (path.startsWith("/api/bride-to-be-requests") && "POST".equalsIgnoreCase(request.getMethod())) {
+
+        if (path.startsWith("/api/bride-to-be-requests")
+                && "POST".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
-        return path.startsWith("/api/auth")
+
+        return path.startsWith("/api/auth/login")
+                || path.startsWith("/api/auth/register")
+                || path.startsWith("/api/auth/refresh")
+                || path.startsWith("/api/auth/forgot-password")
+                || path.startsWith("/api/auth/reset-password")
                 || path.startsWith("/api/fotografite/lloji")
                 || path.startsWith("/uploads")
                 || path.startsWith("/swagger-ui")
@@ -58,9 +66,13 @@ public class JwtFilter extends OncePerRequestFilter {
                 try {
                     String token = authHeader.substring(7);
                     String email = jwtUtil.extractEmail(token);
+
                     if (email != null && jwtUtil.validateToken(token)) {
+
                         User user = userRepository.findByEmail(email).orElse(null);
+
                         if (user != null) {
+
                             List<SimpleGrantedAuthority> authorities =
                                     user.getRoles().stream()
                                             .map(role -> new SimpleGrantedAuthority(role.getEmertimi()))
@@ -76,6 +88,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     // Ignore auth exceptions for public paths
                 }
             }
+
             filterChain.doFilter(request, response);
             return;
         }
@@ -90,12 +103,15 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         try {
+
             String email = jwtUtil.extractEmail(token);
 
             if (email != null && jwtUtil.validateToken(token)) {
+
                 User user = userRepository.findByEmail(email).orElse(null);
 
                 if (user != null) {
+
                     List<SimpleGrantedAuthority> authorities =
                             user.getRoles().stream()
                                     .map(role -> new SimpleGrantedAuthority(role.getEmertimi()))
@@ -106,7 +122,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
+
             } else {
+
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 response.getWriter().write("{\"error\":\"Token i pavlefshëm. Bëni login përsëri.\"}");
@@ -114,6 +132,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
         } catch (RuntimeException e) {
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");

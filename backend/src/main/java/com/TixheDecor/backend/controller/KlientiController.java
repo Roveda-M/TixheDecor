@@ -36,7 +36,7 @@ public class KlientiController {
 
     @Operation(summary = "Krijo klient të ri")
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
     public Klienti create(@RequestBody Klienti klienti) {
         return klientiService.create(klienti);
     }

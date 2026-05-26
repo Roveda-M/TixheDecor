@@ -1,124 +1,118 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "./api";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("account");
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const user = {
-    fullname: "Tixhe User",
-    username: "user",
-    email: "user@example.com",
-    phone: "",
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await api.getProfile();
+        setUser(data);
+      } catch (error) {
+        console.error("Gabim:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("role");
+    navigate("/login");
   };
 
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Duke ngarkuar...</div>;
+
   return (
-    <div className="min-h-screen bg-[#f6f1e8] flex flex-col md:flex-row pt-24">
+      <div className="min-h-screen bg-[#f6f1e8] flex flex-col md:flex-row pt-24">
 
-      {/* SIDEBAR */}
-      <aside className="w-full md:w-72 bg-white shadow-md p-6 flex-shrink-0">
-
-        {/* USER INFO */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto bg-gray-200 rounded-full flex items-center justify-center text-xl">
-            👤
+        {/* SIDEBAR */}
+        <aside className="w-full md:w-72 bg-white shadow-md p-6 flex-shrink-0">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 mx-auto bg-[#e6dfd3] rounded-full flex items-center justify-center text-3xl">
+              👤
+            </div>
+            <h3 className="mt-3 font-medium">{user?.emri || "Përdoruesi"}</h3>
+            <p className="text-xs text-gray-500">{user?.statusi || "Aktiv"}</p>
           </div>
-          <h3 className="mt-3 font-medium break-words">{user.username}</h3>
-          <p className="text-xs text-gray-500">Member since 2012</p>
-        </div>
 
-        {/* NAV - gjithmonë vertikale */}
-        <div className="flex flex-col space-y-2 text-sm">
-          {["account","orders","addresses","wishlist","security"].map(tab => (
+          <div className="flex flex-col space-y-2 text-sm">
+            {["account", "wishlist"].map(tab => (
+                <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`w-full text-left py-2 px-3 rounded transition ${
+                        activeTab === tab ? "bg-[#e6dfd3] text-black font-medium" : "hover:bg-gray-100"
+                    }`}
+                >
+                  {tab === "account" && "Account Details"}
+                  {tab === "wishlist" && "Wishlist"}
+                </button>
+            ))}
+
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`w-full text-left py-2 px-3 rounded transition ${
-                activeTab === tab ? "bg-gray-200 text-black font-medium" : "hover:bg-gray-100"
-              }`}
+                onClick={handleLogout}
+                className="w-full text-left py-2 px-3 text-red-500 hover:bg-red-50 rounded"
             >
-              {tab === "account" && "Account Details"}
-              {tab === "orders" && "Order History"}
-              {tab === "addresses" && "Addresses"}
-              {tab === "wishlist" && "Wishlist"}
-              {tab === "security" && "Security"}
-            </button>
-          ))}
-
-          <button className="w-full text-left py-2 px-3 text-red-500 hover:bg-red-50 rounded">
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* CONTENT */}
-      <main className="flex-1 p-4 md:p-10">
-
-        {/* ACCOUNT */}
-        {activeTab === "account" && (
-          <div>
-            <h2 className="text-2xl mb-6">Account Details</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input className="p-3 border rounded w-full" defaultValue={user.fullname} placeholder="Full Name" />
-              <input className="p-3 border rounded w-full" defaultValue={user.username} placeholder="Username" />
-              <input className="p-3 border rounded w-full md:col-span-2" defaultValue={user.email} placeholder="Email" />
-              <input className="p-3 border rounded w-full md:col-span-2" defaultValue={user.phone} placeholder="Phone" />
-            </div>
-
-            <button className="mt-6 bg-black text-white px-6 py-2 rounded w-full sm:w-auto">
-              Save Changes
+              Logout
             </button>
           </div>
-        )}
+        </aside>
 
-        {/* ORDERS */}
-        {activeTab === "orders" && (
-          <div>
-            <h2 className="text-2xl mb-4">Order History</h2>
-            <div className="bg-white p-4 rounded shadow space-y-2">
-              <p>Delivered</p>
-              <p>Processing</p>
-            </div>
-          </div>
-        )}
+        {/* CONTENT */}
+        <main className="flex-1 p-4 md:p-10">
 
-        {/* ADDRESSES */}
-        {activeTab === "addresses" && (
-          <div>
-            <h2 className="text-2xl mb-4">Addresses</h2>
-            <div className="bg-white p-4 rounded shadow mb-3">
-              Home Address - Ferizaj
-            </div>
-            <button className="border px-4 py-2 rounded w-full sm:w-auto">
-              + Add New Address
-            </button>
-          </div>
-        )}
+          {activeTab === "account" && (
+              <div>
+                <h2 className="text-2xl mb-6 font-light tracking-wide">Account Details</h2>
+                <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-500">Full Name</label>
+                    <p className="text-lg font-medium">{user?.emri || "-"}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Emri</label>
+                    <p className="text-lg font-medium">{user?.emri || "-"}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Email</label>
+                    <p className="text-lg font-medium">{user?.email || "-"}</p>
+                  </div>
 
-        {/* WISHLIST */}
-        {activeTab === "wishlist" && (
-          <div>
-            <h2 className="text-2xl mb-4">Wishlist</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="bg-white p-4 rounded shadow">Dekor - €20</div>
-              <div className="bg-white p-4 rounded shadow">Dekor - €85</div>
-            </div>
-          </div>
-        )}
+                  <div>
+                    <label className="text-sm text-gray-500">Statusi</label>
+                    <p className="text-lg font-medium">{user?.statusi || "Aktiv"}</p>
+                  </div>
+                </div>
+              </div>
+          )}
 
-        {/* SECURITY */}
-        {activeTab === "security" && (
-          <div>
-            <h2 className="text-2xl mb-4">Security</h2>
-            <input className="p-3 border rounded w-full mb-2" placeholder="Current Password" />
-            <input className="p-3 border rounded w-full mb-2" placeholder="New Password" />
-            <input className="p-3 border rounded w-full mb-4" placeholder="Confirm Password" />
-            <button className="bg-black text-white px-6 py-2 rounded w-full sm:w-auto">
-              Update Password
-            </button>
-          </div>
-        )}
+          {activeTab === "wishlist" && (
+              <div>
+                <h2 className="text-2xl mb-6 font-light tracking-wide">Wishlist</h2>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {["Wedding", "Birthday", "Baby Shower", "Engagement"].map(event => (
+                      <div key={event} className="bg-white p-4 rounded-2xl shadow-sm hover:shadow-md transition">
+                        <div className="w-full h-32 bg-[#e6dfd3] rounded-xl mb-3 flex items-center justify-center text-2xl">
+                          🌸
+                        </div>
+                        <p className="font-medium">{event}</p>
+                        <p className="text-sm text-gray-500">Dekorim special</p>
+                      </div>
+                  ))}
+                </div>
+              </div>
+          )}
 
-      </main>
-    </div>
+        </main>
+      </div>
   );
 }

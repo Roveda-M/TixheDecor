@@ -43,7 +43,11 @@ export default function App() {
           <Route path="/wedding" element={<><Wedding /><Footer /></>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<><Profile /><Footer /></>} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <><Profile /><Footer /></>
+            </ProtectedRoute>
+          } />
           <Route path="/birthday" element={<><Birthday /><Footer /></>} />
           <Route path="/bride-to-be" element={<><BrideToBe /><Footer /></>} />
           <Route path="/circumcision" element={<><Circumcision /><Footer /></>} />
