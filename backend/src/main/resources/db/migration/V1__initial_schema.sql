@@ -241,3 +241,18 @@ CREATE TABLE IF NOT EXISTS vleresimi (
     CONSTRAINT fk_vleresimi_projekti FOREIGN KEY (projekti_id) REFERENCES projekti (projekti_id),
     CONSTRAINT fk_vleresimi_klienti FOREIGN KEY (klienti_id) REFERENCES klienti (klienti_id)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS bride_to_be_request (
+    request_id INT NOT NULL AUTO_INCREMENT,
+    bride_name VARCHAR(255),
+    event_date DATE,
+    event_time TIME,
+    location VARCHAR(255),
+    selected_decors VARCHAR(2000),
+    statusi VARCHAR(255),
+    created_at DATETIME(6),
+    punetori_id INT,
+    PRIMARY KEY (request_id),
+    KEY idx_bride_to_be_request_punetori_id (punetori_id),
+    CONSTRAINT fk_bride_to_be_request_punetori FOREIGN KEY (punetori_id) REFERENCES punetori (punetori_id)
+) ENGINE=InnoDB;
