@@ -1,3 +1,4 @@
+import { api } from "./api";
 import { useState } from "react";
 import FeedbackForm from "./FeedbackForm";
 import FeedbackList from "./FeedbackList";
@@ -22,7 +23,7 @@ export default function Contact() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.name.trim() === "") return alert("Shkruaj emrin");
@@ -31,14 +32,24 @@ export default function Contact() {
     if (form.subject.trim() === "") return alert("Shkruaj subjectin");
     if (form.message.trim() === "") return alert("Shkruaj mesazhin");
 
-    setForm({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
-  };
+    try {
+      const nameParts = form.name.trim().split(" ");
+      await api.createKlient({
+        emri: nameParts[0] || "",
+        mbiemri: nameParts.slice(1).join(" ") || "",
+        email: form.email,
+        telefoni: "",
+        adresa: form.subject,
+        statusi: "Aktiv",
+        lloji: "Kontakt",
+      });
 
+      alert("Mesazhi u dërgua me sukses! ✅");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      alert("Ndodhi një gabim: " + error.message);
+    }
+  };
   return (
     <section className="w-full min-h-screen bg-gradient-to-b from-[#f7f3ec] to-[#eae6df] py-12 px-5 flex justify-center">
       <div className="w-full max-w-6xl flex flex-col min-h-screen">

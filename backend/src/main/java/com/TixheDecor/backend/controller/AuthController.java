@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.TixheDecor.backend.service.UserService;
 
 @Tag(name = "Authentication", description = "Login, Register, Refresh Token")
 @RestController
@@ -17,6 +19,11 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserService userService;
+
+
 
     @Operation(summary = "Login", description = "Kyçje me email dhe fjalëkalim")
     @PostMapping("/login")
@@ -37,12 +44,29 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            authService.register(request.getEmail(), request.getPassword());
+
+                    authService.register(
+                            request.getEmail(),
+                            request.getPassword(),
+                            request.getFullname(),
+                            request.getUsername()
+
+            );
             return ResponseEntity.ok(Map.of("message", "Regjistrim i suksesshëm!"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(400)
                     .body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @Operation(summary = "Merr profilin e userit")
+    @GetMapping("/me")
+    public ResponseEntity<?> getMe() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        return userService.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Operation(summary = "Refresh Token", description = "Rinovim i access token")
@@ -90,4 +114,5 @@ public class AuthController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+
 }

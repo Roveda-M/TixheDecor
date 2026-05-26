@@ -21,11 +21,12 @@ export const api = {
     return res.data;
   },
 
-  register: async (email, password) => {
-    const res = await axiosInstance.post("/auth/register", { email, password });
+  register: async (email, password, fullname, username) => {
+    const res = await axiosInstance.post("/auth/register", {
+      email, password, fullname, username
+    });
     return res.data;
   },
-
   forgotPassword: async (email) => {
     const res = await axios.post("http://localhost:8080/api/auth/forgot-password", { email });
     return res.data;
@@ -33,6 +34,16 @@ export const api = {
 
   resetPassword: async (token, password) => {
     const res = await axios.post("http://localhost:8080/api/auth/reset-password", { token, password });
+    return res.data;
+  },
+  // PROFILE
+  getProfile: async () => {
+    const res = await axiosInstance.get("/auth/me");
+    return res.data;
+  },
+
+  updateProfile: async (data) => {
+    const res = await axiosInstance.put("/auth/me", data);
     return res.data;
   },
 

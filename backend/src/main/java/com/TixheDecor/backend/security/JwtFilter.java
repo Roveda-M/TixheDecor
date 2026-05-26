@@ -31,11 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
         return HttpMethod.OPTIONS.matches(request.getMethod());
     }
 
-    private boolean isPublicPath(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        if (path.startsWith("/api/bride-to-be-requests") && "POST".equalsIgnoreCase(request.getMethod())) {
-            return true;
-        }
+    private boolean isPublicPath(String path) {
         return path.startsWith("/api/auth")
                 || path.startsWith("/api/fotografite/lloji")
                 || path.startsWith("/uploads")
@@ -51,34 +47,13 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        String authHeader = request.getHeader("Authorization");
 
-        if (isPublicPath(request)) {
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                try {
-                    String token = authHeader.substring(7);
-                    String email = jwtUtil.extractEmail(token);
-                    if (email != null && jwtUtil.validateToken(token)) {
-                        User user = userRepository.findByEmail(email).orElse(null);
-                        if (user != null) {
-                            List<SimpleGrantedAuthority> authorities =
-                                    user.getRoles().stream()
-                                            .map(role -> new SimpleGrantedAuthority(role.getEmertimi()))
-                                            .collect(Collectors.toList());
-
-                            UsernamePasswordAuthenticationToken auth =
-                                    new UsernamePasswordAuthenticationToken(email, null, authorities);
-
-                            SecurityContextHolder.getContext().setAuthentication(auth);
-                        }
-                    }
-                } catch (Exception e) {
-                    // Ignore auth exceptions for public paths
-                }
-            }
+        if (isPublicPath(path)) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
