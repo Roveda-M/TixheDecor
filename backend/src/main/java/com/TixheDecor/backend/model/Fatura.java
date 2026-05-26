@@ -22,7 +22,9 @@ public class Fatura {
     @JoinColumn(name = "klienti_id")
     private Klienti klienti;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal shumaTotale;
+
     private LocalDate dataFatures;
     private LocalDate dataPageses;
     private String statusi;

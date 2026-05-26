@@ -23,7 +23,12 @@ public class MaterialiProjektit {
     private Materiali materiali;
 
     private Integer sasia;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal cmimiTotal;
+
     private LocalDate dataPerdorimit;
+
+    @Column(columnDefinition = "TEXT")
     private String shenime;
 }

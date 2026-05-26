@@ -21,7 +21,9 @@ public class DetyrimiProjektit {
     @JoinColumn(name = "punetori_id")
     private Punetori punetori;
 
+    @Column(columnDefinition = "TEXT")
     private String pershkrimi;
+
     private LocalDate dataFillimit;
     private LocalDate dataPerfundimit;
     private String statusi;

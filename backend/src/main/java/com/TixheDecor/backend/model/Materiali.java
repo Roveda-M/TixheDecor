@@ -18,9 +18,15 @@ public class Materiali {
     private Furnitori furnitori;
 
     private String emri;
+
+    @Column(columnDefinition = "TEXT")
     private String pershkrimi;
+
     private String njesiaMatese;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal cmimiPerNjesi;
+
     private Integer sasiaStokut;
     private String kategoria;
     private String ngjyra;

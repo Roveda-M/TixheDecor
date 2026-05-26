@@ -19,10 +19,16 @@ public class Projekti {
     private Klienti klienti;
 
     private String emriProjektit;
+
+    @Column(columnDefinition = "TEXT")
     private String pershkrimi;
+
     private LocalDate dataFillimit;
     private LocalDate dataPerfundimit;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal buxheti;
+
     private String statusi;
     private String llojiDekorimit;
     private String lokacioni;

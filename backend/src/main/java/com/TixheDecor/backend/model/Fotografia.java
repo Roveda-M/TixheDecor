@@ -18,7 +18,10 @@ public class Fotografia {
     private Projekti projekti;
 
     private String shtegu;
+
+    @Column(columnDefinition = "TEXT")
     private String pershkrimi;
+
     private LocalDate dataNgarkimit;
     private String lloji;
     private Integer rendi;

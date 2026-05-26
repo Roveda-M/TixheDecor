@@ -20,5 +20,7 @@ public class StockMovement {
     private String tipi;
     private Integer sasia;
     private LocalDate data;
+
+    @Column(columnDefinition = "TEXT")
     private String pershkrimi;
 }

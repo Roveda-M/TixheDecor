@@ -18,7 +18,9 @@ public class Pagesa {
     @JoinColumn(name = "fatura_id")
     private Fatura fatura;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal shuma;
+
     private LocalDate dataPageses;
     private String metoda;
     private String statusi;

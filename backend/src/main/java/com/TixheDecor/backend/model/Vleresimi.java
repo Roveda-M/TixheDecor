@@ -22,7 +22,12 @@ public class Vleresimi {
     private Klienti klienti;
 
     private Integer piket;
+
+    @Column(columnDefinition = "TEXT")
     private String komenti;
+
     private LocalDate dataVleresimit;
+
+    @Column(columnDefinition = "TEXT")
     private String rekomandimi;
 }
