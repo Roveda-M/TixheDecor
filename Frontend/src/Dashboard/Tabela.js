@@ -8,6 +8,12 @@ const klientLabel = (k) =>
 
 const projektLabel = (p) => p.emriProjektit || `Projekt #${p.projektiId}`;
 
+const projektMeKlientLabel = (p) => {
+  const projectName = p.emriProjektit || `Projekt #${p.projektiId}`;
+  const clientName = p.klienti ? klientLabel(p.klienti) : '';
+  return clientName ? `${projectName} - ${clientName}` : projectName;
+};
+
 const punetoriLabel = (p) =>
   `${p.emri || ''} ${p.mbiemri || ''}`.trim() || `Punëtor #${p.punetoriId}`;
 
@@ -73,13 +79,13 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return items.map((item) => ({
         id: item.detyrimiId,
         task: item.pershkrimi || '',
-        project: item.projekti ? item.projekti.emriProjektit : '',
+        project: item.projekti ? projektMeKlientLabel(item.projekti) : '',
         projektiId: item.projekti ? String(item.projekti.projektiId) : '',
         assigned: item.punetori ? `${item.punetori.emri} ${item.punetori.mbiemri}` : '',
         punetoriId: item.punetori ? String(item.punetori.punetoriId) : '',
         startDate: item.dataFillimit || '',
         endDate: item.dataPerfundimit || '',
-        status: item.statusi || "Për t'u bërë",
+        status: item.statusi || 'I filluar',
         prioriteti: item.prioriteti || 'Normal',
       }));
     }
@@ -215,7 +221,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         pershkrimi: form.task || '',
         dataFillimit: form.startDate || null,
         dataPerfundimit: form.endDate || null,
-        statusi: form.status || "Për t'u bërë",
+        statusi: form.status || 'I filluar',
         prioriteti: form.prioriteti || 'Normal',
         projekti: { projektiId: Number(form.projektiId) },
         punetori: { punetoriId: Number(form.punetoriId) },
@@ -228,11 +234,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         pershkrimi: form.description || '',
         shtegu: (form.url || '').trim(),
         lloji: (form.lloji || 'wedding').trim().toLowerCase(),
-        rendi: Number(form.rendi) || 1,
       };
-      if (form.projectId) {
-        payload.projekti = { projektiId: Number(form.projectId) };
-      }
       if (!payload.shtegu && !form.photoFile) {
         throw new Error('Zgjidh nje foto nga pajisja.');
       }
@@ -414,7 +416,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                 source,
                 projects.map((project) => ({
                   value: String(project.projektiId),
-                  label: projektLabel(project),
+                  label: title === 'Detyrat e Projekteve' ? projektMeKlientLabel(project) : projektLabel(project),
                 })),
               ];
             }
@@ -439,7 +441,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     };
 
     loadLookupOptions();
-  }, [columns]);
+  }, [columns, title]);
 
   const getCellValue = (item, col) => {
     if (col.tableKey) return item[col.tableKey] ?? '';

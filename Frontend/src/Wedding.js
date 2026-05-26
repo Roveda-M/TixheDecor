@@ -218,7 +218,7 @@ export default function Wedding() {
     loadWeddingPhotos();
   }, []);
 
-  const photos = dynamicPhotos.length > 0 ? dynamicPhotos : defaultPhotos;
+  const photos = useMemo(() => [...defaultPhotos, ...dynamicPhotos], [dynamicPhotos]);
 
   const toggleSelected = useCallback((index) => {
     setSelectedDecors((prev) =>

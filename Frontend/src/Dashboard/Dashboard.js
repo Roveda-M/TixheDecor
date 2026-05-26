@@ -96,8 +96,16 @@ const crudConfigs = {
       { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'assigned' },
       { key: 'startDate', label: 'Data fillimit', type: 'date' },
       { key: 'endDate', label: 'Afati / Data përfundimit', type: 'date' },
-      { key: 'status', label: 'Statusi', type: 'text' },
-      { key: 'prioriteti', label: 'Prioriteti', type: 'text' },
+      {
+        key: 'status',
+        label: 'Statusi',
+        type: 'select',
+        options: [
+          { value: 'I filluar', label: 'I filluar' },
+          { value: 'Ne proces', label: 'Ne proces' },
+          { value: 'I perfunduar', label: 'I perfunduar' },
+        ],
+      },
     ],
     initialData: []
   },
@@ -134,18 +142,13 @@ const crudConfigs = {
     title: 'Fotografitë e Projekteve',
     icon: <FiImage />,
     columns: [
-      { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project', required: false },
       { key: 'description', label: 'Përshkrimi', type: 'text' },
-      { key: 'rendi', label: 'Renditja', type: 'number' },
       { key: 'photoFile', label: 'Zgjidh Foto nga Pajisja', type: 'file', formOnly: true, required: false },
-      { key: 'url', label: 'Foto e Ruajtur', type: 'text', required: false },
       {
         key: 'lloji',
         label: 'Lloji / faqja ku shfaqet',
         type: 'select',
         options: [
-          { value: 'para', label: 'Para dekorimit' },
-          { value: 'pas', label: 'Pas dekorimit' },
           { value: 'wedding', label: 'Wedding' },
           { value: 'birthday', label: 'Birthday' },
           { value: 'engagement', label: 'Engagement' },
