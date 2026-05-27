@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import html2canvas from "html2canvas";
 
 export default function Engagement() {
@@ -11,9 +11,10 @@ export default function Engagement() {
     message: "",
   });
   const [isDownloading, setIsDownloading] = useState(false);
+  const [dynamicPhotos, setDynamicPhotos] = useState([]);
   const inviteRef = useRef(null);
 
-  const photos = [
+  const staticPhotos = [
     { url: "/fejesa/f6.jpeg", title: { full: "Fillimi i dashurisë", short: "Fillimi" } },
     { url: "/fejesa/f1.jpeg", title: { full: "Momente romantike", short: "Romantike" } },
     { url: "/fejesa/f2.jpeg", title: { full: "Elegancë çiftësh", short: "Çiftësh" } },
@@ -31,6 +32,33 @@ export default function Engagement() {
     { url: "/fejesa/f14.jpeg", title: { full: "Perfeksion romantik", short: "Perfeksion" } },
     { url: "/fejesa/f15.jpeg", title: { full: "Momente të paharrueshme", short: "Momente" } },
   ];
+
+  useEffect(() => {
+    const loadPhotos = async () => {
+      try {
+        const res = await fetch("/api/fotografite/lloji/engagement");
+        if (!res.ok) return;
+        const items = await res.json();
+        setDynamicPhotos(
+          items
+            .filter((item) => item.shtegu)
+            .map((item) => ({
+              url: item.shtegu.startsWith("http") || item.shtegu.startsWith("/") ? item.shtegu : `/${item.shtegu}`,
+              title: {
+                full: item.pershkrimi || "Dekor fejesÃ«",
+                short: item.pershkrimi || "FejesÃ«",
+              },
+            }))
+        );
+      } catch (error) {
+        console.error("Gabim gjate ngarkimit te fotove te fejeses:", error);
+      }
+    };
+
+    loadPhotos();
+  }, []);
+
+  const photos = [...staticPhotos, ...dynamicPhotos];
 
   const toggleSelected = (index) => {
     const isSelected = selectedDecors.includes(index);

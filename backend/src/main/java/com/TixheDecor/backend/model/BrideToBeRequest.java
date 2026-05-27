@@ -37,7 +37,7 @@ public class BrideToBeRequest {
             createdAt = LocalDateTime.now();
         }
         if (statusi == null || statusi.isBlank()) {
-            statusi = "PENDING";
+            statusi = "I filluar";
         }
     }
 }

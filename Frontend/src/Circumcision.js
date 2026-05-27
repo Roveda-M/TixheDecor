@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 
 export default function Circumcision() {
@@ -12,6 +12,7 @@ export default function Circumcision() {
     message: "",
   });
   const [isDownloading, setIsDownloading] = useState(false);
+  const [dynamicPhotos, setDynamicPhotos] = useState([]);
   const inviteRef = useRef(null);
 
   const heroInfo = useMemo(
@@ -32,7 +33,7 @@ export default function Circumcision() {
     []
   );
 
-  const photos = useMemo(
+  const staticPhotos = useMemo(
     () => [
       {
         url: "/syneti/p1.jpeg",
@@ -85,6 +86,33 @@ export default function Circumcision() {
     ],
     []
   );
+
+  useEffect(() => {
+    const loadPhotos = async () => {
+      try {
+        const res = await fetch("/api/fotografite/lloji/circumcision");
+        if (!res.ok) return;
+        const items = await res.json();
+        setDynamicPhotos(
+          items
+            .filter((item) => item.shtegu)
+            .map((item) => ({
+              url: item.shtegu.startsWith("http") || item.shtegu.startsWith("/") ? item.shtegu : `/${item.shtegu}`,
+              title: {
+                full: item.pershkrimi || "Dekor synetie",
+                short: item.pershkrimi || "Syneti",
+              },
+            }))
+        );
+      } catch (error) {
+        console.error("Gabim gjate ngarkimit te fotove te synetise:", error);
+      }
+    };
+
+    loadPhotos();
+  }, []);
+
+  const photos = useMemo(() => [...staticPhotos, ...dynamicPhotos], [staticPhotos, dynamicPhotos]);
 
   const toggleSelected = (index) => {
     const isSelected = selectedDecors.includes(index);

@@ -143,7 +143,8 @@ const crudConfigs = {
     icon: <FiImage />,
     columns: [
       { key: 'description', label: 'Përshkrimi', type: 'text' },
-      { key: 'photoFile', label: 'Zgjidh Foto nga Pajisja', type: 'file', formOnly: true, required: false },
+      { key: 'url', label: 'Foto', type: 'image', tableOnly: true },
+      { key: 'photoFiles', label: 'Zgjidh Foto nga Pajisja', type: 'file', formOnly: true, multiple: true, required: false },
       {
         key: 'lloji',
         label: 'Lloji / faqja ku shfaqet',
@@ -173,7 +174,17 @@ const crudConfigs = {
       { key: 'location', label: 'Lokacioni', type: 'text' },
       { key: 'selectedDecors', label: 'Fotot e zgjedhura', type: 'photoLinks' },
       { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'punetori' },
-      { key: 'statusi', label: 'Statusi', type: 'text' },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        badge: true,
+        options: [
+          { value: 'I filluar', label: 'I filluar' },
+          { value: 'Në proces', label: 'Në proces' },
+          { value: 'I përfunduar', label: 'I përfunduar' },
+        ],
+      },
     ],
     initialData: [],
     disableAdd: true,
@@ -189,7 +200,17 @@ const crudConfigs = {
       { key: 'location', label: 'Lokacioni', type: 'text' },
       { key: 'selectedDecors', label: 'Fotot e zgjedhura', type: 'photoLinks' },
       { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'punetori' },
-      { key: 'statusi', label: 'Statusi', type: 'text' },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        badge: true,
+        options: [
+          { value: 'I filluar', label: 'I filluar' },
+          { value: 'Në proces', label: 'Në proces' },
+          { value: 'I përfunduar', label: 'I përfunduar' },
+        ],
+      },
     ],
     initialData: [],
     disableAdd: true,

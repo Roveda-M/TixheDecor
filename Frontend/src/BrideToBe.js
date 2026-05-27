@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import { api, formatApiError } from "./api";
 
@@ -8,6 +8,7 @@ export default function BrideToBe() {
     const [inviteTime, setInviteTime] = useState("");
     const [eventLocation, setEventLocation] = useState("");
     const [selectedDecors, setSelectedDecors] = useState([]);
+    const [dynamicPhotos, setDynamicPhotos] = useState([]);
     const [requestStatus, setRequestStatus] = useState("");
     const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
     const cardRef = useRef(null);
@@ -71,7 +72,7 @@ export default function BrideToBe() {
         }
     };
 
-    const photos = [
+    const staticPhotos = [
         { url: "bridetobe/10.jpeg", title: { full: "Momente Magjike", short: "Magjike" } },
         { url: "bridetobe/11.jpeg", title: { full: "Elegancë Supreme", short: "Suprem" } },
         { url: "bridetobe/5.jpeg", title: { full: "Detaje Mbretërore", short: "Mbretërore" } },
@@ -85,6 +86,33 @@ export default function BrideToBe() {
         { url: "/bridetobe/15.jpeg", title: { full: "Perfeksion", short: "Detaje" } },
         { url: "/bridetobe/16.jpeg", title: { full: "Magji momenti", short: "Detaje" } }
     ];
+
+    useEffect(() => {
+        const loadPhotos = async () => {
+            try {
+                const res = await fetch("/api/fotografite/lloji/bridetobe");
+                if (!res.ok) return;
+                const items = await res.json();
+                setDynamicPhotos(
+                    items
+                        .filter((item) => item.shtegu)
+                        .map((item) => ({
+                            url: item.shtegu.startsWith("http") || item.shtegu.startsWith("/") ? item.shtegu : `/${item.shtegu}`,
+                            title: {
+                                full: item.pershkrimi || "Dekor Bride To Be",
+                                short: item.pershkrimi || "Dekor",
+                            },
+                        }))
+                );
+            } catch (error) {
+                console.error("Gabim gjate ngarkimit te fotove Bride To Be:", error);
+            }
+        };
+
+        loadPhotos();
+    }, []);
+
+    const photos = [...staticPhotos, ...dynamicPhotos];
 
     return (
         <div className="bg-[#f7f3ec] min-h-screen relative font-sans text-gray-800 overflow-hidden break-words selection:bg-[#fbcfe8]">

@@ -27,10 +27,15 @@ public class BrideToBeRequestService {
     }
 
     public Optional<BrideToBeRequest> update(Integer id, BrideToBeRequest request) {
-        if (!brideToBeRequestRepository.existsById(id)) {
+        Optional<BrideToBeRequest> existing = brideToBeRequestRepository.findById(id);
+        if (existing.isEmpty()) {
             return Optional.empty();
         }
         request.setRequestId(id);
+        request.setCreatedAt(existing.get().getCreatedAt());
+        if (request.getStatusi() == null || request.getStatusi().isBlank()) {
+            request.setStatusi("I filluar");
+        }
         return Optional.of(brideToBeRequestRepository.save(request));
     }
 

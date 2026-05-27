@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api, formatApiError } from './api';
 
 const BabyShower = () => {
@@ -6,6 +6,7 @@ const BabyShower = () => {
   const [requestForm, setRequestForm] = useState({ name: '', date: '', time: '', location: '' });
   const [requestStatus, setRequestStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dynamicCollections, setDynamicCollections] = useState([]);
 
   const collections = [
   { id: 1, name: "Dekor i bardhë", altName: "Stil i pastër dhe elegant", price: 250, image: "babyshower/1.jpeg" },
@@ -25,6 +26,34 @@ const BabyShower = () => {
   { id: 15, name: "Dekor vjollcë", altName: "Me detaje ari", price: 140, image: "babyshower/22.jpeg" },
   { id: 16, name: "Dekor klasik ", altName: "Stil i thjeshtë dhe i bukur", price: 90, image: "babyshower/23.jpeg" },
 ];
+
+  useEffect(() => {
+    const loadPhotos = async () => {
+      try {
+        const res = await fetch('/api/fotografite/lloji/babyshower');
+        if (!res.ok) return;
+        const items = await res.json();
+        setDynamicCollections(
+          items
+            .filter((item) => item.shtegu)
+            .map((item) => ({
+              id: `dynamic-${item.fotografiaId}`,
+              name: item.pershkrimi || 'Dekor Baby Shower',
+              altName: item.pershkrimi || 'Dekor i personalizuar',
+              price: 0,
+              image: item.shtegu.startsWith('http') || item.shtegu.startsWith('/') ? item.shtegu : `/${item.shtegu}`,
+            }))
+        );
+      } catch (error) {
+        console.error('Gabim gjate ngarkimit te fotove te Baby Shower:', error);
+      }
+    };
+
+    loadPhotos();
+  }, []);
+
+  const eventCollections = [...collections, ...dynamicCollections];
+
   const toggleCartItem = (item) => {
     const exists = cart.find(i => i.id === item.id);
     if (exists) {
@@ -122,7 +151,7 @@ const BabyShower = () => {
         </div>
 
         <section className="px-4 sm:px-12 md:px-20 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 relative z-10 w-full mb-8">
-          {collections.map((item) => {
+          {eventCollections.map((item) => {
             const isSelected = cart.find(i => i.id === item.id);
             return (
               <div

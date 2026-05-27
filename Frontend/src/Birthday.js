@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 
 import img1 from './1.jpeg';
@@ -38,6 +38,7 @@ const decors = [
 
 export default function Birthday() {
   const [selectedDecors, setSelectedDecors] = useState([]);
+  const [dynamicDecors, setDynamicDecors] = useState([]);
   const [step, setStep] = useState('selection');
   const [formData, setFormData] = useState({ name: '', date: '', location: '', message: '' });
   const [showInvite, setShowInvite] = useState(false);
@@ -48,6 +49,32 @@ export default function Birthday() {
   const [inviteBgImage, setInviteBgImage] = useState(null);
 
   const inviteRef = useRef(null);
+
+  useEffect(() => {
+    const loadPhotos = async () => {
+      try {
+        const res = await fetch('/api/fotografite/lloji/birthday');
+        if (!res.ok) return;
+        const items = await res.json();
+        setDynamicDecors(
+          items
+            .filter((item) => item.shtegu)
+            .map((item) => ({
+              id: `dynamic-${item.fotografiaId}`,
+              name: item.pershkrimi || 'Dekor ditelindjeje',
+              desc: '',
+              image: item.shtegu.startsWith('http') || item.shtegu.startsWith('/') ? item.shtegu : `/${item.shtegu}`,
+            }))
+        );
+      } catch (error) {
+        console.error('Gabim gjate ngarkimit te fotove te ditelindjes:', error);
+      }
+    };
+
+    loadPhotos();
+  }, []);
+
+  const eventDecors = [...decors, ...dynamicDecors];
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -146,7 +173,7 @@ export default function Birthday() {
 
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 mb-16">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
-              {decors.map((decor) => {
+              {eventDecors.map((decor) => {
                 const isSelected = selectedDecors.includes(decor.id);
                 return (
                     <div

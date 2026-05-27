@@ -51,6 +51,22 @@ const parseSelectedDecorLinks = (value) => {
         .filter((item) => item.title);
 };
 
+const statusBadgeClass = (value) => {
+  const normalized = (value || '').toLowerCase();
+  if (normalized.includes('përfunduar') || normalized.includes('perfunduar')) {
+    return 'border-green-200 bg-green-50 text-green-700';
+  }
+  if (normalized.includes('proces')) {
+    return 'border-amber-200 bg-amber-50 text-amber-700';
+  }
+  return 'border-blue-200 bg-blue-50 text-blue-700';
+};
+
+const normalizeRequestStatus = (value) => {
+  if (!value || value === 'PENDING') return 'I filluar';
+  return value;
+};
+
 export default function Tabela({ title, columns, initialData, disableAdd, enableFilters }) {
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -110,7 +126,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         selectedDecors: item.selectedDecors || '',
         punetori: item.punetori ? punetoriLabel(item.punetori) : '',
         punetoriId: item.punetori?.punetoriId ? String(item.punetori.punetoriId) : '',
-        statusi: item.statusi || 'PENDING',
+        statusi: normalizeRequestStatus(item.statusi),
       }));
     }
     if (title === 'Përdoruesit') {
@@ -235,7 +251,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         shtegu: (form.url || '').trim(),
         lloji: (form.lloji || 'wedding').trim().toLowerCase(),
       };
-      if (!payload.shtegu && !form.photoFile) {
+      if (!payload.shtegu && !form.photoFiles?.length) {
         throw new Error('Zgjidh nje foto nga pajisja.');
       }
       if (editingId) payload.fotografiaId = Number(editingId);
@@ -248,7 +264,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         eventTime: form.eventTime || null,
         location: form.location || '',
         selectedDecors: form.selectedDecors || '',
-        statusi: form.statusi || 'PENDING',
+        statusi: form.statusi || 'I filluar',
       };
       if (form.punetoriId) {
         payload.punetori = { punetoriId: Number(form.punetoriId) };
@@ -454,7 +470,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       setEditingId(item.id);
     } else {
       const emptyForm = {};
-      columns.forEach((col) => {
+      columns.filter((col) => !col.tableOnly).forEach((col) => {
         emptyForm[col.key] = '';
       });
       setFormData(emptyForm);
@@ -495,16 +511,20 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           setData([...data, mapIncomingData(title, [created])[0]]);
         }
       } else if (title === 'Fotografitë e Projekteve') {
-        if (formData.photoFile) {
-          const uploaded = await api.uploadPhoto(formData.photoFile);
-          body.shtegu = uploaded.url;
-        }
         if (editingId) {
+          if (formData.photoFiles?.[0]) {
+            const uploaded = await api.uploadPhoto(formData.photoFiles[0]);
+            body.shtegu = uploaded.url;
+          }
           const updated = await api.updatePhoto(editingId, body);
           setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
         } else {
-          const created = await api.createPhoto(body);
-          setData([...data, mapIncomingData(title, [created])[0]]);
+          const createdPhotos = [];
+          for (const file of formData.photoFiles || []) {
+            const uploaded = await api.uploadPhoto(file);
+            createdPhotos.push(await api.createPhoto({ ...body, shtegu: uploaded.url }));
+          }
+          setData([...data, ...mapIncomingData(title, createdPhotos)]);
         }
       } else if (isEventRequestTitle(title)) {
         if (editingId) {
@@ -619,8 +639,14 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         <input
           type="file"
           accept="image/*"
+          multiple={col.multiple}
           required={col.required !== false && !formData.url}
-          onChange={(e) => setFormData({ ...formData, [col.key]: e.target.files?.[0] || null })}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              [col.key]: col.multiple ? Array.from(e.target.files || []) : e.target.files?.[0] || null,
+            })
+          }
           className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#2b2b2b] file:text-white"
         />
       );
@@ -668,6 +694,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   };
 
   const tableColumns = columns.filter((col) => !col.formOnly);
+  const formColumns = columns.filter((col) => !col.tableOnly);
 
   const renderCellValue = (item, col) => {
     const value = getCellValue(item, col);
@@ -691,6 +718,29 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
             </a>
           ))}
         </div>
+      );
+    }
+
+    if (col.type === 'image') {
+      const src = normalizeAssetUrl(value);
+      if (!src) return '';
+
+      return (
+        <a href={src} target="_blank" rel="noreferrer" className="inline-block">
+          <img
+            src={src}
+            alt={item.description || 'Foto'}
+            className="h-16 w-16 rounded-lg object-cover border border-[#c9c1b5]"
+          />
+        </a>
+      );
+    }
+
+    if (col.badge) {
+      return (
+        <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusBadgeClass(value)}`}>
+          {value}
+        </span>
       );
     }
 
@@ -832,7 +882,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
               </div>
               <form onSubmit={handleSubmit} className="p-6">
                 <div className="space-y-4">
-                  {columns.map((col) => (
+                  {formColumns.map((col) => (
                     <div key={col.key}>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         {col.label}
