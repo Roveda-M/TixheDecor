@@ -14,6 +14,8 @@ export default function Login() {
     if (token) {
       if (hasRole(role, "ROLE_ADMIN")) {
         navigate("/dashboard", { replace: true });
+      } else if (hasRole(role, "ROLE_WORKER")) {
+        navigate("/worker-dashboard", { replace: true });
       } else {
         navigate("/home", { replace: true });
       }
@@ -53,6 +55,8 @@ export default function Login() {
 
       if (hasRole(data.role, "ROLE_ADMIN")) {
         navigate("/dashboard", { replace: true });
+      } else if (hasRole(data.role, "ROLE_WORKER")) {
+        navigate("/worker-dashboard", { replace: true });
       } else {
         navigate("/home", { replace: true });
       }

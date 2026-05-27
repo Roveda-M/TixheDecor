@@ -43,20 +43,28 @@ const crudConfigs = {
   },
   employees: {
     id: 'employees',
-    title: 'Punëtorët',
+    title: 'Punetoret',
     icon: <FiUserCheck />,
     columns: [
-      { key: 'name', label: 'Emri i Plotë', type: 'text' },
-      { key: 'role', label: 'Roli', type: 'text' },
+      { key: 'firstName', label: 'Emri', type: 'text' },
+      { key: 'lastName', label: 'Mbiemri', type: 'text' },
+      { key: 'position', label: 'Pozita', type: 'text' },
       { key: 'specialization', label: 'Specializimi', type: 'text' },
       { key: 'phone', label: 'Telefoni', type: 'text' },
-      { key: 'salary', label: 'Paga (€)', type: 'number' },
-      { key: 'hireDate', label: 'Data e Punësimit', type: 'date' },
-      { key: 'statusi', label: 'Statusi', type: 'text' },
+      { key: 'email', label: 'Emaili', type: 'email' },
+      { key: 'salary', label: 'Paga', type: 'number' },
+      { key: 'hireDate', label: 'Data e punesimit', type: 'date' },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        options: [
+          { value: 'aktiv', label: 'aktiv' },
+          { value: 'jo aktiv', label: 'jo aktiv' },
+        ],
+      },
     ],
-    initialData: [
-      { id: '1', name: 'Blerim Gashi', role: 'Dekorues Kryesor', phone: '+383 45 111 222', salary: '800' },
-    ]
+    initialData: []
   },
   materials: {
     id: 'materials',
@@ -93,9 +101,20 @@ const crudConfigs = {
     columns: [
       { key: 'task', label: 'Përshkrimi i Detyrës', type: 'text' },
       { key: 'projektiId', label: 'Projekti', type: 'select', optionsSource: 'projects', tableKey: 'project' },
-      { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'assigned' },
+      { key: 'brideRequestId', label: 'BrideToBe Event', type: 'select', optionsSource: 'brideRequests', tableKey: 'brideRequest', required: false },
+      { key: 'workerEmail', label: 'Punetori', type: 'select', optionsSource: 'workers', tableKey: 'assigned' },
       { key: 'startDate', label: 'Data fillimit', type: 'date' },
       { key: 'endDate', label: 'Afati / Data përfundimit', type: 'date' },
+      {
+        key: 'includeClientImages',
+        label: 'Include client selected images',
+        type: 'select',
+        options: [
+          { value: 'Jo', label: 'Jo' },
+          { value: 'Po', label: 'Po' },
+        ],
+      },
+      { key: 'clientImages', label: 'Fotot e klientit', type: 'photoLinks', tableOnly: true },
       {
         key: 'status',
         label: 'Statusi',
@@ -262,8 +281,8 @@ const crudConfigs = {
     title: 'Rolet e Përdoruesve',
     icon: <FiCheckSquare />,
     columns: [
-      { key: 'userId', label: 'ID Përdoruesi', type: 'number', tableKey: 'user' },
-      { key: 'roleId', label: 'ID Roli', type: 'number', tableKey: 'role' },
+      { key: 'userEmail', label: 'Perdoruesi', type: 'select', optionsSource: 'users', tableKey: 'user' },
+      { key: 'roleName', label: 'Roli', type: 'select', optionsSource: 'roles', tableKey: 'role' },
     ],
     initialData: [],
   },

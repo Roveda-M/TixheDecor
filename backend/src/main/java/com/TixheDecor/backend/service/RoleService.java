@@ -7,15 +7,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleService {
+    public static final Set<String> ALLOWED_ROLES = Set.of("ROLE_ADMIN", "ROLE_USER", "ROLE_WORKER");
 
     @Autowired
     private RoleRepository roleRepository;
 
     public List<Role> getAll() {
-        return roleRepository.findAll();
+        return roleRepository.findAll().stream()
+                .filter(role -> ALLOWED_ROLES.contains(normalizeName(role.getEmertimi())))
+                .collect(Collectors.toList());
     }
 
     public Optional<Role> getById(Long id) {
@@ -23,14 +28,11 @@ public class RoleService {
     }
 
     public Optional<Role> getByEmertimi(String emertimi) {
-        return roleRepository.findByEmertimi(emertimi);
+        return roleRepository.findByNormalizedName(normalizeName(emertimi));
     }
 
     public Role create(Role role) {
-        if (role.getNormalizedName() == null && role.getEmertimi() != null) {
-            role.setNormalizedName(role.getEmertimi().toUpperCase());
-        }
-
+        normalizeAndValidate(role);
         return roleRepository.save(role);
     }
 
@@ -40,9 +42,7 @@ public class RoleService {
         }
 
         role.setId(id);
-        if (role.getNormalizedName() == null && role.getEmertimi() != null) {
-            role.setNormalizedName(role.getEmertimi().toUpperCase());
-        }
+        normalizeAndValidate(role);
 
         return Optional.of(roleRepository.save(role));
     }
@@ -54,5 +54,28 @@ public class RoleService {
 
         roleRepository.deleteById(id);
         return true;
+    }
+
+    public String normalizeName(String name) {
+        if (name == null) {
+            return "";
+        }
+        String normalized = name.trim().toUpperCase();
+        if (!normalized.startsWith("ROLE_")) {
+            normalized = "ROLE_" + normalized;
+        }
+        if ("ROLE_PUNETOR".equals(normalized) || "ROLE_PUNETORI".equals(normalized)) {
+            return "ROLE_WORKER";
+        }
+        return normalized;
+    }
+
+    private void normalizeAndValidate(Role role) {
+        String normalized = normalizeName(role.getEmertimi());
+        if (!ALLOWED_ROLES.contains(normalized)) {
+            throw new IllegalArgumentException("Lejohen vetem rolet: admin, user, worker.");
+        }
+        role.setEmertimi(normalized);
+        role.setNormalizedName(normalized);
     }
 }

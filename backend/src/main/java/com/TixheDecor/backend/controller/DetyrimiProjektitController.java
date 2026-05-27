@@ -4,6 +4,8 @@ import com.TixheDecor.backend.model.DetyrimiProjektit;
 import com.TixheDecor.backend.service.DetyrimiProjektitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,6 +45,13 @@ public class DetyrimiProjektitController {
         return detyrimiProjektitService.getByStatusi(statusi);
     }
 
+    @GetMapping("/my")
+    @PreAuthorize("hasAnyAuthority('ROLE_WORKER', 'ROLE_ADMIN')")
+    public List<DetyrimiProjektit> getMyTasks() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return detyrimiProjektitService.getByPunetoriEmail(email);
+    }
+
     @PostMapping
     public DetyrimiProjektit create(@RequestBody DetyrimiProjektit detyrimiProjektit) {
         return detyrimiProjektitService.create(detyrimiProjektit);
@@ -54,6 +63,20 @@ public class DetyrimiProjektitController {
         return detyrimiProjektitService.update(id, detyrimiProjektit)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyAuthority('ROLE_WORKER', 'ROLE_ADMIN')")
+    public ResponseEntity<DetyrimiProjektit> updateMyStatus(@PathVariable Integer id,
+                                                            @RequestBody java.util.Map<String, String> body) {
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            return detyrimiProjektitService.updateStatusForPunetori(email, id, body.get("statusi"))
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")

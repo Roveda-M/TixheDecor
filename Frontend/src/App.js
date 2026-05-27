@@ -19,6 +19,7 @@ const Circumcision = lazy(() => import("./Circumcision"));
 const BabyShower = lazy(() => import("./BabyShower"));
 const Engagement = lazy(() => import("./Engagement"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
+const WorkerDashboard = lazy(() => import("./Dashboard/WorkerDashboard"));
 
 export default function App() {
   const location = useLocation();
@@ -26,7 +27,8 @@ export default function App() {
   const hideHeader =
     location.pathname === "/login" ||
     location.pathname === "/register" ||
-    location.pathname.startsWith("/dashboard");
+    location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/worker-dashboard");
 
   return (
     <>
@@ -56,6 +58,11 @@ export default function App() {
           <Route path="/dashboard/*" element={
             <ProtectedRoute requiredRole="ROLE_ADMIN">
               <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/worker-dashboard" element={
+            <ProtectedRoute requiredRole="ROLE_WORKER">
+              <WorkerDashboard />
             </ProtectedRoute>
           } />
         </Routes>

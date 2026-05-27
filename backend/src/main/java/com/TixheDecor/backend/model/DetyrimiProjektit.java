@@ -21,6 +21,10 @@ public class DetyrimiProjektit {
     @JoinColumn(name = "punetori_id")
     private Punetori punetori;
 
+    @ManyToOne
+    @JoinColumn(name = "bride_to_be_request_id")
+    private BrideToBeRequest brideToBeRequest;
+
     @Column(columnDefinition = "TEXT")
     private String pershkrimi;
 
@@ -28,4 +32,5 @@ public class DetyrimiProjektit {
     private LocalDate dataPerfundimit;
     private String statusi;
     private String prioriteti;
+    private Boolean includeClientImages = false;
 }

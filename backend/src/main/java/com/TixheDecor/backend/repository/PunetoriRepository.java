@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface PunetoriRepository extends JpaRepository<Punetori, Integer> {
     Optional<Punetori> findByEmail(String email);
+    Optional<Punetori> findByEmailIgnoreCase(String email);
     List<Punetori> findByStatusi(String statusi);
 }

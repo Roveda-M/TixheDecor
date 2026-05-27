@@ -17,6 +17,9 @@ const projektMeKlientLabel = (p) => {
 const punetoriLabel = (p) =>
   `${p.emri || ''} ${p.mbiemri || ''}`.trim() || `Punëtor #${p.punetoriId}`;
 
+const brideRequestLabel = (request) =>
+  `BrideToBe - ${request.brideName || `Request #${request.requestId}`}`;
+
 const isEventRequestTitle = (title) =>
   title === 'Kërkesat Bride To Be' || title === 'Kërkesat Baby Shower';
 
@@ -78,17 +81,18 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   const [filterLloji, setFilterLloji] = useState('');
 
   const mapIncomingData = (title, items) => {
-    if (title === 'Punëtorët') {
+    if (title === 'Punetoret') {
       return items.map((item) => ({
         id: item.punetoriId,
-        name: `${item.emri || ''} ${item.mbiemri || ''}`.trim(),
-        role: item.pozita || '',
+        firstName: item.emri || '',
+        lastName: item.mbiemri || '',
+        position: item.pozita || '',
         phone: item.telefoni || '',
         salary: item.paga || 0,
         email: item.email || '',
         specialization: item.specializimi || '',
         hireDate: item.dataPunesimit || '',
-        statusi: item.statusi || 'Aktiv',
+        statusi: item.statusi || 'aktiv',
       }));
     }
     if (title === 'Detyrat e Projekteve') {
@@ -97,10 +101,14 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         task: item.pershkrimi || '',
         project: item.projekti ? projektMeKlientLabel(item.projekti) : '',
         projektiId: item.projekti ? String(item.projekti.projektiId) : '',
+        brideRequest: item.brideToBeRequest ? brideRequestLabel(item.brideToBeRequest) : '',
+        brideRequestId: item.brideToBeRequest?.requestId ? String(item.brideToBeRequest.requestId) : '',
         assigned: item.punetori ? `${item.punetori.emri} ${item.punetori.mbiemri}` : '',
-        punetoriId: item.punetori ? String(item.punetori.punetoriId) : '',
+        workerEmail: item.punetori?.email || '',
         startDate: item.dataFillimit || '',
         endDate: item.dataPerfundimit || '',
+        includeClientImages: item.includeClientImages ? 'Po' : 'Jo',
+        clientImages: item.brideToBeRequest?.selectedDecors || item.projekti?.llojiDekorimit || '',
         status: item.statusi || 'I filluar',
         prioriteti: item.prioriteti || 'Normal',
       }));
@@ -152,9 +160,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     if (title === 'Rolet e Përdoruesve') {
       return items.map((item) => ({
         id: item.id,
-        userId: item.user?.id ? String(item.user.id) : '',
-        user: item.user?.email || '',
-        roleId: item.role?.id ? String(item.role.id) : '',
+        userEmail: item.user?.email || '',
+        user: item.user?.fullname || item.user?.emri || item.user?.email || '',
+        roleName: item.role?.emertimi || '',
         role: item.role?.emertimi || '',
       }));
     }
@@ -211,18 +219,15 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   };
 
   const mapOutgoingData = (title, form) => {
-    if (title === 'Punëtorët') {
-      const nameParts = (form.name || '').trim().split(' ');
-      const emri = nameParts[0] || '';
-      const mbiemri = nameParts.slice(1).join(' ') || '';
+    if (title === 'Punetoret') {
       const payload = {
-        emri,
-        mbiemri,
-        pozita: form.role || '',
+        emri: form.firstName || '',
+        mbiemri: form.lastName || '',
+        pozita: form.position || '',
         telefoni: form.phone || '',
         paga: Number(form.salary) || 0,
-        email: form.email || `${emri.toLowerCase()}@tixhedecor.com`,
-        statusi: form.statusi || 'Aktiv',
+        email: form.email || '',
+        statusi: form.statusi || 'aktiv',
         specializimi: form.specialization || 'Dekorim',
         dataPunesimit: form.hireDate || null,
       };
@@ -230,7 +235,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return payload;
     }
     if (title === 'Detyrat e Projekteve') {
-      if (!form.projektiId || !form.punetoriId) {
+      if (!form.projektiId || !form.workerEmail) {
         throw new Error('Zgjidh projektin dhe punetorin.');
       }
       const payload = {
@@ -240,8 +245,12 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         statusi: form.status || 'I filluar',
         prioriteti: form.prioriteti || 'Normal',
         projekti: { projektiId: Number(form.projektiId) },
-        punetori: { punetoriId: Number(form.punetoriId) },
+        punetori: { email: form.workerEmail },
+        includeClientImages: form.includeClientImages === 'Po' || (!!form.brideRequestId && form.includeClientImages !== 'Jo'),
       };
+      if (form.brideRequestId) {
+        payload.brideToBeRequest = { requestId: Number(form.brideRequestId) };
+      }
       if (editingId) payload.detyrimiId = Number(editingId);
       return payload;
     }
@@ -306,12 +315,12 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return payload;
     }
     if (title === 'Rolet e Përdoruesve') {
-      if (!form.userId || !form.roleId) {
-        throw new Error('Shkruaj ID ekzistuese të përdoruesit dhe rolit.');
+      if (!form.userEmail || !form.roleName) {
+        throw new Error('Zgjidh perdoruesin dhe rolin.');
       }
       const payload = {
-        user: { id: Number(form.userId) },
-        role: { id: Number(form.roleId) },
+        userEmail: form.userEmail,
+        roleName: form.roleName,
       };
       if (editingId) payload.id = Number(editingId);
       return payload;
@@ -375,7 +384,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     setIsLoading(true);
     try {
       let items = [];
-      if (title === 'Punëtorët') items = await api.getWorkers();
+      if (title === 'Punetoret') items = await api.getWorkers();
       else if (title === 'Detyrat e Projekteve') items = await api.getTasks();
       else if (title === 'Fotografitë e Projekteve') items = await api.getPhotos();
       else if (title === 'Përdoruesit') items = await api.getUsers();
@@ -436,13 +445,45 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                 })),
               ];
             }
+            if (source === 'users') {
+              const users = await api.getUsers();
+              return [
+                source,
+                users.map((user) => ({
+                  value: user.email || '',
+                  label: `${user.fullname || user.emri || user.email}${user.email ? ' - ' + user.email : ''}`,
+                })),
+              ];
+            }
+            if (source === 'roles') {
+              const roles = await api.getRoles();
+              return [
+                source,
+                roles.map((role) => ({
+                  value: role.emertimi || '',
+                  label: role.emertimi || '',
+                })),
+              ];
+            }
+            if (source === 'brideRequests') {
+              const requests = await api.getBrideToBeRequests();
+              return [
+                source,
+                requests
+                  .filter((request) => !isBabyShowerRequest(request))
+                  .map((request) => ({
+                    value: String(request.requestId),
+                    label: `${brideRequestLabel(request)}${request.eventDate ? ' - ' + request.eventDate : ''}`,
+                  })),
+              ];
+            }
             if (source === 'workers') {
               const workers = await api.getWorkers();
               return [
                 source,
                 workers.map((worker) => ({
-                  value: String(worker.punetoriId),
-                  label: punetoriLabel(worker),
+                  value: worker.email || '',
+                  label: `${punetoriLabel(worker)}${worker.email ? ' - ' + worker.email : ''}`,
                 })),
               ];
             }
@@ -494,7 +535,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     try {
       const body = mapOutgoingData(title, formData);
 
-      if (title === 'Punëtorët') {
+      if (title === 'Punetoret') {
         if (editingId) {
           const updated = await api.updateWorker(editingId, body);
           setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
@@ -604,7 +645,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   const handleDelete = async (id) => {
     if (window.confirm('A jeni i sigurt që doni të fshini këtë rekord?')) {
       try {
-        if (title === 'Punëtorët') await api.deleteWorker(id);
+        if (title === 'Punetoret') await api.deleteWorker(id);
         else if (title === 'Detyrat e Projekteve') await api.deleteTask(id);
         else if (title === 'Fotografitë e Projekteve') await api.deletePhoto(id);
         else if (isEventRequestTitle(title)) await api.deleteBrideToBeRequest(id);

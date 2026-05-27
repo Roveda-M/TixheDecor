@@ -34,15 +34,23 @@ public class PunetoriController {
     }
 
     @PostMapping
-    public Punetori create(@RequestBody Punetori punetori) {
-        return punetoriService.create(punetori);
+    public ResponseEntity<?> create(@RequestBody Punetori punetori) {
+        try {
+            return ResponseEntity.ok(punetoriService.create(punetori));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Punetori> update(@PathVariable Integer id, @RequestBody Punetori punetori) {
-        return punetoriService.update(id, punetori)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Punetori punetori) {
+        try {
+            return punetoriService.update(id, punetori)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

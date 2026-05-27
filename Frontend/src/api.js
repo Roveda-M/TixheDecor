@@ -170,6 +170,16 @@ export const api = {
     return res.data;
   },
 
+  getMyTasks: async () => {
+    const res = await axiosInstance.get("/detyrimet-projektit/my");
+    return res.data;
+  },
+
+  updateMyTaskStatus: async (id, statusi) => {
+    const res = await axiosInstance.patch(`/detyrimet-projektit/${id}/status`, { statusi });
+    return res.data;
+  },
+
   deleteTask: async (id) => {
     await axiosInstance.delete(`/detyrimet-projektit/${id}`);
   },

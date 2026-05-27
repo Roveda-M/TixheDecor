@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user-roles")
@@ -34,15 +35,23 @@ public class UserRoleController {
     }
 
     @PostMapping
-    public UserRole create(@RequestBody UserRole userRole) {
-        return userRoleService.create(userRole);
+    public ResponseEntity<UserRole> create(@RequestBody Map<String, String> request) {
+        try {
+            return ResponseEntity.ok(userRoleService.createByNames(request));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserRole> update(@PathVariable Long id, @RequestBody UserRole userRole) {
-        return userRoleService.update(id, userRole)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserRole> update(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        try {
+            return userRoleService.updateByNames(id, request)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")

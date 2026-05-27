@@ -228,7 +228,7 @@ export default function BrideToBe() {
 
                     <div className="w-full lg:w-1/2 flex flex-col gap-4 sm:gap-8 order-2 lg:order-1 pt-4 lg:pt-0 border-t border-[#f0e6e1] lg:border-none">
                         <div className="text-center lg:text-left">
-                            <h3 className="text-2xl sm:text-4xl lg:text-4xl text-[#5c4a3d] mb-2 lg:mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Personalizo Ftesën</h3>
+                            <h3 className="text-2xl sm:text-4xl lg:text-4xl text-[#5c4a3d] mb-2 lg:mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Zgjedh dekorin ose Personalizo Ftesën</h3>
                             <p className="text-[#8e786b] text-xs sm:text-sm lg:text-base font-light leading-relaxed max-w-sm mx-auto lg:mx-0">
                                 Plotëso të dhënat e tua dhe ktheje në një ftesë mbretërore.
                             </p>

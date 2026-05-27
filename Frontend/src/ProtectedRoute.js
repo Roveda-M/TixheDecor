@@ -9,7 +9,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
     return <Navigate to="/login" />;
   }
 
-  if (requiredRole && !hasRole(role, requiredRole)) {
+  const requiredRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+  if (requiredRole && !requiredRoles.some((item) => hasRole(role, item))) {
     return <Navigate to="/home" replace />;
   }
 
