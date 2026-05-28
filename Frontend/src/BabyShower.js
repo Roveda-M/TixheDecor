@@ -196,16 +196,51 @@ const BabyShower = () => {
           })}
         </section>
 
-        <section className="px-6 sm:px-12 md:px-20 max-w-4xl mx-auto">
-          <div className="grid sm:grid-cols-2 gap-4 bg-[#F8F5F1] border border-[#EADDCB] rounded-3xl p-5 sm:p-8">
-            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" placeholder="Emri" value={requestForm.name} onChange={(e) => updateRequestForm('name', e.target.value)} />
-            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" type="date" value={requestForm.date} onChange={(e) => updateRequestForm('date', e.target.value)} />
-            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" type="time" value={requestForm.time} onChange={(e) => updateRequestForm('time', e.target.value)} />
-            <input className="px-4 py-3 rounded-xl border border-[#EADDCB] outline-none" placeholder="Lokacioni" value={requestForm.location} onChange={(e) => updateRequestForm('location', e.target.value)} />
-            <button onClick={handleSubmitRequest} disabled={isSubmitting} className="sm:col-span-2 px-6 py-3 rounded-xl bg-[#C5B4A3] text-white font-bold uppercase tracking-[0.18em] text-xs disabled:opacity-60">
+        <section className="px-6 sm:px-12 md:px-20 max-w-5xl mx-auto">
+          {cart.length > 0 && (
+            <div className="mb-5 rounded-2xl border border-[#EADDCB] bg-[#FFF8F2] px-5 py-4 text-center text-sm font-medium text-[#7A685B] shadow-sm">
+              Plotësoni informacionet e eventit për të vazhduar.
+            </div>
+          )}
+
+          <div className="rounded-[2rem] border border-[#EADDCB] bg-white p-5 shadow-[0_18px_45px_rgba(197,180,163,0.18)] sm:p-8">
+            <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#A68F7C]">Detajet e eventit</span>
+                <h3 className="mt-2 text-2xl text-[#4A3B32] sm:text-3xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  Kërkesa juaj Baby Shower
+                </h3>
+              </div>
+              <span className="rounded-full bg-[#F8F5F1] px-4 py-2 text-xs font-semibold text-[#7A685B]">
+                {cart.length} dekor{cart.length === 1 ? '' : 'e'} të zgjedhura
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#4A3B32]">Emri</span>
+                <input className="w-full rounded-2xl border border-[#EADDCB] bg-[#F8F5F1] px-4 py-3 text-[#4A3B32] outline-none transition focus:border-[#C5B4A3] focus:bg-white focus:ring-2 focus:ring-[#EADDCB]" placeholder="Shkruani emrin" value={requestForm.name} onChange={(e) => updateRequestForm('name', e.target.value)} />
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#4A3B32]">Lokacioni</span>
+                <input className="w-full rounded-2xl border border-[#EADDCB] bg-[#F8F5F1] px-4 py-3 text-[#4A3B32] outline-none transition focus:border-[#C5B4A3] focus:bg-white focus:ring-2 focus:ring-[#EADDCB]" placeholder="Qyteti / adresa" value={requestForm.location} onChange={(e) => updateRequestForm('location', e.target.value)} />
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-[#4A3B32]">Data e eventit</span>
+                <input className="w-full rounded-2xl border border-[#EADDCB] bg-[#F8F5F1] px-4 py-3 text-[#4A3B32] outline-none transition focus:border-[#C5B4A3] focus:bg-white focus:ring-2 focus:ring-[#EADDCB]" type="date" value={requestForm.date} onChange={(e) => updateRequestForm('date', e.target.value)} />
+              </label>
+              <label className="block md:col-span-3">
+                <span className="mb-2 block text-sm font-semibold text-[#4A3B32]">Ora</span>
+                <input className="w-full rounded-2xl border border-[#EADDCB] bg-[#F8F5F1] px-4 py-3 text-[#4A3B32] outline-none transition focus:border-[#C5B4A3] focus:bg-white focus:ring-2 focus:ring-[#EADDCB] md:max-w-xs" type="time" value={requestForm.time} onChange={(e) => updateRequestForm('time', e.target.value)} />
+              </label>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              {requestStatus && <p className="text-sm font-medium text-[#7A685B]">{requestStatus}</p>}
+              <button onClick={handleSubmitRequest} disabled={isSubmitting} className="rounded-2xl bg-[#4A3B32] px-7 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-[#2F241F] disabled:opacity-60">
               {isSubmitting ? 'Duke dërguar...' : `Dërgo kërkesën (${cart.length})`}
-            </button>
-            {requestStatus && <p className="sm:col-span-2 text-sm text-[#7A685B]">{requestStatus}</p>}
+              </button>
+            </div>
           </div>
         </section>
       </div >

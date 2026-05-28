@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, formatApiError } from '../api';
@@ -83,8 +83,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   const [lookupOptions, setLookupOptions] = useState({});
   const [filterStatus, setFilterStatus] = useState('');
   const [filterLloji, setFilterLloji] = useState('');
+  const [formErrors, setFormErrors] = useState({});
 
-  const mapIncomingData = (title, items) => {
+  const mapIncomingData = useCallback((title, items) => {
     if (title === 'Punetoret') {
       return items.map((item) => ({
         id: item.punetoriId,
@@ -255,7 +256,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       }));
     }
     return items;
-  };
+  }, []);
 
   const mapOutgoingData = (title, form) => {
     if (title === 'Punetoret') {
@@ -457,7 +458,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     return form;
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
       let items = [];
@@ -498,11 +499,11 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filterLloji, filterStatus, initialData, mapIncomingData, title]);
 
   useEffect(() => {
     loadData();
-  }, [title, filterStatus, filterLloji]);
+  }, [loadData]);
 
   useEffect(() => {
     const loadLookupOptions = async () => {
@@ -624,14 +625,97 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     setIsModalOpen(false);
     setFormData({});
     setEditingId(null);
+    setFormErrors({});
   };
 
   const handleChange = (e, key) => {
     setFormData({ ...formData, [key]: e.target.value });
+    setFormErrors((errors) => ({ ...errors, [key]: undefined, _form: undefined }));
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    const addError = (key, message) => {
+      if (!errors[key]) errors[key] = message;
+    };
+
+    formColumns.forEach((col) => {
+      if (col.tableOnly || col.required === false) return;
+
+      const value = formData[col.key];
+      const missingFile = col.type === 'file' && !formData.url && (!value || value.length === 0);
+      const missingValue = col.type !== 'file' && (value == null || String(value).trim() === '');
+
+      if (missingFile || missingValue) {
+        addError(col.key, `${col.label} eshte e detyrueshme.`);
+      }
+    });
+
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      addError('email', 'Shkruaj nje email valid.');
+    }
+
+    if (title === 'Punetoret') {
+      if (formData.salary !== '' && formData.salary != null && Number(formData.salary) < 0) {
+        addError('salary', 'Paga nuk mund te jete negative.');
+      }
+    }
+
+    if (title === 'Detyrat e Projekteve') {
+      if (!formData.projektiId) addError('projektiId', 'Zgjidh projektin.');
+      if (!formData.workerEmail) addError('workerEmail', 'Zgjidh punetorin.');
+      if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+        addError('endDate', 'Data e perfundimit nuk mund te jete para dates se fillimit.');
+      }
+    }
+
+    if (title === 'Fotografitë e Projekteve') {
+      const hasNewFiles = Array.isArray(formData.photoFiles)
+        ? formData.photoFiles.length > 0
+        : Boolean(formData.photoFiles);
+      if (!editingId && !hasNewFiles) {
+        addError('photoFiles', 'Zgjidh te pakten nje fotografi.');
+      }
+      if (!formData.lloji) {
+        addError('lloji', 'Zgjidh faqen ku do te shfaqet fotografia.');
+      }
+    }
+
+    if (title === 'Përdoruesit') {
+      if (!editingId && !formData.password) {
+        addError('password', 'Fjalekalimi eshte i detyrueshem per perdorues te rinj.');
+      }
+      if (formData.password && formData.password.length < 6) {
+        addError('password', 'Fjalekalimi duhet te kete se paku 6 karaktere.');
+      }
+    }
+
+    if (title === 'Rolet') {
+      if (!formData.name) {
+        addError('name', 'Shkruaj emertimin e rolit.');
+      }
+    }
+
+    if (title === 'Rolet e Përdoruesve') {
+      if (!formData.userEmail) addError('userEmail', 'Zgjidh perdoruesin.');
+      if (!formData.roleName) addError('roleName', 'Zgjidh rolin.');
+    }
+
+    if (formData.rating !== undefined && formData.rating !== '') {
+      const rating = Number(formData.rating);
+      if (Number.isNaN(rating) || rating < 1 || rating > 5) {
+        addError('rating', 'Vleresimi duhet te jete nga 1 deri ne 5.');
+      }
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       const body = mapOutgoingData(title, formData);
 
@@ -762,7 +846,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       handleCloseModal();
       alert('Operacioni u krye me sukses! ✅');
     } catch (error) {
-      alert('Ndodhi një gabim: ' + formatApiError(error));
+      setFormErrors({ _form: formatApiError(error) });
     }
   };
 
@@ -792,13 +876,18 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   };
 
   const renderField = (col) => {
+    const fieldClassName = `w-full px-4 py-2 bg-[#f6f1e8] border rounded-lg outline-none ${
+      formErrors[col.key] ? 'border-red-500 ring-1 ring-red-200' : 'border-[#c9c1b5]'
+    }`;
+
     if (col.type === 'photoLinks') {
       return (
         <textarea
           required={col.required !== false}
           value={formData[col.key] || ''}
           onChange={(e) => handleChange(e, col.key)}
-          className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none min-h-[120px]"
+          aria-invalid={Boolean(formErrors[col.key])}
+          className={`${fieldClassName} min-h-[120px]`}
         />
       );
     }
@@ -809,13 +898,15 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           accept="image/*"
           multiple={col.multiple}
           required={col.required !== false && !formData.url}
-          onChange={(e) =>
+          onChange={(e) => {
             setFormData({
               ...formData,
               [col.key]: col.multiple ? Array.from(e.target.files || []) : e.target.files?.[0] || null,
-            })
-          }
-          className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#2b2b2b] file:text-white"
+            });
+            setFormErrors((errors) => ({ ...errors, [col.key]: undefined, _form: undefined }));
+          }}
+          aria-invalid={Boolean(formErrors[col.key])}
+          className={`${fieldClassName} file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#2b2b2b] file:text-white`}
         />
       );
     }
@@ -827,7 +918,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           value={formData[col.key] || ''}
           onChange={(e) => handleChange(e, col.key)}
           disabled={col.optionsSource && options.length === 0}
-          className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none"
+          aria-invalid={Boolean(formErrors[col.key])}
+          className={fieldClassName}
         >
           <option value="">
             {options.length === 0 && col.optionsSource ? 'Nuk ka të dhëna' : 'Zgjidh...'}
@@ -846,7 +938,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           required={col.required !== false}
           value={formData[col.key] || ''}
           onChange={(e) => handleChange(e, col.key)}
-          className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none min-h-[100px]"
+          aria-invalid={Boolean(formErrors[col.key])}
+          className={`${fieldClassName} min-h-[100px]`}
         />
       );
     }
@@ -856,7 +949,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         required={col.required !== false}
         value={formData[col.key] || ''}
         onChange={(e) => handleChange(e, col.key)}
-        className="w-full px-4 py-2 bg-[#f6f1e8] border border-[#c9c1b5] rounded-lg outline-none"
+        aria-invalid={Boolean(formErrors[col.key])}
+        className={fieldClassName}
       />
     );
   };
@@ -1056,9 +1150,17 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                         {col.label}
                       </label>
                       {renderField(col)}
+                      {formErrors[col.key] && (
+                        <p className="mt-1 text-sm text-red-600">{formErrors[col.key]}</p>
+                      )}
                     </div>
                   ))}
                 </div>
+                {formErrors._form && (
+                  <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {formErrors._form}
+                  </div>
+                )}
                 <div className="mt-8 flex justify-end gap-3">
                   <button
                     type="button"

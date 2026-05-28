@@ -101,19 +101,9 @@ const crudConfigs = {
     columns: [
       { key: 'task', label: 'Përshkrimi i Detyrës', type: 'text' },
       { key: 'projektiId', label: 'Projekti', type: 'select', optionsSource: 'projects', tableKey: 'project' },
-      { key: 'brideRequestId', label: 'BrideToBe Event', type: 'select', optionsSource: 'brideRequests', tableKey: 'brideRequest', required: false },
       { key: 'workerEmail', label: 'Punetori', type: 'select', optionsSource: 'workers', tableKey: 'assigned' },
       { key: 'startDate', label: 'Data fillimit', type: 'date' },
       { key: 'endDate', label: 'Afati / Data përfundimit', type: 'date' },
-      {
-        key: 'includeClientImages',
-        label: 'Include client selected images',
-        type: 'select',
-        options: [
-          { value: 'Jo', label: 'Jo' },
-          { value: 'Po', label: 'Po' },
-        ],
-      },
       { key: 'clientImages', label: 'Fotot e klientit', type: 'photoLinks', tableOnly: true },
       {
         key: 'status',
@@ -190,7 +180,6 @@ const crudConfigs = {
       { key: 'eventTime', label: 'Ora', type: 'time' },
       { key: 'location', label: 'Lokacioni', type: 'text' },
       { key: 'selectedDecors', label: 'Fotot e zgjedhura', type: 'photoLinks' },
-      { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'punetori' },
       {
         key: 'statusi',
         label: 'Statusi',
@@ -216,7 +205,6 @@ const crudConfigs = {
       { key: 'eventTime', label: 'Ora', type: 'time' },
       { key: 'location', label: 'Lokacioni', type: 'text' },
       { key: 'selectedDecors', label: 'Fotot e zgjedhura', type: 'photoLinks' },
-      { key: 'punetoriId', label: 'Punëtori', type: 'select', optionsSource: 'workers', tableKey: 'punetori' },
       {
         key: 'statusi',
         label: 'Statusi',
