@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class RoleService {
-    public static final Set<String> ALLOWED_ROLES = Set.of("ROLE_ADMIN", "ROLE_USER", "ROLE_WORKER");
+    public static final Set<String> ALLOWED_ROLES = Set.of("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER", "ROLE_WORKER");
 
     @Autowired
     private RoleRepository roleRepository;
@@ -67,13 +67,16 @@ public class RoleService {
         if ("ROLE_PUNETOR".equals(normalized) || "ROLE_PUNETORI".equals(normalized)) {
             return "ROLE_WORKER";
         }
+        if ("ROLE_MENAXHER".equals(normalized) || "ROLE_MENAXHERI".equals(normalized)) {
+            return "ROLE_MANAGER";
+        }
         return normalized;
     }
 
     private void normalizeAndValidate(Role role) {
         String normalized = normalizeName(role.getEmertimi());
         if (!ALLOWED_ROLES.contains(normalized)) {
-            throw new IllegalArgumentException("Lejohen vetem rolet: admin, user, worker.");
+            throw new IllegalArgumentException("Lejohen vetem rolet: admin, manager, user, worker.");
         }
         role.setEmertimi(normalized);
         role.setNormalizedName(normalized);

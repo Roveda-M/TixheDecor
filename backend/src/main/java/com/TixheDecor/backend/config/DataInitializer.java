@@ -22,6 +22,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         seedRole("ROLE_ADMIN", "Administrator me qasje te plote");
+        seedRole("ROLE_MANAGER", "Menaxher me qasje ne operacionet e biznesit");
         seedRole("ROLE_WORKER", "Punetor me qasje ne detyrat e veta");
         seedRole("ROLE_USER", "Perdorues me qasje te kufizuar");
         removeUnsupportedRoles();
@@ -38,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void removeUnsupportedRoles() {
-        Set<String> allowed = Set.of("ROLE_ADMIN", "ROLE_USER", "ROLE_WORKER");
+        Set<String> allowed = Set.of("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER", "ROLE_WORKER");
         roleRepository.findAll().stream()
                 .filter(role -> !allowed.contains((role.getEmertimi() == null ? "" : role.getEmertimi()).toUpperCase()))
                 .forEach(role -> {
