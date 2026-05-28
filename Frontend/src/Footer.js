@@ -87,7 +87,7 @@ export default function Footer() {
 
   <ul className="space-y-2">
     <li>
-      <Link to="/engagement" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
+      <Link to="/engagement-party" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-[#a67c52]">
         Engagement
       </Link>
     </li>
