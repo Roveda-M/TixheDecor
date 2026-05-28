@@ -16,7 +16,7 @@ import java.util.Arrays;
 @Configuration
 public class FlywayMigrationConfig {
 
-    @Bean(initMethod = "migrate")
+    @Bean
     public Flyway flyway(DataSource dataSource, Environment environment) {
         String[] locations = environment.getProperty(
                 "spring.flyway.locations",
@@ -32,14 +32,25 @@ public class FlywayMigrationConfig {
                 "spring.flyway.validate-on-migrate",
                 "true"
         ));
+        boolean repairBeforeMigrate = Boolean.parseBoolean(environment.getProperty(
+                "spring.flyway.repair-before-migrate",
+                "false"
+        ));
 
-        return Flyway.configure()
+        Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .locations(Arrays.stream(locations).map(String::trim).toArray(String[]::new))
                 .baselineOnMigrate(baselineOnMigrate)
                 .baselineVersion(MigrationVersion.fromVersion(baselineVersion))
                 .validateOnMigrate(validateOnMigrate)
                 .load();
+
+        if (repairBeforeMigrate) {
+            flyway.repair();
+        }
+
+        flyway.migrate();
+        return flyway;
     }
 
     @Bean
