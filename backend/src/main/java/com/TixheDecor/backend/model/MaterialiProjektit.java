@@ -7,7 +7,12 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "Materiali_Projektit")
+@Table(
+        name = "Materiali_Projektit",
+        indexes = {
+                @Index(name = "idx_materiali_projektit_perdorimit", columnList = "data_perdorimit")
+        }
+)
 public class MaterialiProjektit {
 
     @Id
@@ -22,9 +27,10 @@ public class MaterialiProjektit {
     @JoinColumn(name = "materiali_id")
     private Materiali materiali;
 
+    @Column(nullable = false)
     private Integer sasia;
 
-    @Column(precision = 10, scale = 2)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal cmimiTotal;
 
     private LocalDate dataPerdorimit;

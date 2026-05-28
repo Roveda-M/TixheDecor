@@ -27,6 +27,7 @@ public class FurnitoriService {
     }
 
     public Furnitori create(Furnitori furnitori) {
+        validate(furnitori);
         return furnitoriRepository.save(furnitori);
     }
 
@@ -34,6 +35,7 @@ public class FurnitoriService {
         if (!furnitoriRepository.existsById(id)) {
             return Optional.empty();
         }
+        validate(furnitori);
         furnitori.setFurnitoriId(id);
         return Optional.of(furnitoriRepository.save(furnitori));
     }
@@ -44,5 +46,27 @@ public class FurnitoriService {
         }
         furnitoriRepository.deleteById(id);
         return true;
+    }
+
+    private void validate(Furnitori furnitori) {
+        if (furnitori == null) {
+            throw new IllegalArgumentException("Furnitori nuk mund te jete bosh.");
+        }
+        if (isBlank(furnitori.getEmri())) {
+            throw new IllegalArgumentException("Emri i furnitorit eshte i detyrueshem.");
+        }
+        if (isBlank(furnitori.getKontaktiKryesor())) {
+            throw new IllegalArgumentException("Kontakti kryesor eshte i detyrueshem.");
+        }
+        if (isBlank(furnitori.getKushtetPageses())) {
+            throw new IllegalArgumentException("Kushtet e pageses jane te detyrueshme.");
+        }
+        if (furnitori.getVleresimi() == null || furnitori.getVleresimi() < 1 || furnitori.getVleresimi() > 5) {
+            throw new IllegalArgumentException("Vleresimi i furnitorit duhet te jete nga 1 deri ne 5.");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

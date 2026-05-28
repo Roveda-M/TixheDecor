@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface MaterialiProjektitRepository extends JpaRepository<MaterialiProjektit, Integer> {
     List<MaterialiProjektit> findByProjektiProjektiId(Integer projektiId);
-    List<MaterialiProjektit> findBymaterialiMaterialiId(Integer materialiId);
+    List<MaterialiProjektit> findByMaterialiMaterialiId(Integer materialiId);
 }
