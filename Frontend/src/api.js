@@ -184,6 +184,60 @@ export const api = {
     await axiosInstance.delete(`/detyrimet-projektit/${id}`);
   },
 
+  // INVENTARI
+  getMaterials: async () => {
+    const res = await axiosInstance.get("/materialet");
+    return res.data;
+  },
+
+  createMaterial: async (data) => {
+    const res = await axiosInstance.post("/materialet", data);
+    return res.data;
+  },
+
+  updateMaterial: async (id, data) => {
+    const res = await axiosInstance.put(`/materialet/${id}`, data);
+    return res.data;
+  },
+
+  deleteMaterial: async (id) => {
+    await axiosInstance.delete(`/materialet/${id}`);
+  },
+
+  // FURNITORET
+  getSuppliers: async () => {
+    const res = await axiosInstance.get("/furnitoret");
+    return res.data;
+  },
+
+  createSupplier: async (data) => {
+    const res = await axiosInstance.post("/furnitoret", data);
+    return res.data;
+  },
+
+  updateSupplier: async (id, data) => {
+    const res = await axiosInstance.put(`/furnitoret/${id}`, data);
+    return res.data;
+  },
+
+  deleteSupplier: async (id) => {
+    await axiosInstance.delete(`/furnitoret/${id}`);
+  },
+
+  createMaterialUsage: async (data) => {
+    const res = await axiosInstance.post("/materialet-projektit", data);
+    return res.data;
+  },
+
+  updateMaterialUsage: async (id, data) => {
+    const res = await axiosInstance.put(`/materialet-projektit/${id}`, data);
+    return res.data;
+  },
+
+  deleteMaterialUsage: async (id) => {
+    await axiosInstance.delete(`/materialet-projektit/${id}`);
+  },
+
   // BRIDE TO BE REQUESTS
   getBrideToBeRequests: async () => {
     const res = await axiosInstance.get("/bride-to-be-requests");

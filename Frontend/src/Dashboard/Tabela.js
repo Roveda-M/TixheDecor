@@ -17,6 +17,10 @@ const projektMeKlientLabel = (p) => {
 const punetoriLabel = (p) =>
   `${p.emri || ''} ${p.mbiemri || ''}`.trim() || `Punëtor #${p.punetoriId}`;
 
+const furnitoriLabel = (f) => f.emri || `Furnitor #${f.furnitoriId}`;
+
+const materialiLabel = (m) => m.emri || `Material #${m.materialiId}`;
+
 const brideRequestLabel = (request) =>
   `BrideToBe - ${request.brideName || `Request #${request.requestId}`}`;
 
@@ -111,6 +115,41 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         clientImages: item.brideToBeRequest?.selectedDecors || item.projekti?.llojiDekorimit || '',
         status: item.statusi || 'I filluar',
         prioriteti: item.prioriteti || 'Normal',
+      }));
+    }
+    if (title === 'Materialet') {
+      return items.map((item) => ({
+        id: item.materialiId,
+        name: item.emri || '',
+        supplier: item.furnitori ? furnitoriLabel(item.furnitori) : '',
+        supplierId: item.furnitori?.furnitoriId ? String(item.furnitori.furnitoriId) : '',
+        category: item.kategoria || '',
+        unit: item.njesiaMatese || '',
+        stock: item.sasiaStokut ?? 0,
+        price: item.cmimiPerNjesi ?? 0,
+      }));
+    }
+    if (title === 'Furnitorët') {
+      return items.map((item) => ({
+        id: item.furnitoriId,
+        company: item.emri || '',
+        contact: item.kontaktiKryesor || '',
+        phone: item.telefoni || '',
+        email: item.email || '',
+        paymentTerms: item.kushtetPageses || '',
+        rating: item.vleresimi ?? '',
+        statusi: item.statusi || 'Aktiv',
+      }));
+    }
+    if (title === 'Përdorimi i Materialeve') {
+      return items.map((item) => ({
+        id: item.mpId,
+        project: item.projekti ? projektLabel(item.projekti) : '',
+        projectId: item.projekti?.projektiId ? String(item.projekti.projektiId) : '',
+        material: item.materiali ? materialiLabel(item.materiali) : '',
+        materialId: item.materiali?.materialiId ? String(item.materiali.materialiId) : '',
+        quantity: item.sasia ?? 0,
+        date: item.dataPerdorimit || '',
       }));
     }
     if (title === 'Fotografitë e Projekteve') {
@@ -254,6 +293,44 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       if (editingId) payload.detyrimiId = Number(editingId);
       return payload;
     }
+    if (title === 'Materialet') {
+      const payload = {
+        emri: form.name || '',
+        kategoria: form.category || '',
+        njesiaMatese: form.unit || '',
+        sasiaStokut: Number(form.stock) || 0,
+        cmimiPerNjesi: form.price !== '' && form.price != null ? Number(form.price) : 0,
+      };
+      if (form.supplierId) payload.furnitori = { furnitoriId: Number(form.supplierId) };
+      if (editingId) payload.materialiId = Number(editingId);
+      return payload;
+    }
+    if (title === 'Furnitorët') {
+      const payload = {
+        emri: form.company || '',
+        kontaktiKryesor: form.contact || '',
+        telefoni: form.phone || '',
+        email: form.email || '',
+        kushtetPageses: form.paymentTerms || '',
+        vleresimi: Number(form.rating) || 1,
+        statusi: form.statusi || 'Aktiv',
+      };
+      if (editingId) payload.furnitoriId = Number(editingId);
+      return payload;
+    }
+    if (title === 'Përdorimi i Materialeve') {
+      if (!form.projectId || !form.materialId) {
+        throw new Error('Zgjidh projektin dhe materialin.');
+      }
+      const payload = {
+        projekti: { projektiId: Number(form.projectId) },
+        materiali: { materialiId: Number(form.materialId) },
+        sasia: Number(form.quantity) || 0,
+        dataPerdorimit: form.date || null,
+      };
+      if (editingId) payload.mpId = Number(editingId);
+      return payload;
+    }
     if (title === 'Fotografitë e Projekteve') {
       const payload = {
         pershkrimi: form.description || '',
@@ -386,6 +463,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       let items = [];
       if (title === 'Punetoret') items = await api.getWorkers();
       else if (title === 'Detyrat e Projekteve') items = await api.getTasks();
+      else if (title === 'Materialet') items = await api.getMaterials();
+      else if (title === 'Furnitorët') items = await api.getSuppliers();
+      else if (title === 'Përdorimi i Materialeve') items = await api.getMaterialUsage();
       else if (title === 'Fotografitë e Projekteve') items = await api.getPhotos();
       else if (title === 'Përdoruesit') items = await api.getUsers();
       else if (title === 'Rolet') items = await api.getRoles();
@@ -452,6 +532,26 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                 users.map((user) => ({
                   value: user.email || '',
                   label: `${user.fullname || user.emri || user.email}${user.email ? ' - ' + user.email : ''}`,
+                })),
+              ];
+            }
+            if (source === 'suppliers') {
+              const suppliers = await api.getSuppliers();
+              return [
+                source,
+                suppliers.map((supplier) => ({
+                  value: String(supplier.furnitoriId),
+                  label: furnitoriLabel(supplier),
+                })),
+              ];
+            }
+            if (source === 'materials') {
+              const materials = await api.getMaterials();
+              return [
+                source,
+                materials.map((material) => ({
+                  value: String(material.materialiId),
+                  label: materialiLabel(material),
                 })),
               ];
             }
@@ -551,6 +651,30 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
           const created = await api.createTask(body);
           setData([...data, mapIncomingData(title, [created])[0]]);
         }
+      } else if (title === 'Materialet') {
+        if (editingId) {
+          const updated = await api.updateMaterial(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createMaterial(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else if (title === 'Furnitorët') {
+        if (editingId) {
+          const updated = await api.updateSupplier(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createSupplier(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
+      } else if (title === 'Përdorimi i Materialeve') {
+        if (editingId) {
+          const updated = await api.updateMaterialUsage(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createMaterialUsage(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
       } else if (title === 'Fotografitë e Projekteve') {
         if (editingId) {
           if (formData.photoFiles?.[0]) {
@@ -647,6 +771,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       try {
         if (title === 'Punetoret') await api.deleteWorker(id);
         else if (title === 'Detyrat e Projekteve') await api.deleteTask(id);
+        else if (title === 'Materialet') await api.deleteMaterial(id);
+        else if (title === 'Furnitorët') await api.deleteSupplier(id);
+        else if (title === 'Përdorimi i Materialeve') await api.deleteMaterialUsage(id);
         else if (title === 'Fotografitë e Projekteve') await api.deletePhoto(id);
         else if (isEventRequestTitle(title)) await api.deleteBrideToBeRequest(id);
         else if (title === 'Përdoruesit') await api.deleteUser(id);

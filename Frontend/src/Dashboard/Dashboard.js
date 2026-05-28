@@ -72,13 +72,13 @@ const crudConfigs = {
     icon: <FiBox />,
     columns: [
       { key: 'name', label: 'Emri i Materialit', type: 'text' },
+      { key: 'supplierId', label: 'Furnitori', type: 'select', optionsSource: 'suppliers', tableKey: 'supplier', required: false },
       { key: 'category', label: 'Kategoria', type: 'text' },
+      { key: 'unit', label: 'Njësia matëse', type: 'text' },
       { key: 'stock', label: 'Sasia në Stok', type: 'number' },
       { key: 'price', label: 'Çmimi për Njësi (€)', type: 'number' },
     ],
-    initialData: [
-      { id: '1', name: 'Trëndafila të Bardhë', category: 'Lule Natyrale', stock: '500', price: '1.5' },
-    ]
+    initialData: []
   },
   suppliers: {
     id: 'suppliers',
@@ -89,10 +89,10 @@ const crudConfigs = {
       { key: 'contact', label: 'Personi Kontaktues', type: 'text' },
       { key: 'phone', label: 'Telefoni', type: 'text' },
       { key: 'email', label: 'Email', type: 'email' },
+      { key: 'paymentTerms', label: 'Kushtet e pagesës', type: 'text' },
+      { key: 'rating', label: 'Vlerësimi', type: 'number' },
     ],
-    initialData: [
-      { id: '1', name: 'Florist L.L.C', contact: 'Agron Kelmendi', phone: '+383 49 999 888', email: 'info@florist.com' },
-    ]
+    initialData: []
   },
   tasks: {
     id: 'tasks',
@@ -133,14 +133,12 @@ const crudConfigs = {
     title: 'Përdorimi i Materialeve',
     icon: <FiLayers />,
     columns: [
-      { key: 'project', label: 'Projekti', type: 'text' },
-      { key: 'material', label: 'Materiali', type: 'text' },
+      { key: 'projectId', label: 'Projekti', type: 'select', optionsSource: 'projects', tableKey: 'project' },
+      { key: 'materialId', label: 'Materiali', type: 'select', optionsSource: 'materials', tableKey: 'material' },
       { key: 'quantity', label: 'Sasia e Përdorur', type: 'number' },
       { key: 'date', label: 'Data', type: 'date' },
     ],
-    initialData: [
-      { id: '1', project: 'Dasma e Artës', material: 'Trëndafila të Bardhë', quantity: '150', date: '2026-06-14' },
-    ]
+    initialData: []
   },
   invoices: {
     id: 'invoices',
