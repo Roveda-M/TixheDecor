@@ -2,6 +2,7 @@ package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.BrideToBeRequest;
 import com.TixheDecor.backend.service.BrideToBeRequestService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/bride-to-be-requests")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+@Tag(name = "Bride To Be Requests", description = "Kerkesat e klienteve per evente Bride To Be dhe Baby Shower")
 public class BrideToBeRequestController {
 
     @Autowired
