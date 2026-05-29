@@ -29,6 +29,8 @@ export default function Profile() {
     navigate("/login");
   };
 
+  const displayName = user?.fullname || user?.username || "Perdoruesi";
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Duke ngarkuar...</div>;
 
   return (
@@ -38,9 +40,9 @@ export default function Profile() {
         <aside className="w-full md:w-72 bg-white shadow-md p-6 flex-shrink-0">
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto bg-[#e6dfd3] rounded-full flex items-center justify-center text-3xl">
-              👤
+              {displayName.charAt(0).toUpperCase()}
             </div>
-            <h3 className="mt-3 font-medium">{user?.emri || "Përdoruesi"}</h3>
+            <h3 className="mt-3 font-medium">{displayName}</h3>
             <p className="text-xs text-gray-500">{user?.statusi || "Aktiv"}</p>
           </div>
 
@@ -76,11 +78,11 @@ export default function Profile() {
                 <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
                   <div>
                     <label className="text-sm text-gray-500">Full Name</label>
-                    <p className="text-lg font-medium">{user?.emri || "-"}</p>
+                    <p className="text-lg font-medium">{user?.fullname || "-"}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500">Emri</label>
-                    <p className="text-lg font-medium">{user?.emri || "-"}</p>
+                    <label className="text-sm text-gray-500">Username</label>
+                    <p className="text-lg font-medium">{user?.username || "-"}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-500">Email</label>
@@ -102,7 +104,7 @@ export default function Profile() {
                   {["Wedding", "Birthday", "Baby Shower", "Engagement"].map(event => (
                       <div key={event} className="bg-white p-4 rounded-2xl shadow-sm hover:shadow-md transition">
                         <div className="w-full h-32 bg-[#e6dfd3] rounded-xl mb-3 flex items-center justify-center text-2xl">
-                          🌸
+                          {event.charAt(0)}
                         </div>
                         <p className="font-medium">{event}</p>
                         <p className="text-sm text-gray-500">Dekorim special</p>

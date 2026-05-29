@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Ftesa from "./Ftesa";
+import { api, formatApiError } from "./api";
 
 const normalizePhotoUrl = (url) => {
   if (!url) return "";
@@ -188,6 +189,12 @@ export default function Wedding() {
   const [photosLoading, setPhotosLoading] = useState(true);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [countdownDate, setCountdownDate] = useState(getStoredCountdownDate);
+  const [coupleName, setCoupleName] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
+  const [eventLocation, setEventLocation] = useState("");
+  const [requestStatus, setRequestStatus] = useState("");
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   const countdown = useCountdown(countdownDate);
 
@@ -247,6 +254,43 @@ export default function Wedding() {
     if (lightboxIndex === null) return;
     const next = (lightboxIndex + dir + photos.length) % photos.length;
     setLightboxIndex(next);
+  };
+
+  const handleSubmitRequest = async () => {
+    if (selectedDecors.length === 0) {
+      setRequestStatus("Zgjidhni të paktën një dekor nga galeria.");
+      scrollTo("wedding-gallery");
+      return;
+    }
+    if (!coupleName.trim() || !eventDate || !eventTime || !eventLocation.trim()) {
+      setRequestStatus("Plotësoni emrin e çiftit, datën, orën dhe lokacionin.");
+      scrollTo("wedding-request");
+      return;
+    }
+
+    const selectedDecorText = selectedDecors
+        .map((index) => {
+          const photo = photos[index];
+          return `${photo.title.full} (${photo.url})`;
+        })
+        .join(", ");
+
+    try {
+      setIsSubmittingRequest(true);
+      await api.createBrideToBeRequest({
+        brideName: `Wedding - ${coupleName.trim()}`,
+        eventDate,
+        eventTime,
+        location: eventLocation.trim(),
+        selectedDecors: selectedDecorText,
+      });
+      setRequestStatus("Kërkesa u dërgua. Admini e sheh te Menaxhimi i Klientëve dhe te Kërkesat Dasme.");
+      setSelectedDecors([]);
+    } catch (error) {
+      setRequestStatus(formatApiError(error));
+    } finally {
+      setIsSubmittingRequest(false);
+    }
   };
 
   /* ================== FTESA VIEW ================== */
@@ -564,8 +608,8 @@ export default function Wedding() {
                   Dekorë dasme
                 </h2>
                 <p className="mt-4 text-[#8b6a4a] dark:text-[#8b6a4a]/80 max-w-lg text-sm md:text-base leading-relaxed">
-                  Zgjidhni stilet që ju frymëzojnë — klikoni për të shënuar favoritet ose për
-                  parapamje të plotë.
+                  Prekni fotot për të zgjedhur dekorët, pastaj plotësoni formularin më poshtë që
+                  të na kontaktoni — admini merr kërkesën automatikisht.
                 </p>
               </div>
               {selectedDecors.length > 0 && (
@@ -661,6 +705,90 @@ export default function Wedding() {
                     );
                   })}
                 </div>
+            )}
+          </div>
+        </section>
+
+        {/* ——— KËRKESË / KONTAKT ——— */}
+        <section id="wedding-request" className="py-16 md:py-24 px-4 md:px-12">
+          <div className="max-w-4xl mx-auto rounded-[2rem] bg-white/80 dark:bg-white/90 border border-[#e8dfd4] dark:border-[#ead7bd] p-8 md:p-12 shadow-[0_24px_60px_rgba(107,78,55,0.08)]">
+            <p className="text-[10px] tracking-[0.35em] uppercase text-[#a67c52] font-semibold mb-3 text-center">
+              Na kontaktoni
+            </p>
+            <h2
+                className="text-2xl md:text-4xl text-[#6f4e37] text-center mb-3"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Dërgoni kërkesën për dasmin tuaj
+            </h2>
+            <p className="text-center text-[#8b6a4a] text-sm md:text-base mb-8 max-w-xl mx-auto">
+              {selectedDecors.length > 0
+                  ? `${selectedDecors.length} dekor të zgjedhur — plotësoni detajet dhe dërgoni.`
+                  : "Zgjidhni dekorët nga galeria, pastaj plotësoni formularin."}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Emri i çiftit</label>
+                <input
+                    type="text"
+                    value={coupleName}
+                    onChange={(e) => setCoupleName(e.target.value)}
+                    placeholder="psh. Arta & Naser"
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Data e dasmës</label>
+                <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Ora</label>
+                <input
+                    type="time"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Lokacioni</label>
+                <input
+                    type="text"
+                    value={eventLocation}
+                    onChange={(e) => setEventLocation(e.target.value)}
+                    placeholder="psh. Prishtinë, Hotel ..."
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                  type="button"
+                  onClick={handleSubmitRequest}
+                  disabled={isSubmittingRequest}
+                  className="px-10 py-4 rounded-full bg-[#6f4e37] text-white font-semibold tracking-wide hover:bg-[#8b5e3c] transition disabled:opacity-60"
+              >
+                {isSubmittingRequest ? "Duke dërguar..." : "Dërgo kërkesën"}
+              </button>
+              <Link
+                  to="/contact"
+                  className="px-10 py-4 rounded-full text-center border border-[#6f4e37]/25 text-[#6f4e37] font-semibold hover:bg-[#6f4e37]/5 transition"
+              >
+                Kontakt i drejtpërdrejtë
+              </Link>
+            </div>
+
+            {requestStatus && (
+                <p className="mt-6 text-sm text-center text-[#5c4030] bg-[#f7f3ec] border border-[#e8dfd4] rounded-xl px-4 py-3">
+                  {requestStatus}
+                </p>
             )}
           </div>
         </section>
@@ -825,7 +953,7 @@ export default function Wedding() {
         {/* ——— STICKY SELECTION BAR ——— */}
         {selectedDecors.length > 0 && (
             <div
-                className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-4 px-6 py-3.5 rounded-full
+                className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-wrap items-center justify-center gap-3 px-6 py-3.5 rounded-full
           bg-[#6f4e37] dark:bg-[#fff6e8] text-white border border-[#a67c52]/30 dark:border-[#d8bea0]
           shadow-[0_20px_50px_rgba(0,0,0,0.25)] backdrop-blur-md animate-[weddingSlideUp_0.5s_ease-out]"
             >
@@ -834,10 +962,10 @@ export default function Wedding() {
           </span>
               <button
                   type="button"
-                  onClick={() => scrollTo("wedding-gallery")}
-                  className="text-xs uppercase tracking-wider text-[#fde68a] hover:underline"
+                  onClick={() => scrollTo("wedding-request")}
+                  className="text-xs uppercase tracking-wider text-[#fde68a] hover:underline font-semibold"
               >
-                Shiko
+                Kontakto / Dërgo
               </button>
             </div>
         )}

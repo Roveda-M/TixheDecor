@@ -25,9 +25,22 @@ const brideRequestLabel = (request) =>
   `BrideToBe - ${request.brideName || `Request #${request.requestId}`}`;
 
 const isEventRequestTitle = (title) =>
-  title === 'Kërkesat Bride To Be' || title === 'Kërkesat Baby Shower';
+  title === 'Kërkesat Bride To Be' ||
+  title === 'Kërkesat Baby Shower' ||
+  title === 'Kërkesat Dasme';
 
 const isBabyShowerRequest = (item) => (item.brideName || '').startsWith('Baby Shower -');
+
+const isWeddingRequest = (item) => (item.brideName || '').startsWith('Wedding -');
+
+const filterEventRequests = (title, items) => {
+  if (title === 'Kërkesat Baby Shower') return items.filter(isBabyShowerRequest);
+  if (title === 'Kërkesat Dasme') return items.filter(isWeddingRequest);
+  if (title === 'Kërkesat Bride To Be') {
+    return items.filter((item) => !isBabyShowerRequest(item) && !isWeddingRequest(item));
+  }
+  return items;
+};
 
 const normalizeAssetUrl = (url) => {
   const trimmed = (url || '').trim();
@@ -247,12 +260,16 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     if (title === 'Vlerësimet e Klientëve') {
       return items.map((item) => ({
         id: item.vleresimiId,
+        userName: item.user?.fullname || item.user?.username || '',
+        userEmail: item.user?.email || '',
         client: item.klienti ? klientLabel(item.klienti) : '',
         clientId: item.klienti?.klientiId ? String(item.klienti.klientiId) : '',
         project: item.projekti ? projektLabel(item.projekti) : '',
         projectId: item.projekti?.projektiId ? String(item.projekti.projektiId) : '',
         rating: item.piket != null ? String(item.piket) : '',
         comment: item.komenti || '',
+        recommendation: item.rekomandimi || '',
+        date: item.dataVleresimit || '',
       }));
     }
     return items;
@@ -449,6 +466,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       const payload = {
         piket: Number(form.rating) || 0,
         komenti: form.comment || '',
+        rekomandimi: form.recommendation || '',
+        dataVleresimit: form.date || null,
       };
       if (form.clientId) payload.klienti = { klientiId: Number(form.clientId) };
       if (form.projectId) payload.projekti = { projektiId: Number(form.projectId) };
@@ -484,9 +503,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       } else if (title === 'Projektet e Dekorimit') items = await api.getProjektet();
       else if (isEventRequestTitle(title)) {
         items = await api.getBrideToBeRequests();
-        items = items.filter((item) =>
-          title === 'Kërkesat Baby Shower' ? isBabyShowerRequest(item) : !isBabyShowerRequest(item)
-        );
+        items = filterEventRequests(title, items);
       }
       else if (title === 'Faturat') items = await api.getFaturat();
       else if (title === 'Vlerësimet e Klientëve') items = await api.getVleresimet();
@@ -523,6 +540,16 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                 projects.map((project) => ({
                   value: String(project.projektiId),
                   label: title === 'Detyrat e Projekteve' ? projektMeKlientLabel(project) : projektLabel(project),
+                })),
+              ];
+            }
+            if (source === 'clients') {
+              const clients = await api.getKlientet();
+              return [
+                source,
+                clients.map((client) => ({
+                  value: String(client.klientiId),
+                  label: klientLabel(client),
                 })),
               ];
             }
@@ -571,7 +598,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
               return [
                 source,
                 requests
-                  .filter((request) => !isBabyShowerRequest(request))
+                  .filter((request) => !isBabyShowerRequest(request) && !isWeddingRequest(request))
                   .map((request) => ({
                     value: String(request.requestId),
                     label: `${brideRequestLabel(request)}${request.eventDate ? ' - ' + request.eventDate : ''}`,

@@ -97,18 +97,21 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User registerUser(String email, String password,String fullname, String username) {
+    public User registerUser(String email, String password, String fullname, String username) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email ekziston tashme");
+        }
+
+        if (username != null && !username.isBlank() && userRepository.findByUsername(username).isPresent()) {
+            throw new RuntimeException("Username ekziston tashme");
         }
 
         User user = new User();
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setFullname(fullname);
-
+        user.setUsername(username);
         user.setStatusi("Aktiv");
-
         user.setDataKrijimit(LocalDateTime.now());
 
         Role role = roleRepository.findByEmertimi("ROLE_USER")
@@ -143,4 +146,5 @@ public class UserService {
         }
         return passwordEncoder.encode(password);
     }
+
 }

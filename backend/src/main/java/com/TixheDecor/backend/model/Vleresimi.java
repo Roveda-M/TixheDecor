@@ -21,6 +21,10 @@ public class Vleresimi {
     @JoinColumn(name = "klienti_id")
     private Klienti klienti;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private Integer piket;
 
     @Column(columnDefinition = "TEXT")

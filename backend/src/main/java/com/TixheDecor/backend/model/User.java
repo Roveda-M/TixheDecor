@@ -1,5 +1,6 @@
 package com.TixheDecor.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class User {
     private String email;
 
     @Column(name = "password_hash", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String passwordHash;
 
 
@@ -37,7 +39,11 @@ public class User {
     private LocalDateTime dataKrijimit = LocalDateTime.now();
 
     private String statusi;
+  
     private String fullname;
+
+    @Column(unique = true)
+    private String username;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

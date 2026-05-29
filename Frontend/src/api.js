@@ -1,4 +1,3 @@
-import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
 export const formatApiError = (error) => {
@@ -28,12 +27,12 @@ export const api = {
     return res.data;
   },
   forgotPassword: async (email) => {
-    const res = await axios.post("http://localhost:8080/api/auth/forgot-password", { email });
+    const res = await axiosInstance.post("/auth/forgot-password", { email });
     return res.data;
   },
 
   resetPassword: async (token, password) => {
-    const res = await axios.post("http://localhost:8080/api/auth/reset-password", { token, password });
+    const res = await axiosInstance.post("/auth/reset-password", { token, password });
     return res.data;
   },
   // PROFILE
@@ -122,6 +121,11 @@ export const api = {
 
   createVleresim: async (data) => {
     const res = await axiosInstance.post("/vleresimet", data);
+    return res.data;
+  },
+
+  createFeedback: async (data) => {
+    const res = await axiosInstance.post("/vleresimet/feedback", data);
     return res.data;
   },
 

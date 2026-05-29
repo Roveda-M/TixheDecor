@@ -30,9 +30,14 @@ public class BrideToBeRequestController {
         BrideToBeRequest savedRequest = brideToBeRequestService.create(request);
         
         try {
-            String eventName = request.getBrideName() != null && request.getBrideName().startsWith("Baby Shower -")
-                    ? "Baby Shower"
-                    : "Bride To Be";
+            String eventName = "Bride To Be";
+            if (request.getBrideName() != null) {
+                if (request.getBrideName().startsWith("Baby Shower -")) {
+                    eventName = "Baby Shower";
+                } else if (request.getBrideName().startsWith("Wedding -")) {
+                    eventName = "Dasme";
+                }
+            }
 
             org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             String loggedInEmail = "";

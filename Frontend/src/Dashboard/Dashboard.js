@@ -220,6 +220,31 @@ const crudConfigs = {
     initialData: [],
     disableAdd: true,
   },
+  weddingRequests: {
+    id: 'weddingRequests',
+    title: 'Kërkesat Dasme',
+    icon: <FiHeart />,
+    columns: [
+      { key: 'brideName', label: 'Emri i çiftit', type: 'text' },
+      { key: 'eventDate', label: 'Data', type: 'date' },
+      { key: 'eventTime', label: 'Ora', type: 'time' },
+      { key: 'location', label: 'Lokacioni', type: 'text' },
+      { key: 'selectedDecors', label: 'Dekorët e zgjedhur', type: 'photoLinks' },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        badge: true,
+        options: [
+          { value: 'I filluar', label: 'I filluar' },
+          { value: 'Në proces', label: 'Në proces' },
+          { value: 'I përfunduar', label: 'I përfunduar' },
+        ],
+      },
+    ],
+    initialData: [],
+    disableAdd: true,
+  },
   users: {
     id: 'users',
     title: 'Përdoruesit',
@@ -285,10 +310,14 @@ const crudConfigs = {
     title: 'Vlerësimet e Klientëve',
     icon: <FiStar />,
     columns: [
-      { key: 'clientId', label: 'ID Klienti', type: 'number', tableKey: 'client' },
-      { key: 'projectId', label: 'ID Projekti', type: 'number', tableKey: 'project' },
+      { key: 'userName', label: 'Përdoruesi', type: 'text', tableOnly: true },
+      { key: 'userEmail', label: 'Email', type: 'email', tableOnly: true },
+      { key: 'clientId', label: 'Klienti', type: 'select', optionsSource: 'clients', tableKey: 'client', required: false },
+      { key: 'projectId', label: 'Projekti', type: 'select', optionsSource: 'projects', tableKey: 'project', required: false },
       { key: 'rating', label: 'Vlerësimi (1-5)', type: 'number' },
       { key: 'comment', label: 'Koment', type: 'textarea' },
+      { key: 'recommendation', label: 'Emri nga forma', type: 'text', required: false },
+      { key: 'date', label: 'Data', type: 'date', required: false },
     ],
     initialData: [],
   }

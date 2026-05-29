@@ -1,37 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api, formatApiError } from "./api";
 
 export default function FeedbackForm() {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [rating, setRating] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const profile = await api.getProfile();
+        setName(profile.fullname || profile.username || "");
+      } catch (error) {
+        // Forma mbetet e plotesueshme edhe nese profili nuk ngarkohet.
+      }
+    };
+
+    loadProfile();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name.trim()) return alert("Shkruaj emrin");
     if (!text.trim()) return alert("Shkruaj feedback");
     if (rating === 0) return alert("Zgjedh rating");
 
-    const old = JSON.parse(localStorage.getItem("feedbacks")) || [];
+    setLoading(true);
+    try {
+      await api.createFeedback({
+        piket: Number(rating),
+        komenti: text,
+        rekomandimi: name,
+      });
 
-    const newFeedback = {
-      id: Date.now(),
-      name,
-      text,
-      rating,
-    };
-
-    localStorage.setItem(
-      "feedbacks",
-      JSON.stringify([newFeedback, ...old])
-    );
-
-    setName("");
-    setText("");
-    setRating(0);
-
- 
-    
+      setText("");
+      setRating(0);
+      alert("Feedback u ruajt me sukses!");
+    } catch (error) {
+      alert("Feedback nuk u ruajt: " + formatApiError(error));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,23 +67,22 @@ export default function FeedbackForm() {
           className="p-3 border rounded-lg h-28"
         />
 
-        {/* STARS */}
         <div className="flex gap-2 text-2xl">
           {[1, 2, 3, 4, 5].map((star) => (
-            <span
+            <button
+              type="button"
               key={star}
               onClick={() => setRating(star)}
-              className={`cursor-pointer ${
-                star <= rating ? "text-yellow-400" : "text-gray-300"
-              }`}
+              className={star <= rating ? "text-yellow-400" : "text-gray-300"}
+              aria-label={`Rating ${star}`}
             >
               ★
-            </span>
+            </button>
           ))}
         </div>
 
-        <button className="bg-black text-white py-2 rounded-lg">
-          Submit
+        <button disabled={loading} className="bg-black text-white py-2 rounded-lg disabled:opacity-60">
+          {loading ? "Duke ruajtur..." : "Submit"}
         </button>
       </form>
     </div>

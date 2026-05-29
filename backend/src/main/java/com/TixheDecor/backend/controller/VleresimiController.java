@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -54,6 +55,14 @@ public class VleresimiController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Vleresimi create(@RequestBody Vleresimi vleresimi) {
         return vleresimiService.create(vleresimi);
+    }
+
+    @Operation(summary = "Dergo feedback nga perdoruesi i kycur")
+    @PostMapping("/feedback")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public Vleresimi createFeedback(@RequestBody Vleresimi vleresimi) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return vleresimiService.createFeedbackForUser(email, vleresimi);
     }
 
     @Operation(summary = "Përditëso vlerësimin")

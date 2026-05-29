@@ -3,6 +3,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.TixheDecor.backend.dto.LoginRequest;
 import com.TixheDecor.backend.dto.RegisterRequest;
+import com.TixheDecor.backend.dto.UserProfileDto;
 import com.TixheDecor.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,13 @@ public class AuthController {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication().getName();
         return userService.findByEmail(email)
-                .map(ResponseEntity::ok)
+                .map(user -> ResponseEntity.ok(new UserProfileDto(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getFullname(),
+                        user.getUsername(),
+                        user.getStatusi()
+                )))
                 .orElse(ResponseEntity.notFound().build());
     }
 
