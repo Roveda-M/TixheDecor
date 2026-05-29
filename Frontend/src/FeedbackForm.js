@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { api, formatApiError } from "./api";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function FeedbackForm() {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [rating, setRating] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -23,9 +25,9 @@ export default function FeedbackForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name.trim()) return alert("Shkruaj emrin");
-    if (!text.trim()) return alert("Shkruaj feedback");
-    if (rating === 0) return alert("Zgjedh rating");
+    if (!name.trim()) return alertDialog("Shkruaj emrin");
+    if (!text.trim()) return alertDialog("Shkruaj feedback");
+    if (rating === 0) return alertDialog("Zgjedh rating");
 
     setLoading(true);
     try {
@@ -37,9 +39,9 @@ export default function FeedbackForm() {
 
       setText("");
       setRating(0);
-      alert("Feedback u ruajt me sukses!");
+      await alertDialog("Feedback u ruajt me sukses!");
     } catch (error) {
-      alert("Feedback nuk u ruajt: " + formatApiError(error));
+      await alertDialog("Feedback nuk u ruajt: " + formatApiError(error));
     } finally {
       setLoading(false);
     }
@@ -47,6 +49,7 @@ export default function FeedbackForm() {
 
   return (
     <div className="max-w-xl w-full bg-white p-6 rounded-2xl shadow-xl">
+      <ConfirmModal />
       <h2 className="text-xl font-semibold text-center mb-4">
         Leave Feedback
       </h2>

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api, formatApiError } from "./api";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [resetLink, setResetLink] = useState("");
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,7 +16,7 @@ export default function ForgotPassword() {
     setResetLink("");
 
     if (!email.trim()) {
-      alert("Ju lutem shkruani emailin");
+      await alertDialog("Ju lutem shkruani emailin");
       return;
     }
 
@@ -31,7 +33,7 @@ export default function ForgotPassword() {
         }
       }
     } catch (error) {
-      alert(formatApiError(error));
+      await alertDialog(formatApiError(error));
     } finally {
       setLoading(false);
     }
@@ -39,6 +41,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
+      <ConfirmModal />
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h2 className="text-2xl font-light text-center mb-2 tracking-[2px]">
           Rivendos fjalëkalimin

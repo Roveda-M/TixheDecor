@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FiCheckSquare, FiLogOut, FiRefreshCw } from 'react-icons/fi';
 import { api, formatApiError } from '../api';
+import { useConfirmModal } from '../ConfirmModal';
 
 const statuses = ['I filluar', 'Ne proces', 'I perfunduar'];
 
@@ -61,6 +62,7 @@ export default function WorkerDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   const loadTasks = async () => {
     setIsLoading(true);
@@ -88,7 +90,7 @@ export default function WorkerDashboard() {
         current.map((task) => (task.detyrimiId === taskId ? updated : task))
       );
     } catch (err) {
-      alert(formatApiError(err));
+      await alertDialog(formatApiError(err));
     } finally {
       setUpdatingId(null);
     }
@@ -103,6 +105,7 @@ export default function WorkerDashboard() {
 
   return (
     <div className="min-h-screen bg-[#f6f1e8] text-[#2b2b2b]">
+      <ConfirmModal />
       <header className="border-b border-[#c9c1b5] bg-[#f6f1e8]/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 lg:px-8">
           <div>

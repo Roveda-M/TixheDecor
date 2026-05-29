@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { api, formatApiError } from "./api";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -10,32 +11,33 @@ export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!token) {
-      alert("Linku i pavlefshëm. Kërkoni një link të ri.");
+      await alertDialog("Linku i pavlefshëm. Kërkoni një link të ri.");
       return;
     }
 
     if (password.length < 6) {
-      alert("Fjalëkalimi duhet të ketë të paktën 6 karaktere");
+      await alertDialog("Fjalëkalimi duhet të ketë të paktën 6 karaktere");
       return;
     }
 
     if (password !== confirm) {
-      alert("Fjalëkalimet nuk përputhen");
+      await alertDialog("Fjalëkalimet nuk përputhen");
       return;
     }
 
     setLoading(true);
     try {
       await api.resetPassword(token, password);
-      alert("Fjalëkalimi u ndryshua me sukses!");
+      await alertDialog("Fjalëkalimi u ndryshua me sukses!");
       navigate("/login", { replace: true });
     } catch (error) {
-      alert(formatApiError(error));
+      await alertDialog(formatApiError(error));
     } finally {
       setLoading(false);
     }
@@ -59,6 +61,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
+      <ConfirmModal />
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h2 className="text-2xl font-light text-center mb-6 tracking-[2px]">
           Fjalëkalim i ri

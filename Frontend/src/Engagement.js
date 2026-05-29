@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import html2canvas from "html2canvas";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function Engagement() {
   const [selectedDecors, setSelectedDecors] = useState([]);
@@ -13,6 +14,7 @@ export default function Engagement() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [dynamicPhotos, setDynamicPhotos] = useState([]);
   const inviteRef = useRef(null);
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   const staticPhotos = [
     { url: "/fejesa/f6.jpeg", title: { full: "Fillimi i dashurisë", short: "Fillimi" } },
@@ -108,7 +110,7 @@ export default function Engagement() {
       link.click();
     } catch (error) {
       console.error("Error downloading invitation:", error);
-      alert("Pati një gabim gjatë shkarkimit të ftesës.");
+      await alertDialog("Pati një gabim gjatë shkarkimit të ftesës.");
     } finally {
       setIsDownloading(false);
     }
@@ -116,6 +118,7 @@ export default function Engagement() {
 
   return (
     <div className="bg-[#fdf6f0] min-h-screen relative overflow-hidden">
+      <ConfirmModal />
       {/* HERO */}
       <section className="relative w-full min-h-[92vh] flex items-center justify-center pt-24 pb-16">
         <div className="absolute inset-0 overflow-hidden">
