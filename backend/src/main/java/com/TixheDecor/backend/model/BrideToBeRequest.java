@@ -1,5 +1,6 @@
 package com.TixheDecor.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import java.time.LocalTime;
 
 @Data
 @Entity
-@Table(name = "Bride_To_Be_Request")
+@Table(name = "bride_to_be_request")
 public class BrideToBeRequest {
 
     @Id
@@ -19,7 +20,15 @@ public class BrideToBeRequest {
     private String brideName;
     private LocalDate eventDate;
     private LocalTime eventTime;
+
+    @JsonAlias({"adresa", "address", "lokacioni"})
     private String location;
+
+    @JsonAlias({"phone", "phoneNumber"})
+    @Column(name = "telefoni")
+    private String telefoni;
+
+    private String email;
 
     @Column(length = 2000)
     private String selectedDecors;

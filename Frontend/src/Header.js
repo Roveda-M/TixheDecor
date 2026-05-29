@@ -67,7 +67,13 @@ export default function Header() {
     Luxury Weddings & Bespoke Design
   </p>
 </div>
-            <Link to="/profile" className="text-2xl ml-3 inline-block">👤</Link>
+          <Link
+              to="/profile"
+              className="text-2xl ml-3 inline-block"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            👤
+          </Link>
  
         </div>
       </header>

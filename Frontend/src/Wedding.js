@@ -193,6 +193,8 @@ export default function Wedding() {
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
   const [eventLocation, setEventLocation] = useState("");
+  const [eventPhone, setEventPhone] = useState("");
+  const [submittedPhone, setSubmittedPhone] = useState("");
   const [requestStatus, setRequestStatus] = useState("");
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
@@ -262,8 +264,8 @@ export default function Wedding() {
       scrollTo("wedding-gallery");
       return;
     }
-    if (!coupleName.trim() || !eventDate || !eventTime || !eventLocation.trim()) {
-      setRequestStatus("Plotësoni emrin e çiftit, datën, orën dhe lokacionin.");
+    if (!coupleName.trim() || !eventDate || !eventTime || !eventLocation.trim() || !eventPhone.trim()) {
+      setRequestStatus("Plotësoni emrin e çiftit, datën, orën, lokacionin dhe numrin e telefonit.");
       scrollTo("wedding-request");
       return;
     }
@@ -277,15 +279,21 @@ export default function Wedding() {
 
     try {
       setIsSubmittingRequest(true);
+      const phone = eventPhone.trim();
+      const userEmail = await api.getLoggedInUserEmail();
       await api.createBrideToBeRequest({
         brideName: `Wedding - ${coupleName.trim()}`,
         eventDate,
         eventTime,
         location: eventLocation.trim(),
+        telefoni: phone,
+        email: userEmail,
         selectedDecors: selectedDecorText,
       });
-      setRequestStatus("Kërkesa u dërgua. Admini e sheh te Menaxhimi i Klientëve dhe te Kërkesat Dasme.");
+      setSubmittedPhone(phone);
+      setRequestStatus("Kërkesa u dërgua. Admini e sheh te Menaxhimi i Klientëve, Projektet e Dekorimit dhe Kërkesat Wedding.");
       setSelectedDecors([]);
+      setEventPhone("");
     } catch (error) {
       setRequestStatus(formatApiError(error));
     } finally {
@@ -757,13 +765,24 @@ export default function Wedding() {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Lokacioni</label>
+                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Lokacioni / Adresa</label>
                 <input
                     type="text"
                     value={eventLocation}
                     onChange={(e) => setEventLocation(e.target.value)}
                     placeholder="psh. Prishtinë, Hotel ..."
                     className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Numri i telefonit</label>
+                <input
+                    type="tel"
+                    value={eventPhone}
+                    onChange={(e) => setEventPhone(e.target.value)}
+                    placeholder="psh. +383 44 123 456"
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
+                    required
                 />
               </div>
             </div>
@@ -786,9 +805,14 @@ export default function Wedding() {
             </div>
 
             {requestStatus && (
-                <p className="mt-6 text-sm text-center text-[#5c4030] bg-[#f7f3ec] border border-[#e8dfd4] rounded-xl px-4 py-3">
-                  {requestStatus}
-                </p>
+                <div className="mt-6 text-sm text-center text-[#5c4030] bg-[#f7f3ec] border border-[#e8dfd4] rounded-xl px-4 py-3 space-y-1">
+                  <p>{requestStatus}</p>
+                  {submittedPhone && (
+                      <p className="font-medium">
+                        Telefoni i regjistruar: <span className="text-[#6f4e37]">{submittedPhone}</span>
+                      </p>
+                  )}
+                </div>
             )}
           </div>
         </section>

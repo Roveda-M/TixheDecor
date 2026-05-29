@@ -4,6 +4,7 @@ import com.TixheDecor.backend.model.Projekti;
 import com.TixheDecor.backend.repository.ProjektiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,9 @@ public class ProjektiService {
 
     @Autowired
     private ProjektiRepository projektiRepository;
+
+    @Autowired
+    private EntityCascadeDeleteService entityCascadeDeleteService;
 
     public List<Projekti> getAll() {
         return projektiRepository.findAll();
@@ -42,11 +46,12 @@ public class ProjektiService {
         return Optional.of(projektiRepository.save(projekti));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public boolean delete(Integer id) {
         if (!projektiRepository.existsById(id)) {
             return false;
         }
-        projektiRepository.deleteById(id);
+        entityCascadeDeleteService.deleteProjektiCascade(id);
         return true;
     }
 }

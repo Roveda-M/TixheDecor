@@ -2,6 +2,7 @@ package com.TixheDecor.backend.controller;
 
 import com.TixheDecor.backend.model.BrideToBeRequest;
 import com.TixheDecor.backend.service.BrideToBeRequestService;
+import com.TixheDecor.backend.service.EventRequestKlientiSyncService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,54 +21,12 @@ public class BrideToBeRequestController {
     private BrideToBeRequestService brideToBeRequestService;
 
     @Autowired
-    private com.TixheDecor.backend.service.KlientiService klientiService;
-
-    @Autowired
-    private com.TixheDecor.backend.service.ProjektiService projektiService;
+    private EventRequestKlientiSyncService eventRequestKlientiSyncService;
 
     @PostMapping
     public BrideToBeRequest create(@RequestBody BrideToBeRequest request) {
         BrideToBeRequest savedRequest = brideToBeRequestService.create(request);
-        
-        try {
-            String eventName = "Bride To Be";
-            if (request.getBrideName() != null) {
-                if (request.getBrideName().startsWith("Baby Shower -")) {
-                    eventName = "Baby Shower";
-                } else if (request.getBrideName().startsWith("Wedding -")) {
-                    eventName = "Dasme";
-                }
-            }
-
-            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-            String loggedInEmail = "";
-            if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
-                loggedInEmail = auth.getName();
-            }
-
-            // Krijo Klientin
-            com.TixheDecor.backend.model.Klienti klienti = new com.TixheDecor.backend.model.Klienti();
-            klienti.setEmri(request.getBrideName());
-            klienti.setStatusi("Aktiv");
-            klienti.setDataRegjistrimit(java.time.LocalDate.now());
-            klienti.setLloji(eventName + ": " + request.getSelectedDecors());
-            klienti.setEmail(loggedInEmail);
-            com.TixheDecor.backend.model.Klienti savedKlienti = klientiService.create(klienti);
-            
-            // Krijo Projektin
-            com.TixheDecor.backend.model.Projekti projekti = new com.TixheDecor.backend.model.Projekti();
-            projekti.setKlienti(savedKlienti);
-            projekti.setEmriProjektit(eventName);
-            projekti.setDataFillimit(request.getEventDate());
-            projekti.setLlojiDekorimit(request.getSelectedDecors());
-            projekti.setLokacioni(request.getLocation());
-            projekti.setStatusi("Ne Pritje");
-            projekti.setBuxheti(java.math.BigDecimal.ZERO);
-            projektiService.create(projekti);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
+        eventRequestKlientiSyncService.syncAfterRequestSaved(savedRequest);
         return savedRequest;
     }
 

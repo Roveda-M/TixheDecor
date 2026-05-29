@@ -57,11 +57,13 @@ export default function BrideToBe() {
 
         try {
             setIsSubmittingRequest(true);
+            const userEmail = await api.getLoggedInUserEmail();
             await api.createBrideToBeRequest({
                 brideName: inviteName.trim(),
                 eventDate: inviteDate,
                 eventTime: inviteTime,
                 location: eventLocation.trim(),
+                email: userEmail,
                 selectedDecors: selectedDecorText,
             });
             setRequestStatus("Kerkesa u dergua me sukses. Admini do ta shohe ne dashboard.");

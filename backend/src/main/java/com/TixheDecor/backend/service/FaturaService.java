@@ -2,6 +2,8 @@ package com.TixheDecor.backend.service;
 
 import com.TixheDecor.backend.model.Fatura;
 import com.TixheDecor.backend.repository.FaturaRepository;
+import com.TixheDecor.backend.repository.KlientiRepository;
+import com.TixheDecor.backend.repository.ProjektiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,12 @@ public class FaturaService {
 
     @Autowired
     private FaturaRepository faturaRepository;
+
+    @Autowired
+    private KlientiRepository klientiRepository;
+
+    @Autowired
+    private ProjektiRepository projektiRepository;
 
     public List<Fatura> getAll() {
         return faturaRepository.findAll();
@@ -35,6 +43,7 @@ public class FaturaService {
     }
 
     public Fatura create(Fatura fatura) {
+        resolveRelations(fatura);
         return faturaRepository.save(fatura);
     }
 
@@ -43,6 +52,7 @@ public class FaturaService {
             return Optional.empty();
         }
         fatura.setFaturaId(id);
+        resolveRelations(fatura);
         return Optional.of(faturaRepository.save(fatura));
     }
 
@@ -52,5 +62,20 @@ public class FaturaService {
         }
         faturaRepository.deleteById(id);
         return true;
+    }
+
+    private void resolveRelations(Fatura fatura) {
+        if (fatura.getKlienti() != null && fatura.getKlienti().getKlientiId() != null) {
+            fatura.setKlienti(
+                    klientiRepository.findById(fatura.getKlienti().getKlientiId())
+                            .orElseThrow(() -> new IllegalArgumentException("Klienti nuk u gjet."))
+            );
+        }
+        if (fatura.getProjekti() != null && fatura.getProjekti().getProjektiId() != null) {
+            fatura.setProjekti(
+                    projektiRepository.findById(fatura.getProjekti().getProjektiId())
+                            .orElseThrow(() -> new IllegalArgumentException("Projekti nuk u gjet."))
+            );
+        }
     }
 }

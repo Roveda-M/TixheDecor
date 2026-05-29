@@ -76,15 +76,19 @@ export default function Login() {
             Login to Your Account
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             <div>
               <label className="text-sm">Email</label>
               <input
                   type="email"
+                  name="tixhe-login-email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
+                  autoComplete="off"
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute("readonly")}
               />
             </div>
 
@@ -92,10 +96,14 @@ export default function Login() {
               <label className="text-sm">Password</label>
               <input
                   type="password"
+                  name="tixhe-login-password"
                   placeholder="Your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
+                  autoComplete="new-password"
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute("readonly")}
               />
             </div>
 

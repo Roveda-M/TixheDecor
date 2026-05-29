@@ -13,12 +13,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleBadRequest(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        String message = ex.getMessage();
+        if (message == null || message.isBlank()) {
+            message = "Kerkesa nuk eshte e vlefshme.";
+        }
+        return ResponseEntity.badRequest().body(Map.of("error", message));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleDataIntegrity(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Map.of("error", "Te dhenat bien ndesh me kufizimet e databazes."));
+                .body(Map.of(
+                        "error",
+                        "Nuk mund te fshihet: ka te dhena te lidhura (projekte, detyra, fatura). Fshini fillimisht ato ose provoni perseri."
+                ));
     }
 }

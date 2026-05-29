@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { api } from "./api";
 
 export default function Profile() {
-  const [activeTab, setActiveTab] = useState("account");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -47,18 +46,12 @@ export default function Profile() {
           </div>
 
           <div className="flex flex-col space-y-2 text-sm">
-            {["account", "wishlist"].map(tab => (
-                <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`w-full text-left py-2 px-3 rounded transition ${
-                        activeTab === tab ? "bg-[#e6dfd3] text-black font-medium" : "hover:bg-gray-100"
-                    }`}
-                >
-                  {tab === "account" && "Account Details"}
-                  {tab === "wishlist" && "Wishlist"}
-                </button>
-            ))}
+            <button
+                type="button"
+                className="w-full text-left py-2 px-3 rounded bg-[#e6dfd3] text-black font-medium"
+            >
+              Account Details
+            </button>
 
             <button
                 onClick={handleLogout}
@@ -72,47 +65,27 @@ export default function Profile() {
         {/* CONTENT */}
         <main className="flex-1 p-4 md:p-10">
 
-          {activeTab === "account" && (
+          <div>
+            <h2 className="text-2xl mb-6 font-light tracking-wide">Account Details</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
               <div>
-                <h2 className="text-2xl mb-6 font-light tracking-wide">Account Details</h2>
-                <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
-                  <div>
-                    <label className="text-sm text-gray-500">Full Name</label>
-                    <p className="text-lg font-medium">{user?.fullname || "-"}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm text-gray-500">Username</label>
-                    <p className="text-lg font-medium">{user?.username || "-"}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm text-gray-500">Email</label>
-                    <p className="text-lg font-medium">{user?.email || "-"}</p>
-                  </div>
-
-                  <div>
-                    <label className="text-sm text-gray-500">Statusi</label>
-                    <p className="text-lg font-medium">{user?.statusi || "Aktiv"}</p>
-                  </div>
-                </div>
+                <label className="text-sm text-gray-500">Full Name</label>
+                <p className="text-lg font-medium">{user?.fullname || "-"}</p>
               </div>
-          )}
-
-          {activeTab === "wishlist" && (
               <div>
-                <h2 className="text-2xl mb-6 font-light tracking-wide">Wishlist</h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {["Wedding", "Birthday", "Baby Shower", "Engagement"].map(event => (
-                      <div key={event} className="bg-white p-4 rounded-2xl shadow-sm hover:shadow-md transition">
-                        <div className="w-full h-32 bg-[#e6dfd3] rounded-xl mb-3 flex items-center justify-center text-2xl">
-                          {event.charAt(0)}
-                        </div>
-                        <p className="font-medium">{event}</p>
-                        <p className="text-sm text-gray-500">Dekorim special</p>
-                      </div>
-                  ))}
-                </div>
+                <label className="text-sm text-gray-500">Username</label>
+                <p className="text-lg font-medium">{user?.username || "-"}</p>
               </div>
-          )}
+              <div>
+                <label className="text-sm text-gray-500">Email</label>
+                <p className="text-lg font-medium">{user?.email || "-"}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Statusi</label>
+                <p className="text-lg font-medium">{user?.statusi || "Aktiv"}</p>
+              </div>
+            </div>
+          </div>
 
         </main>
       </div>

@@ -41,6 +41,16 @@ export const api = {
     return res.data;
   },
 
+  getLoggedInUserEmail: async () => {
+    try {
+      if (!sessionStorage.getItem("accessToken")) return "";
+      const res = await axiosInstance.get("/auth/me");
+      return res.data?.email || "";
+    } catch {
+      return "";
+    }
+  },
+
   updateProfile: async (data) => {
     const res = await axiosInstance.put("/auth/me", data);
     return res.data;

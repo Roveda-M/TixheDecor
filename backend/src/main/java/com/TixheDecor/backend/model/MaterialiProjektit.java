@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(
-        name = "Materiali_Projektit",
+        name = "materiali_projektit",
         indexes = {
                 @Index(name = "idx_materiali_projektit_perdorimit", columnList = "data_perdorimit")
         }

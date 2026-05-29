@@ -3,8 +3,23 @@ import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, formatApiError } from '../api';
 
-const klientLabel = (k) =>
-  `${k.emri || ''} ${k.mbiemri || ''}`.trim() || `Klient #${k.klientiId}`;
+const stripEventPrefix = (value) =>
+  String(value || '')
+    .replace(/^(Wedding|Baby Shower|Bride To Be)\s*-\s*/i, '')
+    .trim();
+
+const klientDisplayName = (k) => {
+  const emri = (k?.emri || '').trim();
+  const mbiemri = (k?.mbiemri || '').trim();
+  const stripped = stripEventPrefix(emri);
+  const name = stripped || emri;
+  if (name && mbiemri && !name.toLowerCase().includes(mbiemri.toLowerCase())) {
+    return `${name} ${mbiemri}`.trim();
+  }
+  return name || mbiemri || `Klient #${k?.klientiId}`;
+};
+
+const klientLabel = klientDisplayName;
 
 const projektLabel = (p) => p.emriProjektit || `Projekt #${p.projektiId}`;
 
@@ -27,7 +42,7 @@ const brideRequestLabel = (request) =>
 const isEventRequestTitle = (title) =>
   title === 'Kërkesat Bride To Be' ||
   title === 'Kërkesat Baby Shower' ||
-  title === 'Kërkesat Dasme';
+  title === 'Kërkesat Wedding';
 
 const isBabyShowerRequest = (item) => (item.brideName || '').startsWith('Baby Shower -');
 
@@ -35,7 +50,7 @@ const isWeddingRequest = (item) => (item.brideName || '').startsWith('Wedding -'
 
 const filterEventRequests = (title, items) => {
   if (title === 'Kërkesat Baby Shower') return items.filter(isBabyShowerRequest);
-  if (title === 'Kërkesat Dasme') return items.filter(isWeddingRequest);
+  if (title === 'Kërkesat Wedding') return items.filter(isWeddingRequest);
   if (title === 'Kërkesat Bride To Be') {
     return items.filter((item) => !isBabyShowerRequest(item) && !isWeddingRequest(item));
   }
@@ -82,9 +97,134 @@ const statusBadgeClass = (value) => {
   return 'border-blue-200 bg-blue-50 text-blue-700';
 };
 
+const buildRequestIndex = (requests) => {
+  const requestByEmri = {};
+  for (const req of requests) {
+    const fullName = (req.brideName || '').trim().toLowerCase();
+    const shortName = stripEventPrefix(req.brideName).toLowerCase();
+    if (fullName) requestByEmri[fullName] = req;
+    if (shortName) requestByEmri[shortName] = req;
+  }
+  return requestByEmri;
+};
+
+const findRequestForKlient = (klient, requestByEmri, requests) => {
+  const emri = (klient.emri || '').trim();
+  const mbiemri = (klient.mbiemri || '').trim();
+  const fullName = `${emri} ${mbiemri}`.trim();
+
+  for (const candidate of [emri, fullName, stripEventPrefix(emri), stripEventPrefix(fullName)]) {
+    const key = candidate.trim().toLowerCase();
+    if (key && requestByEmri[key]) {
+      return requestByEmri[key];
+    }
+  }
+
+  for (const req of requests) {
+    const requestName = stripEventPrefix(req.brideName);
+    if (requestName && (requestName === emri || requestName === fullName)) {
+      return req;
+    }
+    if (emri && (req.brideName || '').toLowerCase().includes(emri.toLowerCase())) {
+      return req;
+    }
+  }
+
+  return null;
+};
+
+const enrichKlientetFromEventRequests = (clients, requests) => {
+  const requestByEmri = buildRequestIndex(requests);
+
+  return clients.map((k) => {
+    const req = findRequestForKlient(k, requestByEmri, requests);
+    if (!req) return k;
+
+    const telefoni =
+      (k.telefoni || '').trim() || (req.telefoni || req.phone || '').trim();
+    const adresa =
+      (k.adresa || '').trim() ||
+      (req.location || req.adresa || req.address || '').trim();
+    const email = (k.email || '').trim() || (req.email || '').trim();
+    const emri = stripEventPrefix(k.emri || '') || k.emri;
+    const lloji = formatLlojiEventType(k.lloji || req.brideName || '');
+
+    if (
+      telefoni === (k.telefoni || '') &&
+      adresa === (k.adresa || '') &&
+      email === (k.email || '') &&
+      emri === (k.emri || '') &&
+      lloji === (k.lloji || '')
+    ) {
+      return k;
+    }
+
+    return { ...k, telefoni, adresa, email, emri, lloji };
+  });
+};
+
+const formatTimeValue = (value) => {
+  if (!value) return '';
+  const text = String(value);
+  return text.length >= 5 ? text.slice(0, 5) : text;
+};
+
 const normalizeRequestStatus = (value) => {
   if (!value || value === 'PENDING') return 'I filluar';
   return value;
+};
+
+const EVENT_TYPE_LABELS = {
+  wedding: 'Wedding',
+  dasme: 'Wedding',
+  bridetobe: 'Bride To Be',
+  birthday: 'Birthday',
+  engagement: 'Engagement',
+  babyshower: 'Baby Shower',
+  circumcision: 'Circumcision',
+  individual: 'Individual',
+  kontakt: 'Kontakt',
+};
+
+const formatLlojiEventType = (value) => {
+  if (!value) return '';
+  const text = String(value).trim();
+  if (text.toLowerCase().startsWith('from:')) {
+    return text;
+  }
+  if (text.includes(':') && !text.toLowerCase().startsWith('from')) {
+    const label = text.split(':')[0].trim();
+    const key = label.toLowerCase().replace(/\s+/g, '');
+    if (EVENT_TYPE_LABELS[key]) return `From: ${EVENT_TYPE_LABELS[key]}`;
+    return `From: ${label}`;
+  }
+  const key = text.toLowerCase().replace(/\s+/g, '');
+  if (EVENT_TYPE_LABELS[key]) return `From: ${EVENT_TYPE_LABELS[key]}`;
+  if (text.startsWith('Baby Shower -')) return 'From: Baby Shower';
+  if (text.startsWith('Wedding -')) return 'From: Wedding';
+  return `From: ${text}`;
+};
+
+const sortMappedData = (title, items) => {
+  const copy = [...items];
+  if (title === 'Rolet') {
+    return copy.sort((a, b) =>
+      (a.name || '').localeCompare(b.name || '', 'sq', { sensitivity: 'base' })
+    );
+  }
+  if (title === 'Përdoruesit') {
+    return copy.sort((a, b) =>
+      (a.name || '').localeCompare(b.name || '', 'sq', { sensitivity: 'base' })
+    );
+  }
+  if (title === 'Rolet e Përdoruesve') {
+    return copy.sort((a, b) => {
+      const byUser = (a.user || '').localeCompare(b.user || '', 'sq', { sensitivity: 'base' });
+      if (byUser !== 0) return byUser;
+      return (a.role || '').localeCompare(b.role || '', 'sq', { sensitivity: 'base' });
+    });
+  }
+  return copy;
 };
 
 export default function Tabela({ title, columns, initialData, disableAdd, enableFilters }) {
@@ -125,6 +265,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         workerEmail: item.punetori?.email || '',
         startDate: item.dataFillimit || '',
         endDate: item.dataPerfundimit || '',
+        eventTime: formatTimeValue(item.projekti?.oraEventit),
         includeClientImages: item.includeClientImages ? 'Po' : 'Jo',
         clientImages: item.brideToBeRequest?.selectedDecors || item.projekti?.llojiDekorimit || '',
         status: item.statusi || 'I filluar',
@@ -181,8 +322,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return items.map((item) => ({
         id: item.requestId,
         brideName: item.brideName || '',
+        telefoni: item.telefoni || '',
         eventDate: item.eventDate || '',
-        eventTime: item.eventTime || '',
+        eventTime: formatTimeValue(item.eventTime),
         location: item.location || '',
         selectedDecors: item.selectedDecors || '',
         punetori: item.punetori ? punetoriLabel(item.punetori) : '',
@@ -224,10 +366,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         id: item.klientiId,
         name: klientLabel(item),
         email: item.email || '',
-        phone: item.telefoni || '',
-        address: item.adresa || '',
+        phone: item.telefoni || item.phone || '',
+        address: item.adresa || item.address || '',
         status: item.statusi || 'Aktiv',
-        lloji: item.lloji || 'Individual',
+        lloji: formatLlojiEventType(item.lloji || 'Individual'),
       }));
     }
     if (title === 'Projektet e Dekorimit') {
@@ -236,10 +378,11 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         title: item.emriProjektit || '',
         client: item.klienti ? klientLabel(item.klienti) : '',
         clientId: item.klienti?.klientiId ? String(item.klienti.klientiId) : '',
-        llojiDekorimit: item.llojiDekorimit || '',
         date: item.dataFillimit || '',
+        eventTime: formatTimeValue(item.oraEventit),
         endDate: item.dataPerfundimit || '',
         budget: item.buxheti ?? '',
+        deposit: item.kapari ?? '',
         location: item.lokacioni || '',
         status: item.statusi || '',
       }));
@@ -364,6 +507,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     if (isEventRequestTitle(title)) {
       const payload = {
         brideName: form.brideName || '',
+        telefoni: form.telefoni || '',
         eventDate: form.eventDate || null,
         eventTime: form.eventTime || null,
         location: form.location || '',
@@ -440,9 +584,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         statusi: form.status || '',
         dataFillimit: form.date || null,
         dataPerfundimit: form.endDate || null,
+        oraEventit: form.eventTime || null,
         buxheti: form.budget !== '' && form.budget != null ? Number(form.budget) : null,
+        kapari: form.deposit !== '' && form.deposit != null ? Number(form.deposit) : null,
         lokacioni: form.location || '',
-        llojiDekorimit: form.llojiDekorimit || '',
       };
       if (form.clientId) {
         payload.klienti = { klientiId: Number(form.clientId) };
@@ -492,13 +637,21 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       else if (title === 'Rolet e Përdoruesve') items = await api.getUserRoles();
       else if (title === 'Menaxhimi i Klientëve') {
         items = await api.getKlientet();
+        try {
+          const requests = await api.getBrideToBeRequests();
+          items = enrichKlientetFromEventRequests(items, requests);
+        } catch {
+          // vazhdo pa të dhëna nga kërkesat
+        }
         if (filterStatus.trim()) {
           const q = filterStatus.trim().toLowerCase();
           items = items.filter((k) => (k.statusi || '').toLowerCase().includes(q));
         }
         if (filterLloji.trim()) {
           const q = filterLloji.trim().toLowerCase();
-          items = items.filter((k) => (k.lloji || '').toLowerCase().includes(q));
+          items = items.filter((k) =>
+            formatLlojiEventType(k.lloji || '').toLowerCase().includes(q)
+          );
         }
       } else if (title === 'Projektet e Dekorimit') items = await api.getProjektet();
       else if (isEventRequestTitle(title)) {
@@ -508,7 +661,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       else if (title === 'Faturat') items = await api.getFaturat();
       else if (title === 'Vlerësimet e Klientëve') items = await api.getVleresimet();
       else items = initialData || [];
-      setData(mapIncomingData(title, items));
+      setData(sortMappedData(title, mapIncomingData(title, items)));
     } catch (error) {
       console.error('Gabim:', error);
       alert('Gabim ngarkimi: ' + formatApiError(error));
@@ -555,13 +708,13 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
             }
             if (source === 'users') {
               const users = await api.getUsers();
-              return [
-                source,
-                users.map((user) => ({
+              const options = users
+                .map((user) => ({
                   value: user.email || '',
                   label: `${user.fullname || user.emri || user.email}${user.email ? ' - ' + user.email : ''}`,
-                })),
-              ];
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label, 'sq', { sensitivity: 'base' }));
+              return [source, options];
             }
             if (source === 'suppliers') {
               const suppliers = await api.getSuppliers();
@@ -585,13 +738,13 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
             }
             if (source === 'roles') {
               const roles = await api.getRoles();
-              return [
-                source,
-                roles.map((role) => ({
+              const options = roles
+                .map((role) => ({
                   value: role.emertimi || '',
                   label: role.emertimi || '',
-                })),
-              ];
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label, 'sq', { sensitivity: 'base' }));
+              return [source, options];
             }
             if (source === 'brideRequests') {
               const requests = await api.getBrideToBeRequests();
@@ -726,6 +879,13 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     if (title === 'Rolet e Përdoruesve') {
       if (!formData.userEmail) addError('userEmail', 'Zgjidh perdoruesin.');
       if (!formData.roleName) addError('roleName', 'Zgjidh rolin.');
+    }
+
+    if (title === 'Faturat') {
+      if (!formData.clientId) addError('clientId', 'Zgjidh klientin.');
+      if (formData.amount !== '' && formData.amount != null && Number(formData.amount) < 0) {
+        addError('amount', 'Shuma nuk mund te jete negative.');
+      }
     }
 
     if (formData.rating !== undefined && formData.rating !== '') {
@@ -896,6 +1056,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         else if (title === 'Vlerësimet e Klientëve') await api.deleteVleresim(id);
         setData(data.filter((item) => item.id !== id));
         alert('Fshirja u krye me sukses!');
+        await loadData();
       } catch (error) {
         alert('Ndodhi një gabim gjatë fshirjes: ' + formatApiError(error));
       }
@@ -1033,6 +1194,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       );
     }
 
+    if (col.type === 'time') {
+      return formatTimeValue(value);
+    }
+
     return value;
   };
 
@@ -1095,7 +1260,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
             <thead>
               <tr className="bg-[#e6dfd3] border-b border-[#c9c1b5]">
                 {tableColumns.map((col) => (
-                  <th key={col.key} className="p-4 text-sm font-medium text-gray-600">
+                  <th
+                    key={col.key}
+                    className={`p-4 text-sm font-medium text-gray-600 ${col.cellClassName || ''}`}
+                  >
                     {col.label}
                   </th>
                 ))}
@@ -1116,7 +1284,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                     className="border-b border-[#c9c1b5]/30 hover:bg-[#e6dfd3]/50 transition-colors"
                   >
                     {tableColumns.map((col) => (
-                      <td key={col.key} className="p-4 text-sm text-gray-700">
+                      <td
+                        key={col.key}
+                        className={`p-4 text-sm text-gray-700 ${col.cellClassName || ''}`}
+                      >
                         {renderCellValue(item, col)}
                       </td>
                     ))}

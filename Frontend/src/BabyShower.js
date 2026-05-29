@@ -83,11 +83,13 @@ const BabyShower = () => {
 
     try {
       setIsSubmitting(true);
+      const userEmail = await api.getLoggedInUserEmail();
       await api.createBrideToBeRequest({
         brideName: `Baby Shower - ${requestForm.name.trim()}`,
         eventDate: requestForm.date,
         eventTime: requestForm.time,
         location: requestForm.location.trim(),
+        email: userEmail,
         selectedDecors: selectedDecorText,
       });
       setRequestStatus('Kërkesa u dërgua me sukses. Admini do t’i shohë fotot në dashboard.');

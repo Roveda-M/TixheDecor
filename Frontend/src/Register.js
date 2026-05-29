@@ -2,11 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, formatApiError } from "./api";
 
-const usernameFromEmail = (email) => {
-  const local = (email.split("@")[0] || "").trim();
-  return local.replace(/[^a-zA-Z0-9._-]/g, "").slice(0, 30);
-};
-
 export default function Register() {
   const [form, setForm] = useState({
     fullname: "",
@@ -23,17 +18,6 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "email") {
-      setForm((prev) => {
-        const next = { ...prev, email: value };
-        const previousAuto = usernameFromEmail(prev.email);
-        if (!prev.username.trim() || prev.username === previousAuto) {
-          next.username = usernameFromEmail(value);
-        }
-        return next;
-      });
-      return;
-    }
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -42,13 +26,13 @@ export default function Register() {
     setMessage("");
 
     const fullname = form.fullname.trim();
-    const username = (form.username.trim() || usernameFromEmail(form.email)).trim();
+    const username = form.username.trim();
     const email = form.email.trim();
 
     if (!fullname) return alert("Shto emrin e plotë");
+    if (!username) return alert("Shto username");
     if (!email) return alert("Shto email");
     if (!emailValid(email)) return alert("Email i pavlefshëm");
-    if (!username) return alert("Username nuk mund të jetë bosh");
     if (!form.password.trim()) return alert("Shto fjalëkalimin");
     if (form.password !== form.confirm) return alert("Fjalëkalimet nuk përputhen");
     if (form.password.length < 6) return alert("Fjalëkalimi duhet të ketë të paktën 6 karaktere");
@@ -60,7 +44,7 @@ export default function Register() {
       sessionStorage.removeItem("role");
 
       await api.register(email, form.password, fullname, username);
-      setMessage("Llogaria u krijua. Të dhënat (emër, username, email) ruhen në profil pas login-it.");
+      setMessage("Llogaria u krijua. Hyni me email dhe fjalëkalimin tuaj.");
       setTimeout(() => navigate("/login"), 1200);
     } catch (error) {
       setMessage(formatApiError(error));
@@ -72,19 +56,16 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-        <h2 className="text-2xl text-center mb-2 tracking-[2px] font-light">Create Your Account</h2>
-        <p className="text-center text-sm text-gray-500 mb-6">
-          Username plotësohet automatikisht nga emaili (mund ta ndryshosh).
-        </p>
+        <h2 className="text-2xl text-center mb-6 tracking-[2px] font-light">Create Your Account</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3" autoComplete="off">
           <input
             name="fullname"
             placeholder="Full Name"
             value={form.fullname}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg"
-            autoComplete="name"
+            autoComplete="off"
           />
           <input
             name="username"
@@ -92,7 +73,7 @@ export default function Register() {
             value={form.username}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg"
-            autoComplete="username"
+            autoComplete="off"
           />
           <input
             name="email"
@@ -101,7 +82,7 @@ export default function Register() {
             value={form.email}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg"
-            autoComplete="email"
+            autoComplete="off"
           />
           <input
             name="password"

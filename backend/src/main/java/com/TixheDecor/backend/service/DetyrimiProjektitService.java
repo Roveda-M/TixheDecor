@@ -23,6 +23,9 @@ public class DetyrimiProjektitService {
     @Autowired
     private BrideToBeRequestRepository brideToBeRequestRepository;
 
+    @Autowired
+    private EntityCascadeDeleteService entityCascadeDeleteService;
+
     public List<DetyrimiProjektit> getAll() {
         return detyrimiProjektitRepository.findAll();
     }
@@ -83,11 +86,7 @@ public class DetyrimiProjektitService {
     }
 
     public boolean delete(Integer id) {
-        if (!detyrimiProjektitRepository.existsById(id)) {
-            return false;
-        }
-        detyrimiProjektitRepository.deleteById(id);
-        return true;
+        return entityCascadeDeleteService.deleteDetyrimiIfExists(id);
     }
 
     private boolean isValidStatus(String statusi) {
