@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import { api, formatApiError } from "./api";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function BrideToBe() {
     const [inviteName, setInviteName] = useState("");
@@ -12,6 +13,7 @@ export default function BrideToBe() {
     const [requestStatus, setRequestStatus] = useState("");
     const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
     const cardRef = useRef(null);
+    const { alertDialog, ConfirmModal } = useConfirmModal();
 
 
     const handleDownload = async () => {
@@ -25,7 +27,7 @@ export default function BrideToBe() {
             link.click();
         } catch (error) {
             console.error("Error downloading invitation:", error);
-            alert("Pati një gabim gjatë shkarkimit të ftesës.");
+            await alertDialog("Pati një gabim gjatë shkarkimit të ftesës.");
         }
     };
 
@@ -118,6 +120,7 @@ export default function BrideToBe() {
 
     return (
         <div className="bg-[#f7f3ec] min-h-screen relative font-sans text-gray-800 overflow-hidden break-words selection:bg-[#fbcfe8]">
+            <ConfirmModal />
             <section className="relative w-full flex flex-row items-center justify-center gap-2 sm:gap-8 lg:justify-between px-3 sm:px-8 md:px-16 lg:px-24 pt-24 sm:pt-32 pb-10 lg:pb-0 lg:min-h-screen overflow-hidden">
 
                 <div className="absolute inset-0 z-0 pointer-events-none">

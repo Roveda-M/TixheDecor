@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, formatApiError } from "./api";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -13,6 +14,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   const emailValid = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -29,13 +31,13 @@ export default function Register() {
     const username = form.username.trim();
     const email = form.email.trim();
 
-    if (!fullname) return alert("Shto emrin e plotë");
-    if (!username) return alert("Shto username");
-    if (!email) return alert("Shto email");
-    if (!emailValid(email)) return alert("Email i pavlefshëm");
-    if (!form.password.trim()) return alert("Shto fjalëkalimin");
-    if (form.password !== form.confirm) return alert("Fjalëkalimet nuk përputhen");
-    if (form.password.length < 6) return alert("Fjalëkalimi duhet të ketë të paktën 6 karaktere");
+    if (!fullname) return alertDialog("Shto emrin e plotë");
+    if (!username) return alertDialog("Shto username");
+    if (!email) return alertDialog("Shto email");
+    if (!emailValid(email)) return alertDialog("Email i pavlefshëm");
+    if (!form.password.trim()) return alertDialog("Shto fjalëkalimin");
+    if (form.password !== form.confirm) return alertDialog("Fjalëkalimet nuk përputhen");
+    if (form.password.length < 6) return alertDialog("Fjalëkalimi duhet të ketë të paktën 6 karaktere");
 
     setLoading(true);
     try {
@@ -55,6 +57,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
+      <ConfirmModal />
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
         <h2 className="text-2xl text-center mb-6 tracking-[2px] font-light">Create Your Account</h2>
 

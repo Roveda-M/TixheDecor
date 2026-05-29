@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, formatApiError, hasRole } from "./api";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
@@ -29,17 +31,17 @@ export default function Login() {
     e.preventDefault();
 
     if (email.trim() === "") {
-      alert("Ju lutem shtoni emailin");
+      await alertDialog("Ju lutem shtoni emailin");
       return;
     }
 
     if (!emailValid(email)) {
-      alert("Ju lutem shtoni një email të vlefshëm");
+      await alertDialog("Ju lutem shtoni një email të vlefshëm");
       return;
     }
 
     if (password.trim() === "") {
-      alert("Fjalëkalimi është i zbrazët");
+      await alertDialog("Fjalëkalimi është i zbrazët");
       return;
     }
 
@@ -57,7 +59,7 @@ export default function Login() {
         navigate("/", { replace: true });
       }
     } catch (error) {
-      alert(formatApiError(error));
+      await alertDialog(formatApiError(error));
     } finally {
       setLoading(false);
     }
@@ -65,6 +67,7 @@ export default function Login() {
 
   return (
       <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
+        <ConfirmModal />
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           <br />
           <br />

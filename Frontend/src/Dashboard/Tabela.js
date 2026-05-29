@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, formatApiError } from '../api';
+import { useConfirmModal } from '../ConfirmModal';
 
 const stripEventPrefix = (value) =>
   String(value || '')
@@ -237,6 +238,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   const [filterStatus, setFilterStatus] = useState('');
   const [filterLloji, setFilterLloji] = useState('');
   const [formErrors, setFormErrors] = useState({});
+  const { alertDialog, confirmDialog, ConfirmModal } = useConfirmModal();
 
   const mapIncomingData = useCallback((title, items) => {
     if (title === 'Punetoret') {
@@ -664,12 +666,12 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       setData(sortMappedData(title, mapIncomingData(title, items)));
     } catch (error) {
       console.error('Gabim:', error);
-      alert('Gabim ngarkimi: ' + formatApiError(error));
+      await alertDialog('Gabim ngarkimi: ' + formatApiError(error));
       setData([]);
     } finally {
       setIsLoading(false);
     }
-  }, [filterLloji, filterStatus, initialData, mapIncomingData, title]);
+  }, [alertDialog, filterLloji, filterStatus, initialData, mapIncomingData, title]);
 
   useEffect(() => {
     loadData();
@@ -1031,14 +1033,14 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         }
       }
       handleCloseModal();
-      alert('Operacioni u krye me sukses! ✅');
+      await alertDialog('Operacioni u krye me sukses!');
     } catch (error) {
       setFormErrors({ _form: formatApiError(error) });
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('A jeni i sigurt që doni të fshini këtë rekord?')) {
+    if (await confirmDialog('A jeni i sigurt që doni të fshini këtë rekord?')) {
       try {
         if (title === 'Punetoret') await api.deleteWorker(id);
         else if (title === 'Detyrat e Projekteve') await api.deleteTask(id);
@@ -1055,10 +1057,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         else if (title === 'Faturat') await api.deleteFatura(id);
         else if (title === 'Vlerësimet e Klientëve') await api.deleteVleresim(id);
         setData(data.filter((item) => item.id !== id));
-        alert('Fshirja u krye me sukses!');
+        await alertDialog('Fshirja u krye me sukses!');
         await loadData();
       } catch (error) {
-        alert('Ndodhi një gabim gjatë fshirjes: ' + formatApiError(error));
+        await alertDialog('Ndodhi një gabim gjatë fshirjes: ' + formatApiError(error));
       }
     }
   };
@@ -1203,6 +1205,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
 
   return (
     <div className="bg-[#efe9df] rounded-xl shadow-sm border border-[#c9c1b5] p-6">
+      <ConfirmModal />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">{title}</h2>
         {!disableAdd && (

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function Circumcision() {
   const [selectedDecors, setSelectedDecors] = useState([]);
@@ -14,6 +15,7 @@ export default function Circumcision() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [dynamicPhotos, setDynamicPhotos] = useState([]);
   const inviteRef = useRef(null);
+  const { alertDialog, ConfirmModal } = useConfirmModal();
 
   const heroInfo = useMemo(
     () => [
@@ -163,7 +165,7 @@ export default function Circumcision() {
       link.click();
     } catch (error) {
       console.error("Error downloading invitation:", error);
-      alert("Pati një gabim gjatë shkarkimit të ftesës.");
+      await alertDialog("Pati një gabim gjatë shkarkimit të ftesës.");
     } finally {
       setIsDownloading(false);
     }
@@ -171,6 +173,7 @@ export default function Circumcision() {
 
   return (
     <div className="bg-[#f7fbff] min-h-screen relative overflow-hidden">
+      <ConfirmModal />
       {/* HERO */}
       <section className="relative w-full min-h-[92vh] flex items-center justify-center pt-24 pb-16">
         <div className="absolute inset-0 overflow-hidden">

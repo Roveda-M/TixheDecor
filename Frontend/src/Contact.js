@@ -3,9 +3,11 @@ import { useState } from "react";
 import FeedbackForm from "./FeedbackForm";
 import FeedbackList from "./FeedbackList";
 import { useAuthGuard } from "./useAuthGuard";
+import { useConfirmModal } from "./ConfirmModal";
 
 export default function Contact() {
   const { requireAuth, AuthToast } = useAuthGuard();
+  const { alertDialog, ConfirmModal } = useConfirmModal();
   const [view, setView] = useState("contact");
 
   const [form, setForm] = useState({
@@ -29,11 +31,11 @@ export default function Contact() {
     e.preventDefault();
     if (!requireAuth()) return;
 
-    if (form.name.trim() === "") return alert("Shkruaj emrin");
-    if (form.email.trim() === "") return alert("Shkruaj emailin");
-    if (!emailValid(form.email)) return alert("Email jo valid");
-    if (form.subject.trim() === "") return alert("Shkruaj subjectin");
-    if (form.message.trim() === "") return alert("Shkruaj mesazhin");
+    if (form.name.trim() === "") return alertDialog("Shkruaj emrin");
+    if (form.email.trim() === "") return alertDialog("Shkruaj emailin");
+    if (!emailValid(form.email)) return alertDialog("Email jo valid");
+    if (form.subject.trim() === "") return alertDialog("Shkruaj subjectin");
+    if (form.message.trim() === "") return alertDialog("Shkruaj mesazhin");
 
     try {
       const nameParts = form.name.trim().split(" ");
@@ -47,15 +49,16 @@ export default function Contact() {
         lloji: "Kontakt",
       });
 
-      alert("Mesazhi u dërgua me sukses! ");
+      await alertDialog("Mesazhi u dërgua me sukses! ");
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch (error) {
-      alert("Ndodhi një gabim: " + error.message);
+      await alertDialog("Ndodhi një gabim: " + error.message);
     }
   };
 
   return (
       <section className="w-full min-h-screen bg-gradient-to-b from-[#f7f3ec] to-[#eae6df] py-12 px-5 flex justify-center">
+        <ConfirmModal />
         <AuthToast />
 
         <div className="w-full max-w-6xl flex flex-col min-h-screen">
