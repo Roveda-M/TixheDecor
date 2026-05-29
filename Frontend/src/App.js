@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, useLocation,Navigate } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Header from "./Header";
 import ProtectedRoute from "./ProtectedRoute";
 import Footer from "./Footer";
@@ -25,48 +25,50 @@ export default function App() {
   const location = useLocation();
 
   const hideHeader =
-    location.pathname === "/login" ||
-    location.pathname === "/register" ||
-    location.pathname.startsWith("/dashboard") ||
-    location.pathname.startsWith("/worker-dashboard");
+      location.pathname === "/login" ||
+      location.pathname === "/register" ||
+      location.pathname.startsWith("/dashboard") ||
+      location.pathname.startsWith("/worker-dashboard");
 
   return (
-    <>
-      {!hideHeader && <Header />}
+      <>
+        {!hideHeader && <Header />}
 
-      <Suspense fallback={<div className="p-8 text-center text-gray-500">Duke ngarkuar...</div>}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/home" element={<HomeRoute />} />
-          <Route path="/about" element={<><About /><Footer /></>} />
-          <Route path="/contact" element={<><Contact /><Footer /></>} />
-          <Route path="/wedding" element={<><Wedding /><Footer /></>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <><Profile /><Footer /></>
-            </ProtectedRoute>
-          } />
-          <Route path="/birthday" element={<><Birthday /><Footer /></>} />
-          <Route path="/bride-to-be" element={<><BrideToBe /><Footer /></>} />
-          <Route path="/circumcision" element={<><Circumcision /><Footer /></>} />
-          <Route path="/baby-shower" element={<><BabyShower /><Footer /></>} />
-          <Route path="/engagement-party" element={<><Engagement /><Footer /></>} />
-          <Route path="/dashboard/*" element={
-            <ProtectedRoute requiredRole="ROLE_ADMIN">
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/worker-dashboard" element={
-            <ProtectedRoute requiredRole="ROLE_WORKER">
-              <WorkerDashboard />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </Suspense>
-    </>
+        <Suspense fallback={<div className="p-8 text-center text-gray-500">Duke ngarkuar...</div>}>
+          <Routes>
+            {/* "/" shfaq HomeRoute direkt — pa redirect në login */}
+            <Route path="/" element={<HomeRoute />} />
+            <Route path="/home" element={<Navigate to="/" replace />} />
+
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/about" element={<><About /><Footer /></>} />
+            <Route path="/contact" element={<><Contact /><Footer /></>} />
+            <Route path="/wedding" element={<><Wedding /><Footer /></>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <><Profile /><Footer /></>
+              </ProtectedRoute>
+            } />
+            <Route path="/birthday" element={<><Birthday /><Footer /></>} />
+            <Route path="/bride-to-be" element={<><BrideToBe /><Footer /></>} />
+            <Route path="/circumcision" element={<><Circumcision /><Footer /></>} />
+            <Route path="/baby-shower" element={<><BabyShower /><Footer /></>} />
+            <Route path="/engagement-party" element={<><Engagement /><Footer /></>} />
+            <Route path="/dashboard/*" element={
+              <ProtectedRoute requiredRole="ROLE_ADMIN">
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/worker-dashboard" element={
+              <ProtectedRoute requiredRole="ROLE_WORKER">
+                <WorkerDashboard />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </Suspense>
+      </>
   );
 }

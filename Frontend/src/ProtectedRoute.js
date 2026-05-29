@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
   const requiredRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
   if (requiredRole && !requiredRoles.some((item) => hasRole(role, item))) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
