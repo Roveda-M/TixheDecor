@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { hasRole } from "./api";
 
 const getHomePath = () => {
-  const token = sessionStorage.getItem("accessToken");
-  const role = sessionStorage.getItem("role");
-  if (token && hasRole(role, "ROLE_ADMIN")) return "/dashboard";
   return "/";
 };
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClick = () => {
     setOpen(false);
@@ -29,13 +28,21 @@ export default function Header() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const checkAdmin = () => {
+    const token = sessionStorage.getItem("accessToken");
+    const role = sessionStorage.getItem("role");
+    setIsAdmin(!!token && hasRole(role, "ROLE_ADMIN"));
+  };
+
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    checkAdmin();
+  }, [location]);
 
   return (
       <>
@@ -68,12 +75,25 @@ export default function Header() {
               </p>
             </div>
 
-            <button
-                onClick={handleProfileClick}
-                className="text-2xl ml-3 inline-block hover:opacity-70 transition"
-            >
-              👤
-            </button>
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                  <Link
+                      to="/dashboard"
+                      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                      className="text-xs tracking-[2px] px-3 py-1.5 border border-[#2b2b2b]/30 rounded-lg hover:bg-[#2b2b2b] hover:text-white transition-all duration-200"
+                      style={{ fontFamily: "Cormorant Garamond, serif" }}
+                  >
+                    DASHBOARD
+                  </Link>
+              )}
+              <button
+                  onClick={handleProfileClick}
+                  className="text-2xl ml-1 inline-block hover:opacity-70 transition"
+              >
+                👤
+              </button>
+            </div>
+
           </div>
         </header>
 
@@ -112,7 +132,6 @@ export default function Header() {
                 </h2>
               </Link>
 
-              {/* ABOUT */}
               <Link to="/about" onClick={handleClick}>
                 <h2
                     className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
@@ -122,7 +141,6 @@ export default function Header() {
                 </h2>
               </Link>
 
-              {/* CONTACT US */}
               <Link to="/contact" onClick={handleClick}>
                 <h2
                     className="text-2xl tracking-[6px] font-light hover:opacity-60 cursor-pointer"
@@ -132,7 +150,6 @@ export default function Header() {
                 </h2>
               </Link>
 
-              {/* EVENTS */}
               <div className="flex flex-col gap-4">
                 <h2
                     className="text-2xl tracking-[6px] font-light"

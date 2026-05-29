@@ -12,9 +12,7 @@ export default function Login() {
     const token = sessionStorage.getItem("accessToken");
     const role = sessionStorage.getItem("role");
     if (token) {
-      if (hasRole(role, "ROLE_ADMIN")) {
-        navigate("/dashboard", { replace: true });
-      } else if (hasRole(role, "ROLE_WORKER")) {
+      if (hasRole(role, "ROLE_WORKER")) {
         navigate("/worker-dashboard", { replace: true });
       } else {
         navigate("/", { replace: true });
@@ -53,9 +51,7 @@ export default function Login() {
       sessionStorage.setItem("accessToken", data.accessToken);
       sessionStorage.setItem("role", data.role);
 
-      if (hasRole(data.role, "ROLE_ADMIN")) {
-        navigate("/dashboard", { replace: true });
-      } else if (hasRole(data.role, "ROLE_WORKER")) {
+      if (hasRole(data.role, "ROLE_WORKER")) {
         navigate("/worker-dashboard", { replace: true });
       } else {
         navigate("/", { replace: true });
