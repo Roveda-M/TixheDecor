@@ -25,17 +25,21 @@ export default function Profile() {
     localStorage.removeItem("refreshToken");
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("role");
-    navigate("/login");
+    navigate("/");
   };
 
   const displayName = user?.fullname || user?.username || "Perdoruesi";
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Duke ngarkuar...</div>;
+  if (loading)
+    return (
+        <div className="min-h-screen flex items-center justify-center">
+          Duke ngarkuar...
+        </div>
+    );
 
   return (
       <div className="min-h-screen bg-[#f6f1e8] flex flex-col md:flex-row pt-24">
 
-        {/* SIDEBAR */}
         <aside className="w-full md:w-72 bg-white shadow-md p-6 flex-shrink-0">
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto bg-[#e6dfd3] rounded-full flex items-center justify-center text-3xl">
@@ -62,9 +66,7 @@ export default function Profile() {
           </div>
         </aside>
 
-        {/* CONTENT */}
         <main className="flex-1 p-4 md:p-10">
-
           <div>
             <h2 className="text-2xl mb-6 font-light tracking-wide">Account Details</h2>
             <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
@@ -86,7 +88,6 @@ export default function Profile() {
               </div>
             </div>
           </div>
-
         </main>
       </div>
   );

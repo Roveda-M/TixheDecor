@@ -1,11 +1,11 @@
 import { api } from "./api";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import FeedbackForm from "./FeedbackForm";
 import FeedbackList from "./FeedbackList";
+import { useAuthGuard } from "./useAuthGuard";
 
 export default function Contact() {
-  const navigate = useNavigate();
+  const { requireAuth, AuthToast } = useAuthGuard();
   const [view, setView] = useState("contact");
 
   const [form, setForm] = useState({
@@ -14,14 +14,6 @@ export default function Contact() {
     subject: "",
     message: "",
   });
-
-  const requireAuth = () => {
-    if (!sessionStorage.getItem("accessToken")) {
-      navigate("/login");
-      return false;
-    }
-    return true;
-  };
 
   const emailValid = (email) => {
     const emailRegex =
@@ -35,14 +27,12 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Kontroll auth edhe tek submit
     if (!requireAuth()) return;
 
     if (form.name.trim() === "") return alert("Shkruaj emrin");
     if (form.email.trim() === "") return alert("Shkruaj emailin");
     if (!emailValid(form.email)) return alert("Email jo valid");
-    if (form.subject.trim() === "") return alert("Shkruaj subjektin");
+    if (form.subject.trim() === "") return alert("Shkruaj subjectin");
     if (form.message.trim() === "") return alert("Shkruaj mesazhin");
 
     try {
@@ -57,7 +47,7 @@ export default function Contact() {
         lloji: "Kontakt",
       });
 
-      alert("Mesazhi u dergua me sukses! ");
+      alert("Mesazhi u dërgua me sukses! ");
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch (error) {
       alert("Ndodhi një gabim: " + error.message);
@@ -66,8 +56,9 @@ export default function Contact() {
 
   return (
       <section className="w-full min-h-screen bg-gradient-to-b from-[#f7f3ec] to-[#eae6df] py-12 px-5 flex justify-center">
-        <div className="w-full max-w-6xl flex flex-col min-h-screen">
+        <AuthToast />
 
+        <div className="w-full max-w-6xl flex flex-col min-h-screen">
           <br />
           <br />
           <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 text-[#2b2b2b]">
@@ -85,7 +76,6 @@ export default function Contact() {
                       : "flex justify-center"
               }`}
           >
-            {/* LEFT SIDE */}
             <div className="bg-white p-6 rounded-2xl shadow-xl min-h-[420px] w-full md:w-[500px]">
               {view === "contact" && (
                   <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -122,12 +112,10 @@ export default function Contact() {
                     </button>
                   </form>
               )}
-
               {view === "feedback" && <FeedbackForm />}
               {view === "reviews" && <FeedbackList />}
             </div>
 
-            {/* RIGHT SIDE MAP */}
             {view === "contact" && (
                 <div className="rounded-2xl overflow-hidden shadow-xl h-[300px] sm:h-[420px]">
                   <iframe
@@ -141,49 +129,22 @@ export default function Contact() {
             )}
           </div>
 
-          {/* BUTTONS BOTTOM — të mbrojtura me requireAuth */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
             <button
-                onClick={() => {
-                  if (!requireAuth()) return;
-                  setView("contact");
-                  window.scrollTo(0, 0);
-                }}
-                className={`px-5 py-2 rounded-lg w-full sm:w-auto transition ${
-                    view === "contact"
-                        ? "bg-black text-white"
-                        : "bg-gray-200 text-black"
-                }`}
+                onClick={() => { if (!requireAuth()) return; setView("contact"); window.scrollTo(0, 0); }}
+                className={`px-5 py-2 rounded-lg w-full sm:w-auto transition ${view === "contact" ? "bg-black text-white" : "bg-gray-200 text-black"}`}
             >
               Contact
             </button>
-
             <button
-                onClick={() => {
-                  if (!requireAuth()) return;
-                  setView("feedback");
-                  window.scrollTo(0, 0);
-                }}
-                className={`px-5 py-2 rounded-lg w-full sm:w-auto transition ${
-                    view === "feedback"
-                        ? "bg-black text-white"
-                        : "bg-gray-200 text-black"
-                }`}
+                onClick={() => { if (!requireAuth()) return; setView("feedback"); window.scrollTo(0, 0); }}
+                className={`px-5 py-2 rounded-lg w-full sm:w-auto transition ${view === "feedback" ? "bg-black text-white" : "bg-gray-200 text-black"}`}
             >
               Feedback
             </button>
-
             <button
-                onClick={() => {
-                  if (!requireAuth()) return;
-                  setView("reviews");
-                  window.scrollTo(0, 0);
-                }}
-                className={`px-5 py-2 rounded-lg w-full sm:w-auto transition ${
-                    view === "reviews"
-                        ? "bg-black text-white"
-                        : "bg-gray-200 text-black"
-                }`}
+                onClick={() => { if (!requireAuth()) return; setView("reviews"); window.scrollTo(0, 0); }}
+                className={`px-5 py-2 rounded-lg w-full sm:w-auto transition ${view === "reviews" ? "bg-black text-white" : "bg-gray-200 text-black"}`}
             >
               Reviews
             </button>

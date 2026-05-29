@@ -17,7 +17,7 @@ export default function Login() {
       } else if (hasRole(role, "ROLE_WORKER")) {
         navigate("/worker-dashboard", { replace: true });
       } else {
-        navigate("/home", { replace: true });
+        navigate("/", { replace: true });
       }
     }
   }, []);
@@ -58,7 +58,7 @@ export default function Login() {
       } else if (hasRole(data.role, "ROLE_WORKER")) {
         navigate("/worker-dashboard", { replace: true });
       } else {
-        navigate("/home", { replace: true });
+        navigate("/", { replace: true });
       }
     } catch (error) {
       alert(formatApiError(error));
@@ -140,10 +140,10 @@ export default function Login() {
               Login with Apple
             </button>
             <button className="w-full border py-2 rounded-lg hover:bg-gray-100">
-              🌐 Login with Google
+              Login with Google
             </button>
             <button className="w-full border py-2 rounded-lg hover:bg-gray-100">
-              🪟 Login with Microsoft
+              Login with Microsoft
             </button>
           </div>
         </div>

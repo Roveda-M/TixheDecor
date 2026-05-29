@@ -1,11 +1,13 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthGuard } from "./useAuthGuard";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 export default function Ftesa() {
   const previewRef = useRef();
   const navigate = useNavigate();
+  const { requireAuth, AuthToast } = useAuthGuard();
 
   const [form, setForm] = useState({
     bride: "",
@@ -29,14 +31,6 @@ export default function Ftesa() {
     address: form.address || "Prishtinë, Kosovë",
   };
 
-  const requireAuth = () => {
-    if (!sessionStorage.getItem("accessToken")) {
-      navigate("/login");
-      return false;
-    }
-    return true;
-  };
-
   const handleChange = (key, value) => {
     if (!requireAuth()) return;
     update(key, value);
@@ -52,16 +46,15 @@ export default function Ftesa() {
 
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF("portrait", "pt", "a4");
-
     const width = pdf.internal.pageSize.getWidth();
     const height = (canvas.height * width) / canvas.width;
-
     pdf.addImage(imgData, "PNG", 0, 0, width, height);
     pdf.save("ftesa.pdf");
   };
 
   return (
       <div className="min-h-screen flex flex-col md:flex-row bg-[#f7f3ec]">
+        <AuthToast />
 
         {/* LEFT */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-10 mt-16">
@@ -72,16 +65,8 @@ export default function Ftesa() {
             </h1>
 
             <div className="bg-white/90 p-5 rounded-2xl shadow-xl space-y-3">
-              <Input
-                  placeholder="Emri i nuses"
-                  value={form.bride}
-                  onChange={(e) => handleChange("bride", e.target.value)}
-              />
-              <Input
-                  placeholder="Emri i dhëndrit"
-                  value={form.groom}
-                  onChange={(e) => handleChange("groom", e.target.value)}
-              />
+              <Input placeholder="Emri i nuses" value={form.bride} onChange={(e) => handleChange("bride", e.target.value)} />
+              <Input placeholder="Emri i dhëndrit" value={form.groom} onChange={(e) => handleChange("groom", e.target.value)} />
 
               <div className="flex gap-3">
                 <input
@@ -98,16 +83,8 @@ export default function Ftesa() {
                 />
               </div>
 
-              <Input
-                  placeholder="Restoranti"
-                  value={form.restaurant}
-                  onChange={(e) => handleChange("restaurant", e.target.value)}
-              />
-              <Input
-                  placeholder="Adresa"
-                  value={form.address}
-                  onChange={(e) => handleChange("address", e.target.value)}
-              />
+              <Input placeholder="Restoranti" value={form.restaurant} onChange={(e) => handleChange("restaurant", e.target.value)} />
+              <Input placeholder="Adresa" value={form.address} onChange={(e) => handleChange("address", e.target.value)} />
             </div>
 
             <button
@@ -120,7 +97,6 @@ export default function Ftesa() {
           </div>
         </div>
 
-        {/* RIGHT — Preview (publike, shfaqet gjithmonë) */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-6 mt-2">
           <div
               ref={previewRef}
@@ -128,22 +104,13 @@ export default function Ftesa() {
           >
             <div
                 className="absolute inset-0 bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                      "url(https://images.unsplash.com/photo-1523438885200-e635ba2c371e)",
-                }}
+                style={{ backgroundImage: "url(https://images.unsplash.com/photo-1523438885200-e635ba2c371e)" }}
             />
-
             <div className="absolute inset-0 bg-white/70" />
-
             <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8 font-serif">
-              <p className="text-xs tracking-[6px] text-gray-500 uppercase">
-                Ftesë Dasme
-              </p>
-
+              <p className="text-xs tracking-[6px] text-gray-500 uppercase">Ftesë Dasme</p>
               <h1 className="text-3xl mt-6">{safe.bride}</h1>
               <h2 className="text-xl text-gray-600">& {safe.groom}</h2>
-
               <div className="mt-6 text-sm text-gray-700 space-y-1">
                 <p>📅 {safe.date}</p>
                 <p>🕒 {safe.time}</p>
@@ -151,9 +118,7 @@ export default function Ftesa() {
                 <p>📍 {safe.address}</p>
               </div>
               <div className="w-full text-center mt-8">
-                <p className="text-xs text-[#8B5E3C] italic tracking-[4px]">
-                  ✦ Tixhe Decor ✦
-                </p>
+                <p className="text-xs text-[#8B5E3C] italic tracking-[4px]">✦ Tixhe Decor ✦</p>
               </div>
             </div>
           </div>
