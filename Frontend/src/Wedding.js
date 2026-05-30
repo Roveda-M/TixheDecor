@@ -196,7 +196,6 @@ export default function Wedding() {
   const [eventTime, setEventTime] = useState("");
   const [eventLocation, setEventLocation] = useState("");
   const [eventPhone, setEventPhone] = useState("");
-  const [submittedPhone, setSubmittedPhone] = useState("");
   const [requestStatus, setRequestStatus] = useState("");
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
@@ -294,8 +293,7 @@ export default function Wedding() {
         email: userEmail,
         selectedDecors: selectedDecorText,
       });
-      setSubmittedPhone(phone);
-      setRequestStatus("Kërkesa u dërgua. Admini e sheh te Menaxhimi i Klientëve, Projektet e Dekorimit dhe Kërkesat Wedding.");
+      setRequestStatus("Kërkesa u dërgua");
       setSelectedDecors([]);
       setEventPhone("");
     } catch (error) {
@@ -813,11 +811,6 @@ export default function Wedding() {
             {requestStatus && (
                 <div className="mt-6 text-sm text-center text-[#5c4030] bg-[#f7f3ec] border border-[#e8dfd4] rounded-xl px-4 py-3 space-y-1">
                   <p>{requestStatus}</p>
-                  {submittedPhone && (
-                      <p className="font-medium">
-                        Telefoni i regjistruar: <span className="text-[#6f4e37]">{submittedPhone}</span>
-                      </p>
-                  )}
                 </div>
             )}
           </div>

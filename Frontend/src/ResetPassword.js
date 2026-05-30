@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { api, formatApiError } from "./api";
 import { useConfirmModal } from "./ConfirmModal";
@@ -12,6 +12,13 @@ export default function ResetPassword() {
   const navigate = useNavigate();
   const token = searchParams.get("token");
   const { alertDialog, ConfirmModal } = useConfirmModal();
+
+  useEffect(() => {
+    window.history.pushState({ authBackGuard: true }, "");
+    const handleBack = () => window.location.replace("/login");
+    window.addEventListener("popstate", handleBack);
+    return () => window.removeEventListener("popstate", handleBack);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

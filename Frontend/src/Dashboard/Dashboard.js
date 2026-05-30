@@ -9,6 +9,15 @@ import { Link } from 'react-router-dom';
 import Tabela from './Tabela';
 import { api, formatApiError } from '../api';
 
+const eventOptions = [
+  { value: 'baby', label: 'Baby' },
+  { value: 'birthday', label: 'Birthday' },
+  { value: 'bride-to-be', label: 'Bride to Be' },
+  { value: 'circumcision', label: 'Circumcision' },
+  { value: 'engagement', label: 'Engagement' },
+  { value: 'wedding', label: 'Wedding' },
+];
+
 const crudConfigs = {
   clients: {
     id: 'clients',
@@ -34,7 +43,6 @@ const crudConfigs = {
       { key: 'clientId', label: 'Emri i Klientit', type: 'select', optionsSource: 'clients', tableKey: 'client' },
       { key: 'date', label: 'Data e eventit', type: 'date', cellClassName: 'whitespace-nowrap min-w-[9.5rem]' },
       { key: 'eventTime', label: 'Ora', type: 'time', cellClassName: 'whitespace-nowrap min-w-[6rem]' },
-      { key: 'endDate', label: 'Data mbarimit', type: 'date', formOnly: true, required: false },
       { key: 'budget', label: 'Buxheti (€)', type: 'number' },
       { key: 'deposit', label: 'Kapari (€)', type: 'number', required: false },
       { key: 'location', label: 'Lokacioni', type: 'text' },
@@ -140,7 +148,7 @@ const crudConfigs = {
       { key: 'invoiceNo', label: 'Nr. Faturës', type: 'text' },
       { key: 'clientId', label: 'Emri i Klientit', type: 'select', optionsSource: 'clients', tableKey: 'client' },
       { key: 'projectId', label: 'Projekti', type: 'select', optionsSource: 'projects', tableKey: 'project', required: false },
-      { key: 'amount', label: 'Shuma Totale (€)', type: 'number' },
+      { key: 'amount', label: 'Shuma Totale (€)', type: 'text' },
       { key: 'paymentMethod', label: 'Metoda e pagesës', type: 'text' },
       { key: 'status', label: 'Statusi i pagesës', type: 'text' },
     ],
@@ -158,14 +166,7 @@ const crudConfigs = {
         key: 'lloji',
         label: 'Lloji / faqja ku shfaqet',
         type: 'select',
-        options: [
-          { value: 'wedding', label: 'Wedding' },
-          { value: 'birthday', label: 'Birthday' },
-          { value: 'engagement', label: 'Engagement' },
-          { value: 'babyshower', label: 'Baby Shower' },
-          { value: 'bridetobe', label: 'Bride To Be' },
-          { value: 'circumcision', label: 'Circumcision' },
-        ],
+        options: eventOptions,
       },
     ],
     initialData: [
@@ -363,8 +364,8 @@ const crudConfigs = {
     title: 'Vlerësimet e Klientëve',
     icon: <FiStar />,
     columns: [
-      { key: 'userName', label: 'Përdoruesi', type: 'text', tableOnly: true },
-      { key: 'userEmail', label: 'Email', type: 'email', tableOnly: true },
+      { key: 'userName', label: 'Përdoruesi', type: 'text', required: false },
+      { key: 'userEmail', label: 'Email', type: 'select', optionsSource: 'users', tableKey: 'userEmail', required: false },
       { key: 'rating', label: 'Vlerësimi (1-5)', type: 'number' },
       { key: 'comment', label: 'Koment', type: 'textarea' },
       { key: 'recommendation', label: 'Emri nga forma', type: 'text', required: false },

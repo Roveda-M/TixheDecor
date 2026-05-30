@@ -27,6 +27,8 @@ export default function App() {
   const hideHeader =
       location.pathname === "/login" ||
       location.pathname === "/register" ||
+      location.pathname === "/forgot-password" ||
+      location.pathname === "/reset-password" ||
       location.pathname.startsWith("/dashboard") ||
       location.pathname.startsWith("/worker-dashboard");
 

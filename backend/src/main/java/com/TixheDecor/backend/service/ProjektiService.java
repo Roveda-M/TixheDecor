@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.math.BigDecimal;
 
 @Service
 public class ProjektiService {
@@ -35,6 +36,7 @@ public class ProjektiService {
     }
 
     public Projekti create(Projekti projekti) {
+        ensureDefaults(projekti);
         return projektiRepository.save(projekti);
     }
 
@@ -43,6 +45,7 @@ public class ProjektiService {
             return Optional.empty();
         }
         projekti.setProjektiId(id);
+        ensureDefaults(projekti);
         return Optional.of(projektiRepository.save(projekti));
     }
 
@@ -53,5 +56,11 @@ public class ProjektiService {
         }
         entityCascadeDeleteService.deleteProjektiCascade(id);
         return true;
+    }
+
+    private void ensureDefaults(Projekti projekti) {
+        if (projekti.getKapari() == null) {
+            projekti.setKapari(BigDecimal.ZERO);
+        }
     }
 }

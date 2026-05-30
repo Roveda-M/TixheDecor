@@ -6,7 +6,7 @@ import { useConfirmModal } from '../ConfirmModal';
 
 const stripEventPrefix = (value) =>
   String(value || '')
-    .replace(/^(Wedding|Baby Shower|Bride To Be|Engagement|Circumcision)\s*-\s*/i, '')
+    .replace(/^(Wedding|Birthday|Baby|Baby Shower|Bride to Be|Bride To Be|Engagement|Circumcision)\s*-\s*/i, '')
     .trim();
 
 const klientDisplayName = (k) => {
@@ -190,13 +190,32 @@ const normalizeRequestStatus = (value) => {
 const EVENT_TYPE_LABELS = {
   wedding: 'Wedding',
   dasme: 'Wedding',
-  bridetobe: 'Bride To Be',
+  bridetobe: 'Bride to Be',
+  'bride-to-be': 'Bride to Be',
   birthday: 'Birthday',
   engagement: 'Engagement',
-  babyshower: 'Baby Shower',
+  baby: 'Baby',
+  babyshower: 'Baby',
   circumcision: 'Circumcision',
   individual: 'Individual',
   kontakt: 'Kontakt',
+};
+
+const sortOptionsByLabel = (options) =>
+  [...options].sort((a, b) => (a.label || '').localeCompare(b.label || '', 'sq', { sensitivity: 'base' }));
+
+const uniqueClientsByName = (clients) => {
+  const unique = new Map();
+  for (const client of clients) {
+    const label = klientLabel(client);
+    const key = label.toLowerCase();
+    if (!key || unique.has(key)) continue;
+    unique.set(key, {
+      value: String(client.klientiId),
+      label,
+    });
+  }
+  return sortOptionsByLabel([...unique.values()]);
 };
 
 const formatLlojiEventType = (value) => {
@@ -213,8 +232,10 @@ const formatLlojiEventType = (value) => {
   }
   const key = text.toLowerCase().replace(/\s+/g, '');
   if (EVENT_TYPE_LABELS[key]) return `From: ${EVENT_TYPE_LABELS[key]}`;
-  if (text.startsWith('Baby Shower -')) return 'From: Baby Shower';
+  if (text.startsWith('Baby Shower -') || text.startsWith('Baby -')) return 'From: Baby';
   if (text.startsWith('Wedding -')) return 'From: Wedding';
+  if (text.startsWith('Birthday -')) return 'From: Birthday';
+  if (text.startsWith('Bride to Be -') || text.startsWith('Bride To Be -')) return 'From: Bride to Be';
   if (text.startsWith('Engagement -')) return 'From: Engagement';
   if (text.startsWith('Circumcision -')) return 'From: Circumcision';
   return `From: ${text}`;
@@ -252,6 +273,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   const [filterStatus, setFilterStatus] = useState('');
   const [filterLloji, setFilterLloji] = useState('');
   const [formErrors, setFormErrors] = useState({});
+  const [previewPhoto, setPreviewPhoto] = useState(null);
   const { alertDialog, confirmDialog, ConfirmModal } = useConfirmModal();
 
   const mapIncomingData = useCallback((title, items) => {
@@ -398,7 +420,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         eventTime: formatTimeValue(item.oraEventit),
         endDate: item.dataPerfundimit || '',
         budget: item.buxheti ?? '',
-        deposit: item.kapari ?? '',
+        deposit: item.kapari ?? 0,
         location: item.lokacioni || '',
         status: item.statusi || '',
       }));
@@ -599,10 +621,9 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         emriProjektit: form.title || '',
         statusi: form.status || '',
         dataFillimit: form.date || null,
-        dataPerfundimit: form.endDate || null,
         oraEventit: form.eventTime || null,
         buxheti: form.budget !== '' && form.budget != null ? Number(form.budget) : null,
-        kapari: form.deposit !== '' && form.deposit != null ? Number(form.deposit) : null,
+        kapari: form.deposit !== '' && form.deposit != null ? Number(form.deposit) : 0,
         lokacioni: form.location || '',
       };
       if (form.clientId) {
@@ -630,6 +651,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         rekomandimi: form.recommendation || '',
         dataVleresimit: form.date || null,
       };
+      if (form.userEmail) payload.user = { email: form.userEmail };
       if (form.clientId) payload.klienti = { klientiId: Number(form.clientId) };
       if (form.projectId) payload.projekti = { projektiId: Number(form.projectId) };
       if (editingId) payload.vleresimiId = Number(editingId);
@@ -706,21 +728,17 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
               const projects = await api.getProjektet();
               return [
                 source,
-                projects.map((project) => ({
-                  value: String(project.projektiId),
-                  label: title === 'Detyrat e Projekteve' ? projektMeKlientLabel(project) : projektLabel(project),
-                })),
+                sortOptionsByLabel(
+                  projects.map((project) => ({
+                    value: String(project.projektiId),
+                    label: title === 'Detyrat e Projekteve' ? projektMeKlientLabel(project) : projektLabel(project),
+                  }))
+                ),
               ];
             }
             if (source === 'clients') {
               const clients = await api.getKlientet();
-              return [
-                source,
-                clients.map((client) => ({
-                  value: String(client.klientiId),
-                  label: klientLabel(client),
-                })),
-              ];
+              return [source, uniqueClientsByName(clients)];
             }
             if (source === 'users') {
               const users = await api.getUsers();
@@ -815,7 +833,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     } else {
       const emptyForm = {};
       columns.filter((col) => !col.tableOnly).forEach((col) => {
-        emptyForm[col.key] = '';
+        emptyForm[col.key] = title === 'Projektet e Dekorimit' && col.key === 'deposit' ? 0 : '';
       });
       setFormData(emptyForm);
       setEditingId(null);
@@ -831,7 +849,16 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
   };
 
   const handleChange = (e, key) => {
-    setFormData({ ...formData, [key]: e.target.value });
+    if (title === 'Vlerësimet e Klientëve' && key === 'userEmail') {
+      const selectedUser = (lookupOptions.users || []).find((option) => option.value === e.target.value);
+      setFormData({
+        ...formData,
+        userEmail: e.target.value,
+        userName: selectedUser ? selectedUser.label.split(' - ')[0] : formData.userName || '',
+      });
+    } else {
+      setFormData({ ...formData, [key]: e.target.value });
+    }
     setFormErrors((errors) => ({ ...errors, [key]: undefined, _form: undefined }));
   };
 
@@ -1155,7 +1182,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     }
     return (
       <input
-        type={col.type || 'text'}
+        type={title === 'Faturat' && col.key === 'amount' ? 'text' : col.type || 'text'}
         required={col.required !== false}
         value={formData[col.key] || ''}
         onChange={(e) => handleChange(e, col.key)}
@@ -1178,16 +1205,15 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       return (
         <div className="flex flex-wrap gap-2 max-w-xs">
           {links.map((link, index) => (
-            <a
+            <button
+              type="button"
               key={`${link.url}-${index}`}
-              href={link.url}
-              target="_blank"
-              rel="noreferrer"
+              onClick={() => setPreviewPhoto(link)}
               className="inline-flex items-center rounded-lg border border-[#c9c1b5] bg-[#f6f1e8] px-3 py-1 text-xs font-medium text-[#2b2b2b] hover:bg-white"
               title={link.title}
             >
               Hap foton {index + 1}
-            </a>
+            </button>
           ))}
         </div>
       );
@@ -1198,13 +1224,17 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       if (!src) return '';
 
       return (
-        <a href={src} target="_blank" rel="noreferrer" className="inline-block">
+        <button
+          type="button"
+          onClick={() => setPreviewPhoto({ title: item.description || 'Foto', url: src })}
+          className="inline-block"
+        >
           <img
             src={src}
             alt={item.description || 'Foto'}
             className="h-16 w-16 rounded-lg object-cover border border-[#c9c1b5]"
           />
-        </a>
+        </button>
       );
     }
 
@@ -1398,6 +1428,43 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {previewPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Parapamje foto"
+            onClick={() => setPreviewPhoto(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              className="relative max-h-[90vh] w-full max-w-5xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setPreviewPhoto(null)}
+                className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black"
+                aria-label="Mbyll foton"
+              >
+                X
+              </button>
+              <img
+                src={previewPhoto.url}
+                alt={previewPhoto.title || 'Foto'}
+                className="mx-auto max-h-[90vh] w-auto max-w-full rounded-lg object-contain shadow-2xl"
+              />
             </motion.div>
           </motion.div>
         )}
