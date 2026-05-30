@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import { useAuthGuard } from './useAuthGuard';
 
 import img1 from './1.jpeg';
 import img2 from './2.jpeg';
@@ -37,6 +38,7 @@ const decors = [
 ];
 
 export default function Birthday() {
+  const { requireAuth, AuthToast } = useAuthGuard();
   const [selectedDecors, setSelectedDecors] = useState([]);
   const [dynamicDecors, setDynamicDecors] = useState([]);
   const [step, setStep] = useState('selection');
@@ -97,6 +99,7 @@ export default function Birthday() {
   };
 
   const handleDownloadInvite = async () => {
+    if (!requireAuth()) return;
     if (!inviteRef.current) return;
 
     const names = formData.name.split('\n').map(n => n.trim()).filter(n => n);
@@ -134,6 +137,7 @@ export default function Birthday() {
 
   return (
       <>
+        <AuthToast />
         <style>
           {`
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&family=Great+Vibes&display=swap');

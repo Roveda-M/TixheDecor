@@ -1,8 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import { useConfirmModal } from "./ConfirmModal";
+import { api, formatApiError } from "./api";
+import { useAuthGuard } from "./useAuthGuard";
 
 export default function Engagement() {
+  const { requireAuth, AuthToast } = useAuthGuard();
   const [selectedDecors, setSelectedDecors] = useState([]);
   const [invite, setInvite] = useState({
     couple: "",
@@ -12,6 +15,8 @@ export default function Engagement() {
     message: "",
   });
   const [isDownloading, setIsDownloading] = useState(false);
+  const [requestStatus, setRequestStatus] = useState("");
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
   const [dynamicPhotos, setDynamicPhotos] = useState([]);
   const inviteRef = useRef(null);
   const { alertDialog, ConfirmModal } = useConfirmModal();
@@ -95,6 +100,7 @@ export default function Engagement() {
   };
 
   const handleDownloadInvite = async () => {
+    if (!requireAuth()) return;
     if (!inviteRef.current) return;
     try {
       setIsDownloading(true);
@@ -116,9 +122,50 @@ export default function Engagement() {
     }
   };
 
+  const handleSubmitRequest = async () => {
+    if (!requireAuth()) return;
+
+    if (selectedDecors.length === 0) {
+      setRequestStatus("Zgjidh te pakten nje dekor.");
+      scrollToGallery();
+      return;
+    }
+    if (!invite.couple.trim() || !invite.date || !invite.time || !invite.location.trim()) {
+      setRequestStatus("Ploteso emrat e ciftit, daten, oren dhe lokacionin.");
+      scrollToInvite();
+      return;
+    }
+
+    const selectedDecorText = selectedDecors
+      .map((index) => {
+        const photo = photos[index];
+        return `${photo.title.full} (${photo.url})`;
+      })
+      .join(", ");
+
+    try {
+      setIsSubmittingRequest(true);
+      const userEmail = await api.getLoggedInUserEmail();
+      await api.createBrideToBeRequest({
+        brideName: `Engagement - ${invite.couple.trim()}`,
+        eventDate: invite.date,
+        eventTime: invite.time,
+        location: invite.location.trim(),
+        email: userEmail,
+        selectedDecors: selectedDecorText,
+      });
+      setRequestStatus("Kerkesa u dergua me sukses. Admini do ta shohe ne dashboard.");
+    } catch (error) {
+      setRequestStatus(formatApiError(error));
+    } finally {
+      setIsSubmittingRequest(false);
+    }
+  };
+
   return (
     <div className="bg-[#fdf6f0] min-h-screen relative overflow-hidden">
       <ConfirmModal />
+      <AuthToast />
       {/* HERO */}
       <section className="relative w-full min-h-[92vh] flex items-center justify-center pt-24 pb-16">
         <div className="absolute inset-0 overflow-hidden">
@@ -379,6 +426,19 @@ export default function Engagement() {
               >
                 {isDownloading ? "Duke shkarkuar..." : "Shkarko ftesën (PNG)"}
               </button>
+              <button
+                type="button"
+                onClick={handleSubmitRequest}
+                disabled={isSubmittingRequest}
+                className="mt-4 inline-flex items-center justify-center px-10 py-4 rounded-full bg-[#061a2b] text-white font-semibold tracking-wide transition-all duration-300 hover:bg-[#0b2942] hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isSubmittingRequest ? "Duke derguar..." : "Dergo kerkesen"}
+              </button>
+              {requestStatus && (
+                <p className="mt-4 rounded-xl border border-[#f7e4b4] bg-[#fbf3ee] px-4 py-3 text-sm text-[#8b5a3a]">
+                  {requestStatus}
+                </p>
+              )}
             </div>
 
             <div className="p-8 md:p-12 lg:p-14 bg-gradient-to-b from-[#fbf3ee] to-white flex items-center justify-center">
@@ -453,3 +513,4 @@ export default function Engagement() {
     </div>
   );
 }
+

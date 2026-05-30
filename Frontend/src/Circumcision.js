@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import { useConfirmModal } from "./ConfirmModal";
+import { api, formatApiError } from "./api";
+import { useAuthGuard } from "./useAuthGuard";
 
 export default function Circumcision() {
+  const { requireAuth, AuthToast } = useAuthGuard();
   const [selectedDecors, setSelectedDecors] = useState([]);
   const [invite, setInvite] = useState({
     djali: "",
@@ -13,6 +16,8 @@ export default function Circumcision() {
     message: "",
   });
   const [isDownloading, setIsDownloading] = useState(false);
+  const [requestStatus, setRequestStatus] = useState("");
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
   const [dynamicPhotos, setDynamicPhotos] = useState([]);
   const inviteRef = useRef(null);
   const { alertDialog, ConfirmModal } = useConfirmModal();
@@ -150,6 +155,7 @@ export default function Circumcision() {
   };
 
   const handleDownloadInvite = async () => {
+    if (!requireAuth()) return;
     if (!inviteRef.current) return;
     try {
       setIsDownloading(true);
@@ -171,9 +177,50 @@ export default function Circumcision() {
     }
   };
 
+  const handleSubmitRequest = async () => {
+    if (!requireAuth()) return;
+
+    if (selectedDecors.length === 0) {
+      setRequestStatus("Zgjidh te pakten nje dekor.");
+      scrollToGallery();
+      return;
+    }
+    if (!invite.djali.trim() || !invite.familja.trim() || !invite.date || !invite.time || !invite.location.trim()) {
+      setRequestStatus("Ploteso emrin e djalit, familjen, daten, oren dhe lokacionin.");
+      scrollToInvite();
+      return;
+    }
+
+    const selectedDecorText = selectedDecors
+      .map((index) => {
+        const photo = photos[index];
+        return `${photo.title.full} (${photo.url})`;
+      })
+      .join(", ");
+
+    try {
+      setIsSubmittingRequest(true);
+      const userEmail = await api.getLoggedInUserEmail();
+      await api.createBrideToBeRequest({
+        brideName: `Circumcision - ${invite.djali.trim()} ${invite.familja.trim()}`,
+        eventDate: invite.date,
+        eventTime: invite.time,
+        location: invite.location.trim(),
+        email: userEmail,
+        selectedDecors: selectedDecorText,
+      });
+      setRequestStatus("Kerkesa u dergua me sukses. Admini do ta shohe ne dashboard.");
+    } catch (error) {
+      setRequestStatus(formatApiError(error));
+    } finally {
+      setIsSubmittingRequest(false);
+    }
+  };
+
   return (
     <div className="bg-[#f7fbff] min-h-screen relative overflow-hidden">
       <ConfirmModal />
+      <AuthToast />
       {/* HERO */}
       <section className="relative w-full min-h-[92vh] flex items-center justify-center pt-24 pb-16">
         <div className="absolute inset-0 overflow-hidden">
@@ -536,8 +583,20 @@ export default function Circumcision() {
               >
                 {isDownloading ? "Duke shkarkuar..." : "Shkarko ftesën (PNG)"}
               </button>
+              <button
+                type="button"
+                onClick={handleSubmitRequest}
+                disabled={isSubmittingRequest}
+                className="mt-4 inline-flex items-center justify-center px-10 py-4 rounded-full bg-[#0ea5e9] text-white font-semibold tracking-wide transition-all duration-300 hover:bg-[#0284c7] hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isSubmittingRequest ? "Duke derguar..." : "Dergo kerkesen"}
+              </button>
+              {requestStatus && (
+                <p className="mt-4 rounded-xl border border-[#cfe9f7] bg-[#f7fbff] px-4 py-3 text-sm text-[#1f3b55]">
+                  {requestStatus}
+                </p>
+              )}
             </div>
-
             {/* RIGHT: PREVIEW */}
             <div className="p-8 md:p-12 lg:p-14 bg-gradient-to-b from-[#f7fbff] to-white flex items-center justify-center">
               <div className="relative w-full max-w-[420px]">
@@ -614,3 +673,4 @@ export default function Circumcision() {
     </div>
   );
 }
+

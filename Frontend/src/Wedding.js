@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Ftesa from "./Ftesa";
 import { api, formatApiError } from "./api";
+import { useAuthGuard } from "./useAuthGuard";
 
 const normalizePhotoUrl = (url) => {
   if (!url) return "";
@@ -183,6 +184,7 @@ function CountdownUnit({ value, label }) {
 }
 
 export default function Wedding() {
+  const { requireAuth, AuthToast } = useAuthGuard();
   const [view, setView] = useState("main");
   const [selectedDecors, setSelectedDecors] = useState([]);
   const [dynamicPhotos, setDynamicPhotos] = useState([]);
@@ -259,6 +261,8 @@ export default function Wedding() {
   };
 
   const handleSubmitRequest = async () => {
+    if (!requireAuth()) return;
+
     if (selectedDecors.length === 0) {
       setRequestStatus("Zgjidhni të paktën një dekor nga galeria.");
       scrollTo("wedding-gallery");
@@ -305,6 +309,7 @@ export default function Wedding() {
   if (view === "ftesa") {
     return (
         <div className="min-h-screen bg-[#fdfaf6] dark:bg-[#fffaf2] transition-colors duration-500">
+          <AuthToast />
           <Ftesa />
           <div className="flex justify-center pb-16 px-6">
             <button
@@ -332,6 +337,7 @@ export default function Wedding() {
   /* ================== MAIN VIEW ================== */
   return (
       <div className="min-h-screen bg-[#fdfaf6] dark:bg-[#fffaf2] text-[#3d3228] dark:text-[#4b3524] overflow-x-hidden transition-colors duration-500">
+        <AuthToast />
         <WeddingStyles />
 
         {/* ——— HERO ——— */}

@@ -2,8 +2,10 @@ import { useEffect, useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import { api, formatApiError } from "./api";
 import { useConfirmModal } from "./ConfirmModal";
+import { useAuthGuard } from "./useAuthGuard";
 
 export default function BrideToBe() {
+    const { requireAuth, AuthToast } = useAuthGuard();
     const [inviteName, setInviteName] = useState("");
     const [inviteDate, setInviteDate] = useState("");
     const [inviteTime, setInviteTime] = useState("");
@@ -17,6 +19,7 @@ export default function BrideToBe() {
 
 
     const handleDownload = async () => {
+        if (!requireAuth()) return;
         if (!cardRef.current) return;
         try {
             const canvas = await html2canvas(cardRef.current, { scale: 3, useCORS: true });
@@ -41,6 +44,8 @@ export default function BrideToBe() {
     };
 
     const handleSubmitRequest = async () => {
+        if (!requireAuth()) return;
+
         if (selectedDecors.length === 0) {
             setRequestStatus("Zgjidh te pakten nje dekor.");
             return;
@@ -121,6 +126,7 @@ export default function BrideToBe() {
     return (
         <div className="bg-[#f7f3ec] min-h-screen relative font-sans text-gray-800 overflow-hidden break-words selection:bg-[#fbcfe8]">
             <ConfirmModal />
+            <AuthToast />
             <section className="relative w-full flex flex-row items-center justify-center gap-2 sm:gap-8 lg:justify-between px-3 sm:px-8 md:px-16 lg:px-24 pt-24 sm:pt-32 pb-10 lg:pb-0 lg:min-h-screen overflow-hidden">
 
                 <div className="absolute inset-0 z-0 pointer-events-none">

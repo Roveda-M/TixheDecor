@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { api, formatApiError } from './api';
+import { useAuthGuard } from './useAuthGuard';
 
 const BabyShower = () => {
+  const { requireAuth, AuthToast } = useAuthGuard();
   const [cart, setCart] = useState([]);
   const [requestForm, setRequestForm] = useState({ name: '', date: '', time: '', location: '' });
   const [requestStatus, setRequestStatus] = useState('');
@@ -68,6 +70,8 @@ const BabyShower = () => {
   };
 
   const handleSubmitRequest = async () => {
+    if (!requireAuth()) return;
+
     if (cart.length === 0) {
       setRequestStatus('Zgjidh të paktën një dekor.');
       return;
@@ -102,6 +106,7 @@ const BabyShower = () => {
 
   return (
     <div className="bg-[#F8F5F1] min-h-screen py-10 px-4 sm:px-8 lg:px-12 font-sans selection:bg-[#EADDCB] text-[#4A3B32]">
+      <AuthToast />
       <br />
       <br />
       <div className="max-w-[1500px] mx-auto bg-white rounded-[2rem] sm:rounded-[3rem] shadow-[0_20px_60px_rgba(215,195,170,0.15)] overflow-hidden pb-16 relative">

@@ -269,7 +269,7 @@ public class EventRequestKlientiSyncService {
         if (value == null) {
             return "";
         }
-        return value.replaceFirst("^(?i)(Wedding|Baby Shower|Bride To Be)\\s*-\\s*", "").trim();
+        return value.replaceFirst("^(?i)(Wedding|Baby Shower|Bride To Be|Engagement|Circumcision)\\s*-\\s*", "").trim();
     }
 
     private static String resolveEventName(String brideName) {
@@ -281,6 +281,12 @@ public class EventRequestKlientiSyncService {
         }
         if (brideName.startsWith("Wedding -")) {
             return "Wedding";
+        }
+        if (brideName.startsWith("Engagement -")) {
+            return "Engagement";
+        }
+        if (brideName.startsWith("Circumcision -")) {
+            return "Circumcision";
         }
         return "Bride To Be";
     }

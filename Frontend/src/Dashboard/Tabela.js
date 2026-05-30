@@ -6,7 +6,7 @@ import { useConfirmModal } from '../ConfirmModal';
 
 const stripEventPrefix = (value) =>
   String(value || '')
-    .replace(/^(Wedding|Baby Shower|Bride To Be)\s*-\s*/i, '')
+    .replace(/^(Wedding|Baby Shower|Bride To Be|Engagement|Circumcision)\s*-\s*/i, '')
     .trim();
 
 const klientDisplayName = (k) => {
@@ -43,17 +43,29 @@ const brideRequestLabel = (request) =>
 const isEventRequestTitle = (title) =>
   title === 'Kërkesat Bride To Be' ||
   title === 'Kërkesat Baby Shower' ||
-  title === 'Kërkesat Wedding';
+  title === 'Kërkesat Wedding' ||
+  title === 'Kërkesat Engagement' ||
+  title === 'Kërkesat Circumcision';
 
 const isBabyShowerRequest = (item) => (item.brideName || '').startsWith('Baby Shower -');
 
 const isWeddingRequest = (item) => (item.brideName || '').startsWith('Wedding -');
+const isEngagementRequest = (item) => (item.brideName || '').startsWith('Engagement -');
+const isCircumcisionRequest = (item) => (item.brideName || '').startsWith('Circumcision -');
 
 const filterEventRequests = (title, items) => {
   if (title === 'Kërkesat Baby Shower') return items.filter(isBabyShowerRequest);
   if (title === 'Kërkesat Wedding') return items.filter(isWeddingRequest);
+  if (title === 'Kërkesat Engagement') return items.filter(isEngagementRequest);
+  if (title === 'Kërkesat Circumcision') return items.filter(isCircumcisionRequest);
   if (title === 'Kërkesat Bride To Be') {
-    return items.filter((item) => !isBabyShowerRequest(item) && !isWeddingRequest(item));
+    return items.filter(
+      (item) =>
+        !isBabyShowerRequest(item) &&
+        !isWeddingRequest(item) &&
+        !isEngagementRequest(item) &&
+        !isCircumcisionRequest(item)
+    );
   }
   return items;
 };
@@ -203,6 +215,8 @@ const formatLlojiEventType = (value) => {
   if (EVENT_TYPE_LABELS[key]) return `From: ${EVENT_TYPE_LABELS[key]}`;
   if (text.startsWith('Baby Shower -')) return 'From: Baby Shower';
   if (text.startsWith('Wedding -')) return 'From: Wedding';
+  if (text.startsWith('Engagement -')) return 'From: Engagement';
+  if (text.startsWith('Circumcision -')) return 'From: Circumcision';
   return `From: ${text}`;
 };
 
@@ -753,7 +767,13 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
               return [
                 source,
                 requests
-                  .filter((request) => !isBabyShowerRequest(request) && !isWeddingRequest(request))
+                  .filter(
+                    (request) =>
+                      !isBabyShowerRequest(request) &&
+                      !isWeddingRequest(request) &&
+                      !isEngagementRequest(request) &&
+                      !isCircumcisionRequest(request)
+                  )
                   .map((request) => ({
                     value: String(request.requestId),
                     label: `${brideRequestLabel(request)}${request.eventDate ? ' - ' + request.eventDate : ''}`,
@@ -1385,3 +1405,5 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     </div>
   );
 }
+
+
