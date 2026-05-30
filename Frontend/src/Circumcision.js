@@ -30,11 +30,11 @@ export default function Circumcision() {
       },
       {
         t: "Përshtatje për sallën",
-        d: "Dekori ndërtohet sipas formës së sallës dhe vendosjes së tryezave.",
+        d: "Dekori rregullohet sipas formës së sallës dhe vendosjes së tryezave.",
       },
       {
         t: "Montim në kohë",
-        d: "Ekipi ynë instalon para mbërritjes së mysafirëve që gjithçka të jetë gati.",
+        d: "Ekipi ynë rregullon para mbërritjes së mysafirëve që gjithçka të jetë gati.",
       },
     ],
     []
@@ -209,7 +209,7 @@ export default function Circumcision() {
         email: userEmail,
         selectedDecors: selectedDecorText,
       });
-      setRequestStatus("Kerkesa u dergua me sukses. Admini do ta shohe ne dashboard.");
+      setRequestStatus("Kërkesa u dergua me sukses.");
     } catch (error) {
       setRequestStatus(formatApiError(error));
     } finally {
@@ -256,7 +256,7 @@ export default function Circumcision() {
             <p className="mt-6 text-white/85 text-base md:text-lg leading-relaxed max-w-xl">
               Te <span className="font-semibold text-white">Tixhe Dekor</span>{" "}
               krijojmë ambient modern dhe të pastër për ceremoninë e synetisë.
-              Nga hyrja dhe foto-këndi, deri te tryezat dhe detajet – çdo gjë
+              Nga hyrja , deri te tryezat dhe detajet – çdo gjë
               delikate, e harmonizuar dhe e paharrueshme.
             </p>
 
@@ -331,8 +331,7 @@ export default function Circumcision() {
             Zgjedh stilin tënd
           </div>
           <p className="mt-3 text-sm md:text-base text-[#1f3b55]/80 max-w-2xl leading-relaxed">
-            Kliko fotot për t’i shënuar si të preferuara. Mund t’i përdorim si
-            inspirim për dekorin final dhe ta përshtatim sipas sallës dhe buxhetit.
+            Kliko fotot për t’i shënuar si të preferuara.
           </p>
         </div>
 

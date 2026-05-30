@@ -351,14 +351,7 @@ const crudConfigs = {
     ],
     initialData: [],
   },
-  stats: {
-    id: 'stats',
-    title: 'Statistikat',
-    icon: <FiStar />,
-    columns: [],
-    initialData: [],
-    disableAdd: true,
-  },
+
   reviews: {
     id: 'reviews',
     title: 'Vlerësimet e Klientëve',
