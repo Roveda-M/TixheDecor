@@ -253,6 +253,11 @@ const sortMappedData = (title, items) => {
       (a.name || '').localeCompare(b.name || '', 'sq', { sensitivity: 'base' })
     );
   }
+  if (title === 'Menaxhimi i Klientëve') {
+    return copy.sort((a, b) =>
+      (a.name || '').localeCompare(b.name || '', 'sq', { sensitivity: 'base' })
+    );
+  }
   if (title === 'Rolet e Përdoruesve') {
     return copy.sort((a, b) => {
       const byUser = (a.user || '').localeCompare(b.user || '', 'sq', { sensitivity: 'base' });
