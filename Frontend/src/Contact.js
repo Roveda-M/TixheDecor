@@ -79,7 +79,9 @@ export default function Contact() {
                       : "flex justify-center"
               }`}
           >
-            <div className="bg-white p-6 rounded-2xl shadow-xl min-h-[420px] w-full md:w-[500px]">
+            <div className={`bg-white p-6 rounded-2xl shadow-xl min-h-[420px] w-full ${
+              view === "reviews" ? "md:w-[780px]" : "md:w-[500px]"
+            }`}>
               {view === "contact" && (
                   <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <input

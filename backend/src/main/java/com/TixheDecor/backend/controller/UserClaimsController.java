@@ -4,6 +4,7 @@ import com.TixheDecor.backend.model.UserClaims;
 import com.TixheDecor.backend.service.UserClaimsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user-claims")
 @CrossOrigin(origins = "http://localhost:3000")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class UserClaimsController {
 
     @Autowired

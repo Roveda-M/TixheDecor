@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiUsers, FiBriefcase, FiUserCheck, FiBox, 
   FiTruck, FiCheckSquare, FiLayers, FiFileText, 
-  FiImage, FiStar, FiLogOut, FiMenu, FiX, FiHeart
+  FiImage, FiStar, FiLogOut, FiMenu, FiX, FiHeart, FiKey
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Tabela from './Tabela';
@@ -249,6 +249,31 @@ const crudConfigs = {
     initialData: [],
     disableAdd: true,
   },
+  birthdayRequests: {
+    id: 'birthdayRequests',
+    title: 'Kërkesat Birthday',
+    icon: <FiHeart />,
+    columns: [
+      { key: 'brideName', label: 'Emri', type: 'text' },
+      { key: 'eventDate', label: 'Data', type: 'date' },
+      { key: 'eventTime', label: 'Ora', type: 'time' },
+      { key: 'location', label: 'Lokacioni', type: 'text' },
+      { key: 'selectedDecors', label: 'Dekorët e zgjedhur', type: 'photoLinks' },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        badge: true,
+        options: [
+          { value: 'I filluar', label: 'I filluar' },
+          { value: 'Në proces', label: 'Në proces' },
+          { value: 'I përfunduar', label: 'I përfunduar' },
+        ],
+      },
+    ],
+    initialData: [],
+    disableAdd: true,
+  },
   engagementRequests: {
     id: 'engagementRequests',
     title: 'Kërkesat Engagement',
@@ -351,14 +376,22 @@ const crudConfigs = {
     ],
     initialData: [],
   },
-  stats: {
-    id: 'stats',
-    title: 'Statistikat',
-    icon: <FiStar />,
-    columns: [],
+  refreshTokens: {
+    id: 'refreshTokens',
+    title: 'Refresh Tokens',
+    icon: <FiKey />,
+    columns: [
+      { key: 'userEmail', label: 'Përdoruesi', type: 'text' },
+      { key: 'tokenPreview', label: 'Token', type: 'text' },
+      { key: 'createdAt', label: 'Krijuar', type: 'datetime' },
+      { key: 'expiresAt', label: 'Skadon', type: 'datetime' },
+      { key: 'isRevoked', label: 'Revokuar', type: 'booleanBadge' },
+    ],
     initialData: [],
     disableAdd: true,
+    disableEdit: true,
   },
+
   reviews: {
     id: 'reviews',
     title: 'Vlerësimet e Klientëve',
@@ -574,6 +607,7 @@ export default function Dashboard() {
                 columns={activeConfig.columns}
                 initialData={activeConfig.initialData}
                 disableAdd={activeConfig.disableAdd}
+                disableEdit={activeConfig.disableEdit}
                 enableFilters={activeConfig.enableFilters}
               />
             )}

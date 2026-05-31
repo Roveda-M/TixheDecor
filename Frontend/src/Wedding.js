@@ -731,7 +731,7 @@ export default function Wedding() {
                 className="text-2xl md:text-4xl text-[#6f4e37] text-center mb-3"
                 style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Dërgoni kërkesën për dasmin tuaj
+              Dërgoni kërkesën për dasmën tuaj
             </h2>
             <p className="text-center text-[#8b6a4a] text-sm md:text-base mb-8 max-w-xl mx-auto">
               {selectedDecors.length > 0
@@ -937,7 +937,7 @@ export default function Wedding() {
                   className="text-3xl md:text-5xl text-[#4b3524] leading-tight max-w-2xl mx-auto"
                   style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                Le të krijojmë së bashku dasmin që keni ëndërruar
+                Le të krijojmë së bashku dasmën që keni ëndërruar
               </h2>
               <p className="mt-5 text-[#5c4030]/85 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
                 Krijoni ftesën tuaj elegante ose na kontaktoni për një konsultë personalizuese —

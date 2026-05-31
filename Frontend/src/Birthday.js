@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import { api, formatApiError } from './api';
 import { useAuthGuard } from './useAuthGuard';
 
 import img1 from './1.jpeg';
@@ -47,6 +48,8 @@ export default function Birthday() {
   const [inviteThemeColor, setInviteThemeColor] = useState('#8c734b');
   const [inviteBgColor, setInviteBgColor] = useState('#fffdfa');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [requestStatus, setRequestStatus] = useState('');
   const [inviteStyle, setInviteStyle] = useState('elegant');
   const [inviteBgImage, setInviteBgImage] = useState(null);
 
@@ -96,6 +99,51 @@ export default function Birthday() {
   const handleCreateInvite = (e) => {
     e.preventDefault();
     setShowInvite(true);
+  };
+
+  const handleSubmitRequest = async () => {
+    if (!requireAuth()) return;
+
+    if (selectedDecors.length === 0) {
+      setRequestStatus('Zgjidh te pakten nje dekor.');
+      setStep('selection');
+      return;
+    }
+
+    const firstName = formData.name
+      .split('\n')
+      .map((name) => name.trim())
+      .find(Boolean);
+
+    if (!firstName || !formData.date || !formData.location.trim()) {
+      setRequestStatus('Ploteso emrin, daten dhe lokacionin.');
+      return;
+    }
+
+    const [eventDate, eventTime = ''] = formData.date.split('T');
+    const selectedDecorText = selectedDecors
+      .map((decorId) => eventDecors.find((decor) => decor.id === decorId))
+      .filter(Boolean)
+      .map((decor) => `${decor.name} (${decor.image})`)
+      .join(', ');
+
+    try {
+      setIsSubmittingRequest(true);
+      const userEmail = await api.getLoggedInUserEmail();
+      await api.createBrideToBeRequest({
+        brideName: `Birthday - ${firstName}`,
+        eventDate,
+        eventTime: eventTime.slice(0, 5),
+        location: formData.location.trim(),
+        email: userEmail,
+        selectedDecors: selectedDecorText,
+      });
+      setRequestStatus('Kerkesa u dergua me sukses.');
+    } catch (error) {
+      setRequestStatus(formatApiError(error));
+    } finally {
+      setIsSubmittingRequest(false);
+    }
   };
 
   const handleDownloadInvite = async () => {
@@ -170,7 +218,7 @@ export default function Birthday() {
         <div className="w-full bg-[#f7f3ec] text-[#2b2b2b] min-h-screen py-20 overflow-hidden" style={fontSans}>
           <div className="text-center px-4 max-w-4xl mx-auto mb-16 md:mb-24">
             <h1 className="text-5xl md:text-5xl text-[#1c1c1c] mb-6 font-light" style={fontSerif}>
-              Ditelindje
+              Ditëlindje
             </h1>
             <div className="w-[1px] h-16 bg-gray-400 mx-auto mt-8 mb-6"></div>
           </div>
@@ -495,6 +543,19 @@ export default function Birthday() {
                                     </>
                                 )}
                               </button>
+                              <button
+                                  type="button"
+                                  onClick={handleSubmitRequest}
+                                  disabled={isSubmittingRequest}
+                                  className="w-full text-white py-4 px-8 text-[11px] uppercase tracking-[0.3em] font-medium transition-colors duration-500 flex items-center justify-center gap-2 shadow-lg bg-[#8c734b] hover:bg-[#745f3e] disabled:opacity-60 disabled:cursor-not-allowed"
+                              >
+                                {isSubmittingRequest ? 'Duke derguar...' : 'Dergo Kerkesen'}
+                              </button>
+                              {requestStatus && (
+                                  <p className="rounded-xl border border-[#d8cbb5] bg-[#fffdfa] px-4 py-3 text-sm text-[#5a461b]">
+                                    {requestStatus}
+                                  </p>
+                              )}
                             </div>
                           </div>
                       ) : (

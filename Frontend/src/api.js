@@ -359,6 +359,20 @@ export const api = {
     await axiosInstance.delete(`/user-roles/${id}`);
   },
 
+  getRefreshTokens: async () => {
+    const res = await axiosInstance.get("/refresh-tokens");
+    return res.data;
+  },
+
+  revokeRefreshToken: async (id) => {
+    const res = await axiosInstance.patch(`/refresh-tokens/${id}/revoko`);
+    return res.data;
+  },
+
+  deleteRefreshToken: async (id) => {
+    await axiosInstance.delete(`/refresh-tokens/${id}`);
+  },
+
   getMaterialUsage: async () => {
     const res = await axiosInstance.get("/materialet-projektit");
     return res.data;

@@ -17,6 +17,7 @@ public class User {
 
     private String emri;
 
+    private String mbiemri;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -34,6 +35,9 @@ public class User {
 
     @Column(name = "access_failed_count")
     private int accessFailedCount = 0;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @Column(name = "data_krijimit")
     private LocalDateTime dataKrijimit = LocalDateTime.now();

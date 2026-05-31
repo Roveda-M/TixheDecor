@@ -69,8 +69,11 @@ public class AuthController {
                 .map(user -> ResponseEntity.ok(new UserProfileDto(
                         user.getId(),
                         user.getEmail(),
+                        user.getEmri(),
+                        user.getMbiemri(),
                         user.getFullname(),
                         user.getUsername(),
+                        user.getPhoneNumber(),
                         user.getStatusi()
                 )))
                 .orElse(ResponseEntity.notFound().build());

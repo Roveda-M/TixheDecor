@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 import { api } from "./api";
 
 export default function Profile() {
@@ -28,7 +29,8 @@ export default function Profile() {
     navigate("/");
   };
 
-  const displayName = user?.fullname || user?.username || "Perdoruesi";
+  const fullNameFromParts = `${user?.emri || ""} ${user?.mbiemri || ""}`.trim();
+  const displayName = user?.fullname || fullNameFromParts || user?.username || "Perdoruesi";
 
   if (loading)
     return (
@@ -39,7 +41,6 @@ export default function Profile() {
 
   return (
       <div className="min-h-screen bg-[#f6f1e8] flex flex-col md:flex-row pt-24">
-
         <aside className="w-full md:w-72 bg-white shadow-md p-6 flex-shrink-0">
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto bg-[#e6dfd3] rounded-full flex items-center justify-center text-3xl">
@@ -68,15 +69,39 @@ export default function Profile() {
 
         <main className="flex-1 p-4 md:p-10">
           <div>
-            <h2 className="text-2xl mb-6 font-light tracking-wide">Account Details</h2>
+            <div className="flex items-center gap-3 mb-6">
+              <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  aria-label="Go back"
+                  className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-100 transition flex-shrink-0"
+              >
+                <FaArrowLeft aria-hidden="true" />
+              </button>
+              <h2 className="text-2xl font-light tracking-wide">Account Details</h2>
+            </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
               <div>
                 <label className="text-sm text-gray-500">Full Name</label>
-                <p className="text-lg font-medium">{user?.fullname || "-"}</p>
+                <p className="text-lg font-medium">{displayName || "-"}</p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-sm text-gray-500">Emri</label>
+                  <p className="text-lg font-medium">{user?.emri || "-"}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Mbiemri</label>
+                  <p className="text-lg font-medium">{user?.mbiemri || "-"}</p>
+                </div>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Username</label>
                 <p className="text-lg font-medium">{user?.username || "-"}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Telefoni</label>
+                <p className="text-lg font-medium">{user?.phoneNumber || "-"}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Email</label>

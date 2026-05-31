@@ -21,7 +21,7 @@ export default function ForgotPassword() {
     e.preventDefault();
 
     if (!email.trim()) {
-      await alertDialog("Ju lutem shkruani emailin");
+      await alertDialog("Please enter your email address.");
       return;
     }
 
@@ -50,19 +50,19 @@ export default function ForgotPassword() {
           <ConfirmModal />
           <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-light text-center mb-2 tracking-[2px]">
-              Token u gjenerua me sukses!
+              Reset link generated successfully!
             </h2>
             {resetLink && (
                 <div className="mt-2 mb-6 p-3 bg-[#f6f1e8] rounded-lg border border-[#c9c1b5] text-sm">
-                  <p className="text-gray-600 mb-2">(Demo) Klikoni linkun për të vazhduar:</p>
+                  <p className="text-gray-600 mb-2">(Demo) Click the link to continue:</p>
                   <Link to={resetLink} replace className="text-blue-600 underline break-all">
-                    Rivendos fjalëkalimin
+                    Reset password
                   </Link>
                 </div>
             )}
             <p className="text-sm text-center mt-4">
               <Link to="/login" replace className="underline">
-                Kthehu te login
+                Back to login
               </Link>
             </p>
           </div>
@@ -75,10 +75,10 @@ export default function ForgotPassword() {
         <ConfirmModal />
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-2xl font-light text-center mb-2 tracking-[2px]">
-            Rivendos fjalëkalimin
+            Reset Password
           </h2>
           <p className="text-sm text-gray-500 text-center mb-6">
-            Shkruani emailin e llogarisë suaj
+            Enter the email address for your account
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -97,12 +97,12 @@ export default function ForgotPassword() {
                 disabled={loading}
                 className="w-full bg-black text-white py-3 rounded-lg hover:opacity-80 transition disabled:opacity-60"
             >
-              {loading ? "Duke dërguar..." : "Dërgo emailin"}
+              {loading ? "Sending..." : "Send email"}
             </button>
           </form>
           <p className="text-sm text-center mt-6">
             <Link to="/login" replace className="underline">
-              Kthehu te login
+              Back to login
             </Link>
           </p>
         </div>

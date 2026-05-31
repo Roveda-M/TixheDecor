@@ -36,6 +36,7 @@ public class UserService {
     }
 
     public User create(User user) {
+        normalizeIdentityFields(user);
         user.setPasswordHash(encodePasswordIfNeeded(user.getPasswordHash()));
         if (user.getDataKrijimit() == null) {
             user.setDataKrijimit(LocalDateTime.now());
@@ -50,11 +51,19 @@ public class UserService {
         return userRepository.findById(id)
                 .map(existing -> {
                     user.setId(id);
+                    if (user.getUsername() == null || user.getUsername().isBlank()) {
+                        user.setUsername(existing.getUsername());
+                    }
+                    if ((user.getRoles() == null || user.getRoles().isEmpty()) && existing.getRoles() != null) {
+                        user.setRoles(existing.getRoles());
+                    }
+                    user.setDataKrijimit(existing.getDataKrijimit());
                     if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
                         user.setPasswordHash(existing.getPasswordHash());
                     } else {
                         user.setPasswordHash(encodePasswordIfNeeded(user.getPasswordHash()));
                     }
+                    normalizeIdentityFields(user);
                     return userRepository.save(user);
                 });
     }
@@ -110,6 +119,7 @@ public class UserService {
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setFullname(fullname);
+        applyNamePartsFromFullname(user);
         user.setUsername(username);
         user.setStatusi("Aktiv");
         user.setDataKrijimit(LocalDateTime.now());
@@ -145,6 +155,38 @@ public class UserService {
             return password;
         }
         return passwordEncoder.encode(password);
+    }
+
+    private void normalizeIdentityFields(User user) {
+        if (user == null) {
+            return;
+        }
+        if ((user.getFullname() == null || user.getFullname().isBlank())
+                && (hasText(user.getEmri()) || hasText(user.getMbiemri()))) {
+            user.setFullname(((user.getEmri() == null ? "" : user.getEmri().trim()) + " "
+                    + (user.getMbiemri() == null ? "" : user.getMbiemri().trim())).trim());
+        }
+        applyNamePartsFromFullname(user);
+    }
+
+    private void applyNamePartsFromFullname(User user) {
+        if (user == null || user.getFullname() == null || user.getFullname().isBlank()) {
+            return;
+        }
+        if (hasText(user.getEmri()) && hasText(user.getMbiemri())) {
+            return;
+        }
+        String[] parts = user.getFullname().trim().split("\\s+", 2);
+        if (!hasText(user.getEmri())) {
+            user.setEmri(parts[0]);
+        }
+        if (!hasText(user.getMbiemri()) && parts.length > 1) {
+            user.setMbiemri(parts[1]);
+        }
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
 }
