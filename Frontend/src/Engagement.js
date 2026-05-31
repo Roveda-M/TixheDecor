@@ -154,7 +154,7 @@ export default function Engagement() {
         email: userEmail,
         selectedDecors: selectedDecorText,
       });
-      setRequestStatus("Kerkesa u dergua me sukses. Admini do ta shohe ne dashboard.");
+      setRequestStatus("Kërkesa u dergua me sukses.");
     } catch (error) {
       setRequestStatus(formatApiError(error));
     } finally {

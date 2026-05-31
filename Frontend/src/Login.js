@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { api, formatApiError, hasRole } from "./api";
 import { useConfirmModal } from "./ConfirmModal";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { alertDialog, ConfirmModal } = useConfirmModal();
@@ -20,7 +22,7 @@ export default function Login() {
         navigate("/", { replace: true });
       }
     }
-  }, []);
+  }, [navigate]);
 
   const emailValid = (email) => {
     const emailRegex = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
@@ -66,8 +68,16 @@ export default function Login() {
   };
 
   return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#f6f1e8] px-4 py-6 relative">
         <ConfirmModal />
+        <button
+            type="button"
+            onClick={() => navigate("/")}
+            aria-label="Go back"
+            className="absolute top-4 left-4 sm:top-6 sm:left-6 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-100 transition"
+        >
+          <FaArrowLeft aria-hidden="true" />
+        </button>
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           <br />
           <br />
@@ -93,17 +103,28 @@ export default function Login() {
 
             <div>
               <label className="text-sm">Password</label>
-              <input
-                  type="password"
-                  name="tixhe-login-password"
-                  placeholder="Your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
-                  autoComplete="new-password"
-                  readOnly
-                  onFocus={(e) => e.target.removeAttribute("readonly")}
-              />
+              <div className="relative mt-1">
+                <input
+                    type={showPassword ? "text" : "password"}
+                    name="tixhe-login-password"
+                    placeholder="Your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="password-visibility-input w-full p-3 pr-11 border rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
+                    autoComplete="new-password"
+                    readOnly
+                    onFocus={(e) => e.target.removeAttribute("readonly")}
+                />
+                <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setShowPassword((visible) => !visible)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute inset-y-0 right-3 flex items-center text-black hover:text-gray-600 transition"
+                >
+                  {showPassword ? <FaEyeSlash aria-hidden="true" /> : <FaEye aria-hidden="true" />}
+                </button>
+              </div>
             </div>
 
             <div className="text-right">
@@ -127,24 +148,6 @@ export default function Login() {
               </Link>
             </p>
           </form>
-
-          <div className="flex items-center my-6">
-            <div className="flex-1 h-px bg-gray-300"></div>
-            <span className="px-3 text-sm text-gray-500">OR</span>
-            <div className="flex-1 h-px bg-gray-300"></div>
-          </div>
-
-          <div className="space-y-2">
-            <button className="w-full border py-2 rounded-lg hover:bg-gray-100">
-              Login with Apple
-            </button>
-            <button className="w-full border py-2 rounded-lg hover:bg-gray-100">
-              Login with Google
-            </button>
-            <button className="w-full border py-2 rounded-lg hover:bg-gray-100">
-              Login with Microsoft
-            </button>
-          </div>
         </div>
       </div>
   );

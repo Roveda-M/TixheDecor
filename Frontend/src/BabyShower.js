@@ -96,7 +96,7 @@ const BabyShower = () => {
         email: userEmail,
         selectedDecors: selectedDecorText,
       });
-      setRequestStatus('Kërkesa u dërgua me sukses. Admini do t’i shohë fotot në dashboard.');
+      setRequestStatus('Kërkesa u dërgua me sukses.');
     } catch (error) {
       setRequestStatus(formatApiError(error));
     } finally {

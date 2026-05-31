@@ -37,6 +37,7 @@ public class VleresimiService {
     }
 
     public Vleresimi create(Vleresimi vleresimi) {
+        resolveUser(vleresimi);
         if (vleresimi.getDataVleresimit() == null) {
             vleresimi.setDataVleresimit(LocalDate.now());
         }
@@ -57,6 +58,7 @@ public class VleresimiService {
         return vleresimiRepository.findById(id)
                 .map(existing -> {
                     vleresimi.setVleresimiId(id);
+                    resolveUser(vleresimi);
                     if (vleresimi.getUser() == null) {
                         vleresimi.setUser(existing.getUser());
                     }
@@ -73,5 +75,14 @@ public class VleresimiService {
         }
         vleresimiRepository.deleteById(id);
         return true;
+    }
+
+    private void resolveUser(Vleresimi vleresimi) {
+        if (vleresimi.getUser() == null || vleresimi.getUser().getEmail() == null) {
+            return;
+        }
+        User user = userRepository.findByEmail(vleresimi.getUser().getEmail())
+                .orElseThrow(() -> new RuntimeException("Perdoruesi nuk u gjet"));
+        vleresimi.setUser(user);
     }
 }

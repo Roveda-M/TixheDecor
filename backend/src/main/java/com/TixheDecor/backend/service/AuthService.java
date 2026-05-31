@@ -75,11 +75,9 @@ public class AuthService {
     }
 
     public Map<String, String> forgotPassword(String email) {
-        String message = "Nese emaili ekziston ne sistem, do te merrni udhezime per rivendosjen e fjalekalimit.";
-
         Optional<User> userOpt = userService.findByEmail(email.trim());
         if (userOpt.isEmpty()) {
-            return Map.of("message", message);
+            throw new RuntimeException("Email nuk ekziston në sistem!");
         }
 
         User user = userOpt.get();
@@ -96,7 +94,7 @@ public class AuthService {
 
         String resetUrl = frontendUrl + "/reset-password?token=" + token;
         return Map.of(
-                "message", message,
+                "message", "Token u gjenerua me sukses!",
                 "resetUrl", resetUrl
         );
     }

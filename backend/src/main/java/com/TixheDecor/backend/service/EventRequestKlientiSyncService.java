@@ -126,6 +126,10 @@ public class EventRequestKlientiSyncService {
                 projekti.setLlojiDekorimit(request.getSelectedDecors());
                 changed = true;
             }
+            if (projekti.getKapari() == null) {
+                projekti.setKapari(BigDecimal.ZERO);
+                changed = true;
+            }
 
             if (changed) {
                 projektiService.update(projekti.getProjektiId(), projekti);
@@ -142,6 +146,7 @@ public class EventRequestKlientiSyncService {
         projekti.setLokacioni(request.getLocation());
         projekti.setStatusi("Ne Pritje");
         projekti.setBuxheti(BigDecimal.ZERO);
+        projekti.setKapari(BigDecimal.ZERO);
 
         try {
             projektiService.create(projekti);

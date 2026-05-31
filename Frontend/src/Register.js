@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { api, formatApiError } from "./api";
 import { useConfirmModal } from "./ConfirmModal";
 
@@ -13,6 +14,8 @@ export default function Register() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const { alertDialog, ConfirmModal } = useConfirmModal();
 
@@ -87,24 +90,46 @@ export default function Register() {
             className="w-full p-3 border rounded-lg"
             autoComplete="off"
           />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-            autoComplete="new-password"
-          />
-          <input
-            name="confirm"
-            type="password"
-            placeholder="Confirm Password"
-            value={form.confirm}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-            autoComplete="new-password"
-          />
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              className="password-visibility-input w-full p-3 pr-11 border rounded-lg"
+              autoComplete="new-password"
+            />
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setShowPassword((visible) => !visible)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute inset-y-0 right-3 flex items-center text-black hover:text-gray-600 transition"
+            >
+              {showPassword ? <FaEyeSlash aria-hidden="true" /> : <FaEye aria-hidden="true" />}
+            </button>
+          </div>
+          <div className="relative">
+            <input
+              name="confirm"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              value={form.confirm}
+              onChange={handleChange}
+              className="password-visibility-input w-full p-3 pr-11 border rounded-lg"
+              autoComplete="new-password"
+            />
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setShowConfirmPassword((visible) => !visible)}
+              aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+              className="absolute inset-y-0 right-3 flex items-center text-black hover:text-gray-600 transition"
+            >
+              {showConfirmPassword ? <FaEyeSlash aria-hidden="true" /> : <FaEye aria-hidden="true" />}
+            </button>
+          </div>
 
           {message && (
             <p className="text-sm text-center text-[#5c4030] bg-[#f6f1e8] border border-[#e6dfd3] rounded-lg px-3 py-2">
