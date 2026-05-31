@@ -191,6 +191,13 @@ const normalizeRequestStatus = (value) => {
   return value;
 };
 
+const maskToken = (value) => {
+  const token = String(value || '').trim();
+  if (!token) return '';
+  if (token.length <= 18) return token;
+  return `${token.slice(0, 10)}...${token.slice(-6)}`;
+};
+
 const EVENT_TYPE_LABELS = {
   wedding: 'Wedding',
   dasme: 'Wedding',
@@ -272,7 +279,7 @@ const sortMappedData = (title, items) => {
   return copy;
 };
 
-export default function Tabela({ title, columns, initialData, disableAdd, enableFilters }) {
+export default function Tabela({ title, columns, initialData, disableAdd, disableEdit, enableFilters }) {
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
@@ -406,6 +413,16 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         user: item.user?.fullname || item.user?.emri || item.user?.email || '',
         roleName: item.role?.emertimi || '',
         role: item.role?.emertimi || '',
+      }));
+    }
+    if (title === 'Refresh Tokens') {
+      return items.map((item) => ({
+        id: item.tokenId,
+        userEmail: item.user?.email || '',
+        tokenPreview: maskToken(item.token),
+        createdAt: item.createdAt || '',
+        expiresAt: item.expiresAt || '',
+        isRevoked: Boolean(item.isRevoked),
       }));
     }
     if (title === 'Menaxhimi i Klientëve') {
@@ -683,6 +700,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       else if (title === 'Përdoruesit') items = await api.getUsers();
       else if (title === 'Rolet') items = await api.getRoles();
       else if (title === 'Rolet e Përdoruesve') items = await api.getUserRoles();
+      else if (title === 'Refresh Tokens') items = await api.getRefreshTokens();
       else if (title === 'Menaxhimi i Klientëve') {
         items = await api.getKlientet();
         try {
@@ -1109,6 +1127,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         else if (title === 'Përdoruesit') await api.deleteUser(id);
         else if (title === 'Rolet') await api.deleteRole(id);
         else if (title === 'Rolet e Përdoruesve') await api.deleteUserRole(id);
+        else if (title === 'Refresh Tokens') await api.deleteRefreshToken(id);
         else if (title === 'Menaxhimi i Klientëve') await api.deleteKlient(id);
         else if (title === 'Projektet e Dekorimit') await api.deleteProjekt(id);
         else if (title === 'Faturat') await api.deleteFatura(id);
@@ -1118,6 +1137,18 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
         await loadData();
       } catch (error) {
         await alertDialog('Ndodhi një gabim gjatë fshirjes: ' + formatApiError(error));
+      }
+    }
+  };
+
+  const handleRevokeRefreshToken = async (id) => {
+    if (await confirmDialog('A jeni i sigurt që doni ta revokoni këtë refresh token?')) {
+      try {
+        const updated = await api.revokeRefreshToken(id);
+        setData(data.map((item) => (item.id === id ? mapIncomingData(title, [updated])[0] : item)));
+        await alertDialog('Refresh token u revokua me sukses!');
+      } catch (error) {
+        await alertDialog('Ndodhi një gabim gjatë revokimit: ' + formatApiError(error));
       }
     }
   };
@@ -1256,6 +1287,29 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       );
     }
 
+    if (col.type === 'booleanBadge') {
+      return (
+        <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
+          value ? 'border-red-200 bg-red-50 text-red-700' : 'border-green-200 bg-green-50 text-green-700'
+        }`}>
+          {value ? 'Po' : 'Jo'}
+        </span>
+      );
+    }
+
+    if (col.type === 'datetime') {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString('sq-AL', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
     if (col.type === 'time') {
       return formatTimeValue(value);
     }
@@ -1356,12 +1410,23 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
                     ))}
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenModal(item)}
-                          className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-                        >
-                          <FiEdit2 size={16} />
-                        </button>
+                        {!disableEdit && (
+                          <button
+                            onClick={() => handleOpenModal(item)}
+                            className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <FiEdit2 size={16} />
+                          </button>
+                        )}
+                        {title === 'Refresh Tokens' && !item.isRevoked && (
+                          <button
+                            onClick={() => handleRevokeRefreshToken(item.id)}
+                            className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            title="Revoko token"
+                          >
+                            <FiX size={16} />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDelete(item.id)}
                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"

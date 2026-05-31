@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiUsers, FiBriefcase, FiUserCheck, FiBox, 
   FiTruck, FiCheckSquare, FiLayers, FiFileText, 
-  FiImage, FiStar, FiLogOut, FiMenu, FiX, FiHeart
+  FiImage, FiStar, FiLogOut, FiMenu, FiX, FiHeart, FiKey
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Tabela from './Tabela';
@@ -376,6 +376,21 @@ const crudConfigs = {
     ],
     initialData: [],
   },
+  refreshTokens: {
+    id: 'refreshTokens',
+    title: 'Refresh Tokens',
+    icon: <FiKey />,
+    columns: [
+      { key: 'userEmail', label: 'Përdoruesi', type: 'text' },
+      { key: 'tokenPreview', label: 'Token', type: 'text' },
+      { key: 'createdAt', label: 'Krijuar', type: 'datetime' },
+      { key: 'expiresAt', label: 'Skadon', type: 'datetime' },
+      { key: 'isRevoked', label: 'Revokuar', type: 'booleanBadge' },
+    ],
+    initialData: [],
+    disableAdd: true,
+    disableEdit: true,
+  },
 
   reviews: {
     id: 'reviews',
@@ -592,6 +607,7 @@ export default function Dashboard() {
                 columns={activeConfig.columns}
                 initialData={activeConfig.initialData}
                 disableAdd={activeConfig.disableAdd}
+                disableEdit={activeConfig.disableEdit}
                 enableFilters={activeConfig.enableFilters}
               />
             )}
