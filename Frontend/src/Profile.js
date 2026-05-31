@@ -30,7 +30,7 @@ export default function Profile() {
   };
 
   const fullNameFromParts = `${user?.emri || ""} ${user?.mbiemri || ""}`.trim();
-  const displayName = user?.fullname || fullNameFromParts || user?.username || "Perdoruesi";
+  const displayName = user?.fullname || fullNameFromParts || "Perdoruesi";
 
   if (loading)
     return (
@@ -94,10 +94,6 @@ export default function Profile() {
                   <label className="text-sm text-gray-500">Mbiemri</label>
                   <p className="text-lg font-medium">{user?.mbiemri || "-"}</p>
                 </div>
-              </div>
-              <div>
-                <label className="text-sm text-gray-500">Username</label>
-                <p className="text-lg font-medium">{user?.username || "-"}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Telefoni</label>

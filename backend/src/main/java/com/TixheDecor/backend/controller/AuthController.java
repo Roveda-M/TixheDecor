@@ -50,7 +50,7 @@ public class AuthController {
                             request.getEmail(),
                             request.getPassword(),
                             request.getFullname(),
-                            request.getUsername()
+                            request.getPhoneNumber()
 
             );
             return ResponseEntity.ok(Map.of("message", "Regjistrim i suksesshëm!"));
@@ -72,7 +72,6 @@ public class AuthController {
                         user.getEmri(),
                         user.getMbiemri(),
                         user.getFullname(),
-                        user.getUsername(),
                         user.getPhoneNumber(),
                         user.getStatusi()
                 )))

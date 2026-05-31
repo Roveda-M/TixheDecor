@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiUsers, FiBriefcase, FiUserCheck, FiBox, 
   FiTruck, FiCheckSquare, FiLayers, FiFileText, 
-  FiImage, FiStar, FiLogOut, FiMenu, FiX, FiHeart, FiKey
+  FiImage, FiStar, FiLogOut, FiMenu, FiX, FiHeart, FiKey, FiMail
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Tabela from './Tabela';
@@ -33,6 +33,30 @@ const crudConfigs = {
     ],
     initialData: [],
     enableFilters: true,
+  },
+  contactMessages: {
+    id: 'contactMessages',
+    title: 'Mesazhet e Kontaktit',
+    icon: <FiMail />,
+    columns: [
+      { key: 'name', label: 'Emri', type: 'text' },
+      { key: 'email', label: 'Email', type: 'email' },
+      { key: 'phoneNumber', label: 'Telefoni', type: 'text', required: false },
+      { key: 'subject', label: 'Subject', type: 'text' },
+      { key: 'message', label: 'Mesazhi', type: 'textarea' },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        options: [
+          { value: 'I ri', label: 'I ri' },
+          { value: 'I lexuar', label: 'I lexuar' },
+          { value: 'I perfunduar', label: 'I perfunduar' },
+        ],
+      },
+      { key: 'createdAt', label: 'Data', type: 'datetime', tableOnly: true },
+    ],
+    initialData: [],
   },
   projects: {
     id: 'projects',

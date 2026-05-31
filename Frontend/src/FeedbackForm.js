@@ -13,7 +13,7 @@ export default function FeedbackForm() {
     const loadProfile = async () => {
       try {
         const profile = await api.getProfile();
-        setName(profile.fullname || profile.username || "");
+        setName(profile.fullname || "");
       } catch (error) {
         // Forma mbetet e plotesueshme edhe nese profili nuk ngarkohet.
       }

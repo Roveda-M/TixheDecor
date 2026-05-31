@@ -11,7 +11,6 @@ public class UserProfileDto {
     private String emri;
     private String mbiemri;
     private String fullname;
-    private String username;
     private String phoneNumber;
     private String statusi;
 }

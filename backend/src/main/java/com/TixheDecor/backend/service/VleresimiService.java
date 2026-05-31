@@ -24,6 +24,10 @@ public class VleresimiService {
         return vleresimiRepository.findAll();
     }
 
+    public List<Vleresimi> getReviews() {
+        return vleresimiRepository.findAllByOrderByDataVleresimitDescVleresimiIdDesc();
+    }
+
     public Optional<Vleresimi> getById(Integer id) {
         return vleresimiRepository.findById(id);
     }

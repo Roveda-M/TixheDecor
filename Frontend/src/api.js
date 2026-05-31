@@ -20,9 +20,9 @@ export const api = {
     return res.data;
   },
 
-  register: async (email, password, fullname, username) => {
+  register: async (email, password, fullname, phoneNumber) => {
     const res = await axiosInstance.post("/auth/register", {
-      email, password, fullname, username
+      email, password, fullname, phoneNumber
     });
     return res.data;
   },
@@ -72,6 +72,25 @@ export const api = {
   createKlient: async (data) => {
     const res = await axiosInstance.post("/klienti", data);
     return res.data;
+  },
+
+  getContactMessages: async () => {
+    const res = await axiosInstance.get("/contact-messages");
+    return res.data;
+  },
+
+  createContactMessage: async (data) => {
+    const res = await axiosInstance.post("/contact-messages", data);
+    return res.data;
+  },
+
+  updateContactMessage: async (id, data) => {
+    const res = await axiosInstance.put(`/contact-messages/${id}`, data);
+    return res.data;
+  },
+
+  deleteContactMessage: async (id) => {
+    await axiosInstance.delete(`/contact-messages/${id}`);
   },
 
   updateKlient: async (id, data) => {
@@ -126,6 +145,11 @@ export const api = {
   // VLERESIMI — backend: /api/vleresimet (jo /vleresimi)
   getVleresimet: async () => {
     const res = await axiosInstance.get("/vleresimet");
+    return res.data;
+  },
+
+  getReviews: async () => {
+    const res = await axiosInstance.get("/vleresimet/reviews");
     return res.data;
   },
 

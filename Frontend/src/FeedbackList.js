@@ -4,7 +4,6 @@ import { api, formatApiError } from "./api";
 const getReviewerName = (item) =>
   item.rekomandimi ||
   item.user?.fullname ||
-  item.user?.username ||
   item.user?.emri ||
   item.user?.email ||
   "Klient";
@@ -31,7 +30,7 @@ export default function FeedbackList() {
     const loadFeedbacks = async () => {
       try {
         setIsLoading(true);
-        const data = await api.getVleresimet();
+        const data = await api.getReviews();
         setFeedbacks(Array.isArray(data) ? data : []);
         setError("");
       } catch (err) {

@@ -195,7 +195,6 @@ export default function Wedding() {
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
   const [eventLocation, setEventLocation] = useState("");
-  const [eventPhone, setEventPhone] = useState("");
   const [requestStatus, setRequestStatus] = useState("");
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
@@ -267,8 +266,8 @@ export default function Wedding() {
       scrollTo("wedding-gallery");
       return;
     }
-    if (!coupleName.trim() || !eventDate || !eventTime || !eventLocation.trim() || !eventPhone.trim()) {
-      setRequestStatus("Plotësoni emrin e çiftit, datën, orën, lokacionin dhe numrin e telefonit.");
+    if (!coupleName.trim() || !eventDate || !eventTime || !eventLocation.trim()) {
+      setRequestStatus("Plotesoni emrin e ciftit, daten, oren dhe lokacionin.");
       scrollTo("wedding-request");
       return;
     }
@@ -282,20 +281,18 @@ export default function Wedding() {
 
     try {
       setIsSubmittingRequest(true);
-      const phone = eventPhone.trim();
-      const userEmail = await api.getLoggedInUserEmail();
+      const profile = await api.getProfile();
       await api.createBrideToBeRequest({
         brideName: `Wedding - ${coupleName.trim()}`,
         eventDate,
         eventTime,
         location: eventLocation.trim(),
-        telefoni: phone,
-        email: userEmail,
+        telefoni: profile?.phoneNumber || "",
+        email: profile?.email || "",
         selectedDecors: selectedDecorText,
       });
       setRequestStatus("Kërkesa u dërgua");
       setSelectedDecors([]);
-      setEventPhone("");
     } catch (error) {
       setRequestStatus(formatApiError(error));
     } finally {
@@ -776,17 +773,6 @@ export default function Wedding() {
                     onChange={(e) => setEventLocation(e.target.value)}
                     placeholder="psh. Prishtinë, Hotel ..."
                     className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="text-xs uppercase tracking-widest text-[#a67c52] font-semibold">Numri i telefonit</label>
-                <input
-                    type="tel"
-                    value={eventPhone}
-                    onChange={(e) => setEventPhone(e.target.value)}
-                    placeholder="psh. +383 44 123 456"
-                    className="mt-2 w-full px-4 py-3 rounded-xl border border-[#d4c4b0] bg-white/90 outline-none focus:ring-2 focus:ring-[#a67c52]/30"
-                    required
                 />
               </div>
             </div>

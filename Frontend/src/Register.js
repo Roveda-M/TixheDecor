@@ -7,7 +7,7 @@ import { useConfirmModal } from "./ConfirmModal";
 export default function Register() {
   const [form, setForm] = useState({
     fullname: "",
-    username: "",
+    phoneNumber: "",
     email: "",
     password: "",
     confirm: "",
@@ -31,11 +31,11 @@ export default function Register() {
     setMessage("");
 
     const fullname = form.fullname.trim();
-    const username = form.username.trim();
+    const phoneNumber = form.phoneNumber.trim();
     const email = form.email.trim();
 
     if (!fullname) return alertDialog("Shto emrin e plotë");
-    if (!username) return alertDialog("Shto username");
+    if (!phoneNumber) return alertDialog("Shto numrin e telefonit");
     if (!email) return alertDialog("Shto email");
     if (!emailValid(email)) return alertDialog("Email i pavlefshëm");
     if (!form.password.trim()) return alertDialog("Shto fjalëkalimin");
@@ -48,7 +48,7 @@ export default function Register() {
       sessionStorage.removeItem("accessToken");
       sessionStorage.removeItem("role");
 
-      await api.register(email, form.password, fullname, username);
+      await api.register(email, form.password, fullname, phoneNumber);
       setMessage("Llogaria u krijua. Hyni me email dhe fjalëkalimin tuaj.");
       setTimeout(() => navigate("/login"), 1200);
     } catch (error) {
@@ -74,12 +74,13 @@ export default function Register() {
             autoComplete="off"
           />
           <input
-            name="username"
-            placeholder="Username"
-            value={form.username}
+            name="phoneNumber"
+            type="tel"
+            placeholder="Phone Number"
+            value={form.phoneNumber}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg"
-            autoComplete="off"
+            autoComplete="tel"
           />
           <input
             name="email"

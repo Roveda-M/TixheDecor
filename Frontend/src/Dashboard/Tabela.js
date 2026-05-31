@@ -389,7 +389,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, disabl
     if (title === 'Përdoruesit') {
       return items.map((item) => ({
         id: item.id,
-        name: `${item.emri || ''} ${item.mbiemri || ''}`.trim() || item.fullname || item.username || '',
+        name: `${item.emri || ''} ${item.mbiemri || ''}`.trim() || item.fullname || '',
         email: item.email || '',
         phone: item.phoneNumber || '',
         roles: Array.isArray(item.roles) ? item.roles.map((role) => role.emertimi).join(', ') : '',
@@ -436,6 +436,18 @@ export default function Tabela({ title, columns, initialData, disableAdd, disabl
         lloji: formatLlojiEventType(item.lloji || 'Individual'),
       }));
     }
+    if (title === 'Mesazhet e Kontaktit') {
+      return items.map((item) => ({
+        id: item.contactMessageId,
+        name: item.name || '',
+        email: item.email || '',
+        phoneNumber: item.phoneNumber || '',
+        subject: item.subject || '',
+        message: item.message || '',
+        statusi: item.statusi || 'I ri',
+        createdAt: item.createdAt || '',
+      }));
+    }
     if (title === 'Projektet e Dekorimit') {
       return items.map((item) => ({
         id: item.projektiId,
@@ -467,7 +479,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, disabl
     if (title === 'Vlerësimet e Klientëve') {
       return items.map((item) => ({
         id: item.vleresimiId,
-        userName: item.user?.fullname || item.user?.username || '',
+        userName: item.user?.fullname || '',
         userEmail: item.user?.email || '',
         client: item.klienti ? klientLabel(item.klienti) : '',
         clientId: item.klienti?.klientiId ? String(item.klienti.klientiId) : '',
@@ -643,6 +655,19 @@ export default function Tabela({ title, columns, initialData, disableAdd, disabl
       if (editingId) payload.klientiId = Number(editingId);
       return payload;
     }
+    if (title === 'Mesazhet e Kontaktit') {
+      const payload = {
+        name: form.name || '',
+        email: form.email || '',
+        phoneNumber: form.phoneNumber || '',
+        subject: form.subject || '',
+        message: form.message || '',
+        statusi: form.statusi || 'I ri',
+      };
+      if (form.createdAt) payload.createdAt = form.createdAt;
+      if (editingId) payload.contactMessageId = Number(editingId);
+      return payload;
+    }
     if (title === 'Projektet e Dekorimit') {
       const payload = {
         emriProjektit: form.title || '',
@@ -719,7 +744,8 @@ export default function Tabela({ title, columns, initialData, disableAdd, disabl
             formatLlojiEventType(k.lloji || '').toLowerCase().includes(q)
           );
         }
-      } else if (title === 'Projektet e Dekorimit') items = await api.getProjektet();
+      } else if (title === 'Mesazhet e Kontaktit') items = await api.getContactMessages();
+      else if (title === 'Projektet e Dekorimit') items = await api.getProjektet();
       else if (isEventRequestTitle(title)) {
         items = await api.getBrideToBeRequests();
         items = filterEventRequests(title, items);
@@ -1076,6 +1102,14 @@ export default function Tabela({ title, columns, initialData, disableAdd, disabl
           const created = await api.createKlient(body);
           setData([...data, mapIncomingData(title, [created])[0]]);
         }
+      } else if (title === 'Mesazhet e Kontaktit') {
+        if (editingId) {
+          const updated = await api.updateContactMessage(editingId, body);
+          setData(data.map((item) => (item.id === editingId ? mapIncomingData(title, [updated])[0] : item)));
+        } else {
+          const created = await api.createContactMessage(body);
+          setData([...data, mapIncomingData(title, [created])[0]]);
+        }
       } else if (title === 'Projektet e Dekorimit') {
         if (editingId) {
           const updated = await api.updateProjekt(editingId, body);
@@ -1129,6 +1163,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, disabl
         else if (title === 'Rolet e Përdoruesve') await api.deleteUserRole(id);
         else if (title === 'Refresh Tokens') await api.deleteRefreshToken(id);
         else if (title === 'Menaxhimi i Klientëve') await api.deleteKlient(id);
+        else if (title === 'Mesazhet e Kontaktit') await api.deleteContactMessage(id);
         else if (title === 'Projektet e Dekorimit') await api.deleteProjekt(id);
         else if (title === 'Faturat') await api.deleteFatura(id);
         else if (title === 'Vlerësimet e Klientëve') await api.deleteVleresim(id);

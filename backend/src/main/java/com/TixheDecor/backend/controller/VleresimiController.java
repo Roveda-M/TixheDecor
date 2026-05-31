@@ -27,6 +27,13 @@ public class VleresimiController {
         return vleresimiService.getAll();
     }
 
+    @Operation(summary = "Merr reviews per perdoruesit")
+    @GetMapping("/reviews")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public List<Vleresimi> getReviews() {
+        return vleresimiService.getReviews();
+    }
+
     @Operation(summary = "Merr vlerësimin me ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

@@ -51,9 +51,6 @@ public class UserService {
         return userRepository.findById(id)
                 .map(existing -> {
                     user.setId(id);
-                    if (user.getUsername() == null || user.getUsername().isBlank()) {
-                        user.setUsername(existing.getUsername());
-                    }
                     if ((user.getRoles() == null || user.getRoles().isEmpty()) && existing.getRoles() != null) {
                         user.setRoles(existing.getRoles());
                     }
@@ -106,13 +103,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User registerUser(String email, String password, String fullname, String username) {
+    public User registerUser(String email, String password, String fullname, String phoneNumber) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email ekziston tashme");
-        }
-
-        if (username != null && !username.isBlank() && userRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("Username ekziston tashme");
         }
 
         User user = new User();
@@ -120,7 +113,7 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setFullname(fullname);
         applyNamePartsFromFullname(user);
-        user.setUsername(username);
+        user.setPhoneNumber(phoneNumber);
         user.setStatusi("Aktiv");
         user.setDataKrijimit(LocalDateTime.now());
 

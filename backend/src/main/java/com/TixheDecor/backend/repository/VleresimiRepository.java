@@ -7,6 +7,7 @@ import java.util.List;
 
 @Repository
 public interface VleresimiRepository extends JpaRepository<Vleresimi, Integer> {
+    List<Vleresimi> findAllByOrderByDataVleresimitDescVleresimiIdDesc();
     List<Vleresimi> findByProjektiProjektiId(Integer projektiId);
     List<Vleresimi> findByKlientiKlientiId(Integer klientiId);
 }

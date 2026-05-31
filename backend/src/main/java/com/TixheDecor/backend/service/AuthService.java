@@ -45,8 +45,8 @@ public class AuthService {
         );
     }
 
-    public User register(String email, String password, String fullname, String username) {
-        return userService.registerUser(email, password, fullname, username);
+    public User register(String email, String password, String fullname, String phoneNumber) {
+        return userService.registerUser(email, password, fullname, phoneNumber);
     }
 
     public Map<String, String> refresh(String refreshTokenValue) {

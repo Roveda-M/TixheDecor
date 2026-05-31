@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FeedbackForm from "./FeedbackForm";
 import FeedbackList from "./FeedbackList";
 import { useAuthGuard } from "./useAuthGuard";
@@ -9,6 +9,8 @@ export default function Contact() {
   const { requireAuth, AuthToast } = useAuthGuard();
   const { alertDialog, ConfirmModal } = useConfirmModal();
   const [view, setView] = useState("contact");
+  const [loggedInEmail, setLoggedInEmail] = useState("");
+  const [loggedInPhone, setLoggedInPhone] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -23,6 +25,21 @@ export default function Contact() {
     return emailRegex.test(email.toLowerCase());
   };
 
+  useEffect(() => {
+    const loadLoggedInUser = async () => {
+      try {
+        const profile = await api.getProfile();
+        setLoggedInEmail(profile?.email || "");
+        setLoggedInPhone(profile?.phoneNumber || "");
+      } catch {
+        setLoggedInEmail("");
+        setLoggedInPhone("");
+      }
+    };
+
+    loadLoggedInUser();
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -33,20 +50,22 @@ export default function Contact() {
 
     if (form.name.trim() === "") return alertDialog("Shkruaj emrin");
     if (form.email.trim() === "") return alertDialog("Shkruaj emailin");
-    if (!emailValid(form.email)) return alertDialog("Email jo valid");
+    const email = form.email.trim();
+    if (!emailValid(email)) return alertDialog("Email jo valid");
+    if (loggedInEmail && email.toLowerCase() !== loggedInEmail.toLowerCase()) {
+      return alertDialog("Mund te dergosh mesazh vetem me emailin e llogarise tende");
+    }
     if (form.subject.trim() === "") return alertDialog("Shkruaj subjectin");
     if (form.message.trim() === "") return alertDialog("Shkruaj mesazhin");
 
     try {
-      const nameParts = form.name.trim().split(" ");
-      await api.createKlient({
-        emri: nameParts[0] || "",
-        mbiemri: nameParts.slice(1).join(" ") || "",
-        email: form.email,
-        telefoni: "",
-        adresa: form.subject,
-        statusi: "Aktiv",
-        lloji: "Kontakt",
+      await api.createContactMessage({
+        name: form.name.trim(),
+        email,
+        phoneNumber: loggedInPhone,
+        subject: form.subject.trim(),
+        message: form.message.trim(),
+        statusi: "I ri",
       });
 
       await alertDialog("Mesazhi u dërgua me sukses! ");
@@ -93,6 +112,7 @@ export default function Contact() {
                     />
                     <input
                         name="email"
+                        type="email"
                         value={form.email}
                         onChange={handleChange}
                         placeholder="Email"

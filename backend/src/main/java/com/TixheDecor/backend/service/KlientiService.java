@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 
@@ -45,7 +46,7 @@ public class KlientiService {
 
         List<Klienti> klientet = klientiRepository.findAll();
 
-        return eventRequestKlientiSyncService.enrichKlientetForDashboard(klientet);
+        return withoutContactPageMessages(eventRequestKlientiSyncService.enrichKlientetForDashboard(klientet));
 
     }
 
@@ -104,12 +105,18 @@ public class KlientiService {
 
     public List<Klienti> getByStatusi(String statusi) {
 
-        return eventRequestKlientiSyncService.enrichKlientetForDashboard(
+        return withoutContactPageMessages(eventRequestKlientiSyncService.enrichKlientetForDashboard(
 
                 klientiRepository.findByStatusi(statusi)
 
-        );
+        ));
 
+    }
+
+    private List<Klienti> withoutContactPageMessages(List<Klienti> klientet) {
+        return klientet.stream()
+                .filter(klienti -> klienti.getLloji() == null || !klienti.getLloji().toLowerCase().contains("kontakt"))
+                .collect(Collectors.toList());
     }
 
 }
