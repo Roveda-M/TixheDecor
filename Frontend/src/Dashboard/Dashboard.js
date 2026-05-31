@@ -248,6 +248,31 @@ const crudConfigs = {
     initialData: [],
     disableAdd: true,
   },
+  birthdayRequests: {
+    id: 'birthdayRequests',
+    title: 'Kërkesat Birthday',
+    icon: <FiHeart />,
+    columns: [
+      { key: 'brideName', label: 'Emri', type: 'text' },
+      { key: 'eventDate', label: 'Data', type: 'date' },
+      { key: 'eventTime', label: 'Ora', type: 'time' },
+      { key: 'location', label: 'Lokacioni', type: 'text' },
+      { key: 'selectedDecors', label: 'Dekorët e zgjedhur', type: 'photoLinks' },
+      {
+        key: 'statusi',
+        label: 'Statusi',
+        type: 'select',
+        badge: true,
+        options: [
+          { value: 'I filluar', label: 'I filluar' },
+          { value: 'Në proces', label: 'Në proces' },
+          { value: 'I përfunduar', label: 'I përfunduar' },
+        ],
+      },
+    ],
+    initialData: [],
+    disableAdd: true,
+  },
   engagementRequests: {
     id: 'engagementRequests',
     title: 'Kërkesat Engagement',
