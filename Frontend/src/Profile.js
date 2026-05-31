@@ -29,7 +29,8 @@ export default function Profile() {
     navigate("/");
   };
 
-  const displayName = user?.fullname || user?.username || "Perdoruesi";
+  const fullNameFromParts = `${user?.emri || ""} ${user?.mbiemri || ""}`.trim();
+  const displayName = user?.fullname || fullNameFromParts || user?.username || "Perdoruesi";
 
   if (loading)
     return (
@@ -82,11 +83,25 @@ export default function Profile() {
             <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
               <div>
                 <label className="text-sm text-gray-500">Full Name</label>
-                <p className="text-lg font-medium">{user?.fullname || "-"}</p>
+                <p className="text-lg font-medium">{displayName || "-"}</p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-sm text-gray-500">Emri</label>
+                  <p className="text-lg font-medium">{user?.emri || "-"}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Mbiemri</label>
+                  <p className="text-lg font-medium">{user?.mbiemri || "-"}</p>
+                </div>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Username</label>
                 <p className="text-lg font-medium">{user?.username || "-"}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Telefoni</label>
+                <p className="text-lg font-medium">{user?.phoneNumber || "-"}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Email</label>

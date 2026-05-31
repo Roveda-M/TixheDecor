@@ -218,7 +218,7 @@ export default function Birthday() {
         <div className="w-full bg-[#f7f3ec] text-[#2b2b2b] min-h-screen py-20 overflow-hidden" style={fontSans}>
           <div className="text-center px-4 max-w-4xl mx-auto mb-16 md:mb-24">
             <h1 className="text-5xl md:text-5xl text-[#1c1c1c] mb-6 font-light" style={fontSerif}>
-              Ditelindje
+              Ditëlindje
             </h1>
             <div className="w-[1px] h-16 bg-gray-400 mx-auto mt-8 mb-6"></div>
           </div>

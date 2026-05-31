@@ -382,7 +382,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
     if (title === 'Përdoruesit') {
       return items.map((item) => ({
         id: item.id,
-        name: `${item.emri || ''} ${item.mbiemri || ''}`.trim(),
+        name: `${item.emri || ''} ${item.mbiemri || ''}`.trim() || item.fullname || item.username || '',
         email: item.email || '',
         phone: item.phoneNumber || '',
         roles: Array.isArray(item.roles) ? item.roles.map((role) => role.emertimi).join(', ') : '',
@@ -572,6 +572,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
       const payload = {
         emri: nameParts[0] || '',
         mbiemri: nameParts.slice(1).join(' ') || '',
+        fullname: (form.name || '').trim(),
         email: form.email || '',
         phoneNumber: form.phone || '',
         statusi: form.statusi || 'Aktiv',
@@ -754,7 +755,7 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
               const options = users
                 .map((user) => ({
                   value: user.email || '',
-                  label: `${user.fullname || user.emri || user.email}${user.email ? ' - ' + user.email : ''}`,
+                  label: `${user.fullname || `${user.emri || ''} ${user.mbiemri || ''}`.trim() || user.email}${user.email ? ' - ' + user.email : ''}`,
                 }))
                 .sort((a, b) => a.label.localeCompare(b.label, 'sq', { sensitivity: 'base' }));
               return [source, options];
