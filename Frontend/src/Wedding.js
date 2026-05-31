@@ -800,12 +800,7 @@ export default function Wedding() {
               >
                 {isSubmittingRequest ? "Duke dërguar..." : "Dërgo kërkesën"}
               </button>
-              <Link
-                  to="/contact"
-                  className="px-10 py-4 rounded-full text-center border border-[#6f4e37]/25 text-[#6f4e37] font-semibold hover:bg-[#6f4e37]/5 transition"
-              >
-                Kontakt i drejtpërdrejtë
-              </Link>
+
             </div>
 
             {requestStatus && (
@@ -961,13 +956,7 @@ export default function Wedding() {
                 >
                   Krijo ftesë perfekte
                 </button>
-                <Link
-                    to="/contact"
-                    className="px-10 py-4 rounded-full bg-[#6f4e37]/10 text-[#5c4030] border border-[#6f4e37]/20 font-semibold
-                tracking-wide backdrop-blur-sm hover:bg-[#6f4e37]/15 hover:-translate-y-0.5 transition-all duration-500"
-                >
-                  Rezervo konsultën
-                </Link>
+
               </div>
             </div>
           </div>

@@ -1286,10 +1286,10 @@ export default function Tabela({ title, columns, initialData, disableAdd, enable
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Filtro sipas llojit</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Filtro sipas faqes</label>
             <input
               type="text"
-              placeholder="p.sh. Individual"
+              placeholder="p.sh. Wedding"
               value={filterLloji}
               onChange={(e) => setFilterLloji(e.target.value)}
               className="px-3 py-2 bg-white border border-[#c9c1b5] rounded-lg text-sm w-40"
